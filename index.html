@@ -680,7 +680,7 @@ font-size: 18px !important;
     </div>
   </div>
 
-  <input type="file" id="fileInput" accept=".cbz" style="display:none" onchange="handleFileSelect(event)">
+  <input type="file" id="fileInput" accept=".cbz,.cbr,.cbt,.cb7,.pdf,.zip,.rar" style="display:none" onchange="handleFileSelect(event)">
 </div>
 
 <!-- Reader Screen -->
@@ -744,6 +744,16 @@ font-size: 18px !important;
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<script src="https://unpkg.com/libarchive.js/dist/libarchive.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<script>
+  if (typeof pdfjsLib !== 'undefined') {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+</script>
 
 <script>
 // ===== STATE =====
@@ -848,61 +858,61 @@ async function handleFileSelect(event) {
   showLoading('جارٍ فتح الكوميكس...');
 
   try {
-    // Check file size
     const fileSizeMB = file.size / (1024 * 1024);
-    if (fileSizeMB > 200) {
-      throw new Error(`حجم الملف كبير جداً (${fileSizeMB.toFixed(0)} MB). الحد الأقصى 200 MB`);
+    if (fileSizeMB > 300) {
+      throw new Error(`حجم الملف كبير جداً (${fileSizeMB.toFixed(0)} MB). الحد الأقصى 300 MB`);
     }
+
+    const ext = file.name.split('.').pop().toLowerCase();
+    let imageFiles = [];
 
     showLoading('جارٍ قراءة الملف...');
-    
-    const zip = new JSZip();
-    const contents = await zip.loadAsync(file, {
-      optimizedBinaryString: true
-    });
-    
-    // Find image files
-    const imageFiles = [];
-    contents.forEach((path, zipEntry) => {
-      if (!zipEntry.dir) {
-        const ext = path.split('.').pop().toLowerCase();
-        if (['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp'].includes(ext)) {
-          // Skip hidden files and Mac metadata
-          const filename = path.split('/').pop();
-          if (!filename.startsWith('.') && !path.includes('__MACOSX')) {
-            imageFiles.push({ path, entry: zipEntry });
-          }
-        }
-      }
-    });
 
-    if (imageFiles.length === 0) {
-      throw new Error('لم يتم العثور على صور في الملف. تأكد أن الملف بصيغة CBZ صحيحة');
+    // CBZ, ZIP, CBT = ZIP format
+    if (['cbz', 'zip', 'cbt'].includes(ext)) {
+      imageFiles = await extractFromZip(file);
+    }
+    // CBR, RAR = RAR format - try as ZIP first (some CBR are actually ZIP)
+    else if (['cbr', 'rar'].includes(ext)) {
+      try {
+        imageFiles = await extractFromZip(file);
+      } catch(e) {
+        // Try libarchive for real RAR files
+        imageFiles = await extractFromArchive(file);
+      }
+    }
+    // CB7 = 7zip format
+    else if (ext === 'cb7') {
+      imageFiles = await extractFromArchive(file);
+    }
+    // PDF
+    else if (ext === 'pdf') {
+      imageFiles = await extractFromPDF(file);
+    }
+    else {
+      // Try ZIP as fallback
+      imageFiles = await extractFromZip(file);
     }
 
-    // Sort by name naturally
-    imageFiles.sort((a, b) => {
-      const nameA = a.path.split('/').pop();
-      const nameB = b.path.split('/').pop();
-      return nameA.localeCompare(nameB, undefined, { numeric: true, sensitivity: 'base' });
-    });
+    if (imageFiles.length === 0) {
+      throw new Error('لم يتم العثور على صور في الملف');
+    }
+
+    // Sort naturally
+    imageFiles.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
 
     showLoading(`وجدت ${imageFiles.length} صفحة، جارٍ التحميل...`);
 
-    // Load images - limit to avoid memory issues
-    const maxPages = Math.min(imageFiles.length, 100);
+    const maxPages = Math.min(imageFiles.length, 120);
     const pages = [];
     
     for (let i = 0; i < maxPages; i++) {
-      const { entry, path } = imageFiles[i];
-      
       try {
-        const blob = await entry.async('blob');
-        const ext = path.split('.').pop().toLowerCase();
-        const mimeType = ext === 'png' ? 'image/png' : 
-                         ext === 'webp' ? 'image/webp' : 'image/jpeg';
+        const { blob, name } = imageFiles[i];
+        const imgExt = name.split('.').pop().toLowerCase();
+        const mimeType = imgExt === 'png' ? 'image/png' : 
+                         imgExt === 'webp' ? 'image/webp' : 'image/jpeg';
         
-        // Resize large images to save memory
         const base64 = await blobToBase64(blob);
         
         pages.push({
@@ -915,34 +925,26 @@ async function handleFileSelect(event) {
 
         if (i % 3 === 0) {
           showLoading(`جارٍ تحميل الصفحة ${i + 1} من ${maxPages}...`);
-          await sleep(10); // Let UI update
+          await sleep(10);
         }
       } catch(pageErr) {
         console.warn(`تخطي صفحة ${i + 1}:`, pageErr);
       }
     }
 
-    if (pages.length === 0) {
-      throw new Error('فشل تحميل الصور');
-    }
+    if (pages.length === 0) throw new Error('فشل تحميل الصور');
 
+    const title = file.name.replace(/\.(cbz|cbr|cbt|cb7|pdf|zip|rar)$/i, '');
     const comic = {
       id: Date.now(),
-      title: file.name.replace(/\.cbz$/i, ''),
+      title,
       pages,
       cover: pages[0]?.original || null,
       dateAdded: new Date().toISOString()
     };
 
-    // Save to memory only (don't save to localStorage due to size)
     comics.unshift(comic);
-    
-    try {
-      saveLibrary();
-    } catch(e) {
-      // If storage fails, keep in memory only
-      console.warn('تعذر الحفظ في الذاكرة المحلية');
-    }
+    try { saveLibrary(); } catch(e) {}
     
     renderLibrary();
     hideLoading();
@@ -951,14 +953,101 @@ async function handleFileSelect(event) {
       ? `تم تحميل ${pages.length} صفحة (من أصل ${imageFiles.length}) ✓`
       : `تم تحميل ${pages.length} صفحة ✓`;
     showToast(msg, 'success');
-    
-    // Auto open the comic
     openComic(0);
 
   } catch (error) {
     hideLoading();
-    console.error('خطأ في فتح الملف:', error);
+    console.error('خطأ:', error);
     showToast('خطأ: ' + (error.message || 'فشل فتح الملف'), 'error');
+  }
+}
+
+// Extract from ZIP-based formats (CBZ, ZIP, CBT)
+async function extractFromZip(file) {
+  const zip = new JSZip();
+  const contents = await zip.loadAsync(file, { optimizedBinaryString: true });
+  
+  const imageFiles = [];
+  const imgExts = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'avif'];
+  
+  contents.forEach((path, entry) => {
+    if (!entry.dir) {
+      const ext = path.split('.').pop().toLowerCase();
+      const name = path.split('/').pop();
+      if (imgExts.includes(ext) && !name.startsWith('.') && !path.includes('__MACOSX')) {
+        imageFiles.push({ 
+          name,
+          path,
+          getBlob: () => entry.async('blob')
+        });
+      }
+    }
+  });
+
+  // Resolve blobs
+  const resolved = [];
+  for (const f of imageFiles) {
+    const blob = await f.getBlob();
+    resolved.push({ name: f.name, blob });
+  }
+  return resolved;
+}
+
+// Extract from archive formats using libarchive (CBR, CB7)
+async function extractFromArchive(file) {
+  try {
+    if (typeof Archive === 'undefined') {
+      throw new Error('مكتبة RAR غير متاحة، جرب تحويل الملف لـ CBZ');
+    }
+    
+    const archive = await Archive.open(file);
+    const entries = await archive.getFilesArray();
+    
+    const imgExts = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp'];
+    const imageFiles = [];
+    
+    for (const entry of entries) {
+      const ext = entry.name.split('.').pop().toLowerCase();
+      if (imgExts.includes(ext) && !entry.name.startsWith('.')) {
+        const blob = new Blob([entry.fileData], { type: 'image/jpeg' });
+        imageFiles.push({ name: entry.name, blob });
+      }
+    }
+    return imageFiles;
+  } catch(e) {
+    throw new Error('تعذر فتح ملف RAR/7Z. حاول تحويله لـ CBZ أولاً');
+  }
+}
+
+// Extract from PDF
+async function extractFromPDF(file) {
+  try {
+    if (typeof pdfjsLib === 'undefined') {
+      throw new Error('مكتبة PDF غير متاحة');
+    }
+
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    const imageFiles = [];
+
+    for (let i = 1; i <= Math.min(pdf.numPages, 120); i++) {
+      showLoading(`جارٍ تحويل صفحة PDF ${i} من ${pdf.numPages}...`);
+      
+      const page = await pdf.getPage(i);
+      const viewport = page.getViewport({ scale: 1.5 });
+      
+      const canvas = document.createElement('canvas');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      
+      await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+      
+      const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.85));
+      imageFiles.push({ name: `page_${String(i).padStart(4, '0')}.jpg`, blob });
+    }
+    return imageFiles;
+  } catch(e) {
+    throw new Error('تعذر فتح ملف PDF: ' + e.message);
   }
 }
 
