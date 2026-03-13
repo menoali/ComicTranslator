@@ -969,6 +969,8 @@ async function extractFromZip(file) {
   
   const imageFiles = [];
   const imgExts = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'avif'];
+  const archiveExts = ['cbz', 'cbr', 'cbt', 'zip'];
+  let innerArchives = [];
   let allPaths = [];
   
   contents.forEach((path, entry) => {
@@ -976,34 +978,74 @@ async function extractFromZip(file) {
     if (!entry.dir) {
       const ext = path.split('.').pop().toLowerCase();
       const name = path.split('/').pop();
-      // More permissive - accept any image regardless of path
-      if (imgExts.includes(ext) && !name.startsWith('.')) {
-        imageFiles.push({ 
-          name: path, // Use full path for better sorting
-          path,
-          getBlob: () => entry.async('blob')
-        });
+      if (!name.startsWith('.') && !path.includes('__MACOSX')) {
+        if (imgExts.includes(ext)) {
+          imageFiles.push({ name: path, path, getBlob: () => entry.async('blob') });
+        } else if (archiveExts.includes(ext)) {
+          innerArchives.push({ name: path, path, getBlob: () => entry.async('blob') });
+        }
       }
     }
   });
 
-  // Debug: show what's in the ZIP
-  if (imageFiles.length === 0) {
-    const sample = allPaths.slice(0, 10).join('\n');
-    throw new Error(`لم يتم العثور على صور.\n\nمحتوى الملف:\n${sample}`);
+  // If ZIP contains images directly - return them
+  if (imageFiles.length > 0) {
+    imageFiles.sort((a, b) => a.path.localeCompare(b.path, undefined, { numeric: true, sensitivity: 'base' }));
+    const resolved = [];
+    for (const f of imageFiles) {
+      const blob = await f.getBlob();
+      resolved.push({ name: f.path.split('/').pop(), blob });
+    }
+    return resolved;
   }
 
-  // Sort by full path
-  imageFiles.sort((a, b) => a.path.localeCompare(b.path, undefined, { numeric: true, sensitivity: 'base' }));
-
-  // Resolve blobs
-  const resolved = [];
-  for (const f of imageFiles) {
-    const blob = await f.getBlob();
-    const shortName = f.path.split('/').pop();
-    resolved.push({ name: shortName, blob });
+  // If ZIP contains inner archives (CBR/CBZ) - extract from them
+  if (innerArchives.length > 0) {
+    innerArchives.sort((a, b) => a.path.localeCompare(b.path, undefined, { numeric: true }));
+    const allImages = [];
+    
+    for (const archive of innerArchives) {
+      showLoading(`جارٍ فتح: ${archive.path.split('/').pop()}...`);
+      const blob = await archive.getBlob();
+      const innerFile = new File([blob], archive.path.split('/').pop());
+      
+      try {
+        // Try as ZIP first (CBZ)
+        const innerZip = new JSZip();
+        const innerContents = await innerZip.loadAsync(innerFile);
+        
+        innerContents.forEach((path, entry) => {
+          if (!entry.dir) {
+            const ext = path.split('.').pop().toLowerCase();
+            const name = path.split('/').pop();
+            if (imgExts.includes(ext) && !name.startsWith('.') && !path.includes('__MACOSX')) {
+              allImages.push({
+                name: archive.path + '/' + path,
+                path: archive.path + '/' + path,
+                getBlob: () => entry.async('blob')
+              });
+            }
+          }
+        });
+      } catch(e) {
+        console.warn('Could not open inner archive as ZIP:', archive.path);
+      }
+    }
+    
+    if (allImages.length > 0) {
+      allImages.sort((a, b) => a.path.localeCompare(b.path, undefined, { numeric: true, sensitivity: 'base' }));
+      const resolved = [];
+      for (const f of allImages) {
+        const blob = await f.getBlob();
+        resolved.push({ name: f.path.split('/').pop(), blob });
+      }
+      return resolved;
+    }
   }
-  return resolved;
+
+  // Nothing found
+  const sample = allPaths.slice(0, 8).join('\n');
+  throw new Error(`لم يتم العثور على صور.\n\nمحتوى الملف:\n${sample}`);
 }
 
 // Extract from archive formats using libarchive (CBR, CB7)
