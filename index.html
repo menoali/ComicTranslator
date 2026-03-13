@@ -969,14 +969,17 @@ async function extractFromZip(file) {
   
   const imageFiles = [];
   const imgExts = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'avif'];
+  let allPaths = [];
   
   contents.forEach((path, entry) => {
+    allPaths.push(path);
     if (!entry.dir) {
       const ext = path.split('.').pop().toLowerCase();
       const name = path.split('/').pop();
-      if (imgExts.includes(ext) && !name.startsWith('.') && !path.includes('__MACOSX')) {
+      // More permissive - accept any image regardless of path
+      if (imgExts.includes(ext) && !name.startsWith('.')) {
         imageFiles.push({ 
-          name,
+          name: path, // Use full path for better sorting
           path,
           getBlob: () => entry.async('blob')
         });
@@ -984,11 +987,21 @@ async function extractFromZip(file) {
     }
   });
 
+  // Debug: show what's in the ZIP
+  if (imageFiles.length === 0) {
+    const sample = allPaths.slice(0, 10).join('\n');
+    throw new Error(`لم يتم العثور على صور.\n\nمحتوى الملف:\n${sample}`);
+  }
+
+  // Sort by full path
+  imageFiles.sort((a, b) => a.path.localeCompare(b.path, undefined, { numeric: true, sensitivity: 'base' }));
+
   // Resolve blobs
   const resolved = [];
   for (const f of imageFiles) {
     const blob = await f.getBlob();
-    resolved.push({ name: f.name, blob });
+    const shortName = f.path.split('/').pop();
+    resolved.push({ name: shortName, blob });
   }
   return resolved;
 }
