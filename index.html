@@ -1602,13 +1602,17 @@ async function translateWithDeepLHybrid(imageDataUrl, mimeType, detector = 'gemi
   const base64 = imageDataUrl.split(',')[1];
   const actualMime = mimeType || 'image/jpeg';
 
-  const detectPrompt = `أنت مترجم كوميكس. انظر لهذه الصفحة واقرأ كل النصوص الإنجليزية في فقاعات الكلام مرتبة من أعلى لأسفل.
+  const detectPrompt = `You are a comic text detector. Look at this comic page carefully.
 
-أجب فقط بـ JSON:
-{"originals":["text1","text2"]}
+Find ALL speech bubbles containing English text. For each bubble identify its zone position.
 
-إذا لم يوجد نص: {"originals":[]}
-لا تترجم، فقط اكتب النصوص الإنجليزية الأصلية مرتبة.`;
+Zones: TL=top-left, TC=top-center, TR=top-right, ML=mid-left, MC=mid-center, MR=mid-right, BL=bot-left, BC=bot-center, BR=bot-right
+
+Respond ONLY with valid JSON:
+{"originals":[{"zone":"TL","text":"English text here"},{"zone":"TR","text":"more text"}]}
+
+If no text found: {"originals":[]}
+Only original English text, no translation.`;
 
   let responseText;
 
@@ -1655,9 +1659,14 @@ async function translateWithDeepLHybrid(imageDataUrl, mimeType, detector = 'gemi
   try { originals = JSON.parse(clean).originals || []; } catch(e) {}
   if (originals.length === 0) return imageDataUrl;
 
-  // Translate each text with DeepL
-  const arabicTranslations = await Promise.all(originals.map(t => translateWithDeepL(t)));
-  return await drawTranslationsOnImage(imageDataUrl, arabicTranslations);
+  // Translate each with DeepL and build zone bubbles
+  const zoneBubbles = await Promise.all(originals.map(async item => {
+    if (typeof item === 'string') return null;
+    const arabic = await translateWithDeepL(item.text);
+    return { zone: item.zone, arabic };
+  }));
+  const valid = zoneBubbles.filter(b => b && b.arabic);
+  return await drawTranslationsByZone(imageDataUrl, valid);
 }
 
 async function translateWithDeepL(text) {
@@ -1775,16 +1784,32 @@ async function translateWithOpenRouter(imageDataUrl, mimeType) {
 
 // ===== SHARED HELPERS =====
 function getTranslationPrompt() {
-  return `أنت مترجم كوميكس محترف. انظر لهذه الصفحة واقرأ كل النصوص الإنجليزية الموجودة في فقاعات الكلام والبالونات فقط.
+  return `You are a comic translator. Look at this comic page carefully.
 
-رتّبها من أعلى الصفحة لأسفلها (من اليسار لليمين في نفس الصف).
+Find ALL speech bubbles and text boxes that contain English text. Read them in order from top to bottom, left to right.
 
-أجب فقط بـ JSON هكذا بدون أي نص إضافي:
-{"translations":["الترجمة1","الترجمة2","الترجمة3"]}
+For each bubble, respond with its position zone and translation.
 
-- ترجم كل نص للعربية بشكل طبيعي مناسب للكوميكس
-- إذا لم يوجد نص: {"translations":[]}
-- لا تضع إحداثيات، فقط الترجمات مرتبة`;
+Zones are:
+- "TL" = top-left quarter
+- "TC" = top-center  
+- "TR" = top-right quarter
+- "ML" = middle-left
+- "MC" = middle-center
+- "MR" = middle-right
+- "BL" = bottom-left quarter
+- "BC" = bottom-center
+- "BR" = bottom-right quarter
+
+Respond ONLY with valid JSON, nothing else:
+{"bubbles":[{"zone":"TL","arabic":"الترجمة العربية"},{"zone":"TR","arabic":"ترجمة أخرى"}]}
+
+If no English text found: {"bubbles":[]}
+
+Rules:
+- Translate naturally to Arabic as a comic translator
+- Ignore large title text or captions that span full width
+- Order bubbles top-to-bottom`;
 }
 
 async function handleApiErrors(response) {
@@ -1802,65 +1827,133 @@ async function handleApiErrors(response) {
 
 async function processTranslationResult(text, imageDataUrl) {
   const cleanText = text.replace(/```json/g, '').replace(/```/g, '').trim();
-  let translations = [];
+  let bubbles = [];
   try {
     const parsed = JSON.parse(cleanText);
-    // Support both old format {textBlocks:[]} and new {translations:[]}
-    if (parsed.translations) {
-      translations = parsed.translations.filter(t => t && t.trim());
+    if (parsed.bubbles) {
+      bubbles = parsed.bubbles.filter(b => b.arabic && b.arabic.trim());
+    } else if (parsed.translations) {
+      // fallback old format - just use order
+      return await drawTranslationsByOrder(imageDataUrl, parsed.translations.filter(t => t && t.trim()));
     } else if (parsed.textBlocks) {
-      translations = parsed.textBlocks.map(b => b.arabic).filter(t => t && t.trim());
+      return await drawTranslationsByOrder(imageDataUrl, parsed.textBlocks.map(b => b.arabic).filter(t => t && t.trim()));
     }
-  } catch(e) { translations = []; }
+  } catch(e) { bubbles = []; }
 
-  if (translations.length === 0) return imageDataUrl;
-  return await drawTranslationsOnImage(imageDataUrl, translations);
+  if (bubbles.length === 0) return imageDataUrl;
+  return await drawTranslationsByZone(imageDataUrl, bubbles);
 }
 
-async function drawTranslationsOnImage(imageDataUrl, translations) {
+// Zone definitions: each zone maps to a region of the image
+function zoneToRect(zone, W, H) {
+  const zones = {
+    'TL': { x: 0,     y: 0,     w: 0.5, h: 0.33 },
+    'TC': { x: 0.25,  y: 0,     w: 0.5, h: 0.33 },
+    'TR': { x: 0.5,   y: 0,     w: 0.5, h: 0.33 },
+    'ML': { x: 0,     y: 0.33,  w: 0.5, h: 0.34 },
+    'MC': { x: 0.25,  y: 0.33,  w: 0.5, h: 0.34 },
+    'MR': { x: 0.5,   y: 0.33,  w: 0.5, h: 0.34 },
+    'BL': { x: 0,     y: 0.67,  w: 0.5, h: 0.33 },
+    'BC': { x: 0.25,  y: 0.67,  w: 0.5, h: 0.33 },
+    'BR': { x: 0.5,   y: 0.67,  w: 0.5, h: 0.33 },
+  };
+  const z = zones[zone] || zones['MC'];
+  return {
+    x: Math.floor(z.x * W), y: Math.floor(z.y * H),
+    w: Math.floor(z.w * W), h: Math.floor(z.h * H)
+  };
+}
+
+async function drawTranslationsByZone(imageDataUrl, zoneBubbles) {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => {
       const canvas = document.createElement('canvas');
-      canvas.width = img.width;
-      canvas.height = img.height;
+      canvas.width = img.width; canvas.height = img.height;
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0);
-
       const imgData = ctx.getImageData(0, 0, img.width, img.height);
       const W = img.width, H = img.height;
 
-      // Detect all speech bubbles
-      const bubbles = findAllBubbles(imgData.data, W, H);
+      // Detect all bubbles once
+      const allBubbles = findAllBubbles(imgData.data, W, H);
 
-      // Sort bubbles top-to-bottom, left-to-right (same reading order as AI)
+      for (const item of zoneBubbles) {
+        if (!item.arabic || !item.arabic.trim()) continue;
+        const zone = zoneToRect(item.zone, W, H);
+
+        // Find the best bubble inside this zone
+        let best = null, bestArea = 0;
+        for (const b of allBubbles) {
+          const bcx = b.x + b.w / 2;
+          const bcy = b.y + b.h / 2;
+          // Check if bubble center is inside zone
+          if (bcx >= zone.x && bcx <= zone.x + zone.w &&
+              bcy >= zone.y && bcy <= zone.y + zone.h) {
+            const area = b.w * b.h;
+            if (area > bestArea) { bestArea = area; best = b; }
+          }
+        }
+
+        if (!best) {
+          // No bubble found in zone - try larger search area
+          let bestDist = Infinity;
+          const zcx = zone.x + zone.w / 2;
+          const zcy = zone.y + zone.h / 2;
+          for (const b of allBubbles) {
+            const dist = Math.hypot((b.x+b.w/2) - zcx, (b.y+b.h/2) - zcy);
+            if (dist < bestDist) { bestDist = dist; best = b; }
+          }
+          // Only use if reasonably close
+          if (!best || bestDist > Math.min(W, H) * 0.3) continue;
+        }
+
+        // Fill bubble and draw text
+        const sx = Math.floor(best.x + best.w * 0.5);
+        const sy = Math.floor(best.y + best.h * 0.4);
+        const si = (Math.min(sy,H-1) * W + Math.min(sx,W-1)) * 4;
+        const bgR = imgData.data[si], bgG = imgData.data[si+1], bgB = imgData.data[si+2];
+        const inset = Math.max(2, Math.min(best.w, best.h) * 0.05);
+        ctx.fillStyle = `rgb(${bgR},${bgG},${bgB})`;
+        ctx.fillRect(best.x+inset, best.y+inset, best.w-inset*2, best.h-inset*2);
+        drawFittedText(ctx, item.arabic, best.x, best.y, best.w, best.h);
+      }
+
+      resolve(canvas.toDataURL('image/jpeg', 0.92));
+    };
+    img.onerror = () => reject(new Error('فشل تحميل الصورة'));
+    img.src = imageDataUrl;
+  });
+}
+
+async function drawTranslationsByOrder(imageDataUrl, translations) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width; canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      const imgData = ctx.getImageData(0, 0, img.width, img.height);
+      const W = img.width, H = img.height;
+
+      const bubbles = findAllBubbles(imgData.data, W, H);
       const rowSize = H * 0.12;
       bubbles.sort((a, b) => {
-        const rowA = Math.floor(a.y / rowSize);
-        const rowB = Math.floor(b.y / rowSize);
-        if (rowA !== rowB) return rowA - rowB;
-        return a.x - b.x;
+        const rowA = Math.floor(a.y / rowSize), rowB = Math.floor(b.y / rowSize);
+        return rowA !== rowB ? rowA - rowB : a.x - b.x;
       });
 
-      // Match translations to bubbles by order
       const count = Math.min(translations.length, bubbles.length);
       for (let i = 0; i < count; i++) {
         const b = bubbles[i];
         const arabic = translations[i];
         if (!arabic || !arabic.trim()) continue;
-
-        // Sample background color from center of bubble
-        const sx = Math.floor(b.x + b.w * 0.5);
-        const sy = Math.floor(b.y + b.h * 0.4);
-        const si = (Math.max(0, Math.min(H-1, sy)) * W + Math.max(0, Math.min(W-1, sx))) * 4;
+        const si = (Math.min(Math.floor(b.y+b.h*0.4),H-1)*W + Math.min(Math.floor(b.x+b.w*0.5),W-1))*4;
         const bgR = imgData.data[si], bgG = imgData.data[si+1], bgB = imgData.data[si+2];
-
-        // Fill bubble interior preserving border
-        const inset = Math.max(2, Math.min(b.w, b.h) * 0.05);
+        const inset = Math.max(2, Math.min(b.w, b.h)*0.05);
         ctx.fillStyle = `rgb(${bgR},${bgG},${bgB})`;
-        ctx.fillRect(b.x + inset, b.y + inset, b.w - inset*2, b.h - inset*2);
-
-        // Draw Arabic text
+        ctx.fillRect(b.x+inset, b.y+inset, b.w-inset*2, b.h-inset*2);
         drawFittedText(ctx, arabic, b.x, b.y, b.w, b.h);
       }
 
@@ -1869,6 +1962,18 @@ async function drawTranslationsOnImage(imageDataUrl, translations) {
     img.onerror = () => reject(new Error('فشل تحميل الصورة'));
     img.src = imageDataUrl;
   });
+}
+
+async function drawTranslationsOnImage(imageDataUrl, translations) {
+  // Support both old array format and new zone format
+  if (Array.isArray(translations) && translations.length > 0) {
+    if (typeof translations[0] === 'string') {
+      return await drawTranslationsByOrder(imageDataUrl, translations);
+    } else if (translations[0].zone) {
+      return await drawTranslationsByZone(imageDataUrl, translations);
+    }
+  }
+  return imageDataUrl;
 }
 
 function findAllBubbles(data, W, H) {
