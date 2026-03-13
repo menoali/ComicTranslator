@@ -1638,67 +1638,156 @@ async function drawTranslationsOnImage(imageDataUrl, textBlocks) {
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0);
 
+      // Detect speech bubbles automatically from the image
+      const bubbles = detectSpeechBubbles(ctx, img.width, img.height);
+
+      // Match each translation to nearest bubble
       textBlocks.forEach(block => {
-        // Clamp coordinates to image bounds
-        let x = Math.max(0, Math.min(block.x, 0.99)) * img.width;
-        let y = Math.max(0, Math.min(block.y, 0.99)) * img.height;
-        let w = Math.max(0.02, Math.min(block.width, 1 - block.x)) * img.width;
-        let h = Math.max(0.02, Math.min(block.height, 1 - block.y)) * img.height;
-
-        // Skip blocks that are too large (likely wrong coordinates from AI)
-        if (w > img.width * 0.95 || h > img.height * 0.5) return;
-        if (w < 10 || h < 10) return;
-
-        // Cover English text
-        ctx.fillStyle = 'white';
-        ctx.fillRect(x - 1, y - 1, w + 2, h + 2);
-
         if (!block.arabic || !block.arabic.trim()) return;
 
-        const padX = Math.max(4, w * 0.06);
-        const padY = Math.max(4, h * 0.08);
-        const availW = w - padX * 2;
-        const availH = h - padY * 2;
+        // AI-provided coordinates as hint
+        const hintX = block.x * img.width;
+        const hintY = block.y * img.height;
+        const hintW = block.width * img.width;
+        const hintH = block.height * img.height;
+        const hintCX = hintX + hintW / 2;
+        const hintCY = hintY + hintH / 2;
 
-        if (availW < 8 || availH < 8) return;
+        // Find closest bubble to hint center
+        let best = null;
+        let bestDist = Infinity;
 
-        // Find the right font size - start small and work up
-        let fontSize = 8;
-        let bestSize = 7;
-        let bestLines = [block.arabic];
-
-        for (let size = 8; size <= 28; size += 0.5) {
-          ctx.font = `600 ${size}px Cairo, Arial`;
-          const lines = wrapText(ctx, block.arabic, availW);
-          const totalH = lines.length * size * 1.3;
-          if (totalH <= availH && lines.every(l => ctx.measureText(l).width <= availW)) {
-            bestSize = size;
-            bestLines = lines;
-          } else {
-            break;
+        bubbles.forEach(b => {
+          const bCX = b.x + b.w / 2;
+          const bCY = b.y + b.h / 2;
+          const dist = Math.hypot(bCX - hintCX, bCY - hintCY);
+          // Prefer bubbles that contain or overlap the hint
+          const overlap = rectsOverlap(b.x, b.y, b.w, b.h, hintX, hintY, hintW, hintH);
+          const score = overlap ? dist * 0.3 : dist;
+          if (score < bestDist) {
+            bestDist = score;
+            best = b;
           }
+        });
+
+        // Use detected bubble if close enough, otherwise use AI hint
+        let rx, ry, rw, rh;
+        if (best && bestDist < img.width * 0.3) {
+          rx = best.x; ry = best.y; rw = best.w; rh = best.h;
+        } else {
+          // Clamp AI hint
+          rx = Math.max(0, hintX);
+          ry = Math.max(0, hintY);
+          rw = Math.min(hintW, img.width - rx);
+          rh = Math.min(hintH, img.height - ry);
+          if (rw < 20 || rh < 20 || rw > img.width * 0.9) return;
         }
 
-        fontSize = bestSize;
-        ctx.font = `600 ${fontSize}px Cairo, Arial`;
-        const lineHeight = fontSize * 1.3;
-        const totalHeight = bestLines.length * lineHeight;
-        const startY = y + padY + (availH - totalHeight) / 2 + lineHeight * 0.8;
+        // Fill bubble white
+        ctx.fillStyle = 'white';
+        ctx.fillRect(rx, ry, rw, rh);
 
-        ctx.fillStyle = '#111111';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'alphabetic';
-        ctx.direction = 'rtl';
-
-        bestLines.forEach((line, i) => {
-          ctx.fillText(line, x + w / 2, startY + i * lineHeight, availW);
-        });
+        // Draw Arabic text fitted inside
+        drawFittedText(ctx, block.arabic, rx, ry, rw, rh);
       });
 
       resolve(canvas.toDataURL('image/jpeg', 0.92));
     };
     img.onerror = () => reject(new Error('فشل تحميل الصورة'));
     img.src = imageDataUrl;
+  });
+}
+
+function rectsOverlap(x1,y1,w1,h1, x2,y2,w2,h2) {
+  return x1 < x2+w2 && x1+w1 > x2 && y1 < y2+h2 && y1+h1 > y2;
+}
+
+function detectSpeechBubbles(ctx, W, H) {
+  const imageData = ctx.getImageData(0, 0, W, H);
+  const data = imageData.data;
+  const bubbles = [];
+
+  // Scan for white/light regions that look like speech bubbles
+  // Use grid sampling for performance
+  const step = Math.max(2, Math.floor(Math.min(W, H) / 300));
+  const visited = new Uint8Array(Math.ceil(W/step) * Math.ceil(H/step));
+  const gW = Math.ceil(W/step);
+
+  function isLight(px, py) {
+    const i = (py * W + px) * 4;
+    return data[i] > 210 && data[i+1] > 210 && data[i+2] > 210;
+  }
+
+  function floodFill(sx, sy) {
+    const stack = [[sx, sy]];
+    let minX = sx, maxX = sx, minY = sy, maxY = sy;
+    let count = 0;
+    while (stack.length && count < 5000) {
+      const [x, y] = stack.pop();
+      const gx = Math.floor(x/step), gy = Math.floor(y/step);
+      const gi = gy * gW + gx;
+      if (gx < 0 || gy < 0 || gx >= gW || gy >= Math.ceil(H/step)) continue;
+      if (visited[gi]) continue;
+      if (!isLight(x, y)) continue;
+      visited[gi] = 1;
+      count++;
+      minX = Math.min(minX, x); maxX = Math.max(maxX, x);
+      minY = Math.min(minY, y); maxY = Math.max(maxY, y);
+      stack.push([x+step, y], [x-step, y], [x, y+step], [x, y-step]);
+    }
+    return { x: minX, y: minY, w: maxX-minX, h: maxY-minY, count };
+  }
+
+  for (let y = 0; y < H; y += step) {
+    for (let x = 0; x < W; x += step) {
+      const gx = Math.floor(x/step), gy = Math.floor(y/step);
+      if (visited[gy * gW + gx]) continue;
+      if (!isLight(x, y)) continue;
+      const region = floodFill(x, y);
+      const minSize = Math.min(W, H) * 0.03;
+      const maxSize = Math.min(W, H) * 0.45;
+      if (region.w > minSize && region.h > minSize &&
+          region.w < maxSize && region.h < maxSize) {
+        bubbles.push({ x: region.x, y: region.y, w: region.w, h: region.h });
+      }
+    }
+  }
+  return bubbles;
+}
+
+function drawFittedText(ctx, text, x, y, w, h) {
+  const padX = Math.max(4, w * 0.06);
+  const padY = Math.max(4, h * 0.08);
+  const availW = w - padX * 2;
+  const availH = h - padY * 2;
+  if (availW < 10 || availH < 10) return;
+
+  // Find best font size
+  let bestSize = 7;
+  let bestLines = [text];
+
+  for (let size = 8; size <= 32; size += 0.5) {
+    ctx.font = `600 ${size}px Cairo, Arial`;
+    const lines = wrapText(ctx, text, availW);
+    const totalH = lines.length * size * 1.3;
+    if (totalH <= availH) {
+      bestSize = size;
+      bestLines = lines;
+    } else break;
+  }
+
+  ctx.font = `600 ${bestSize}px Cairo, Arial`;
+  const lineHeight = bestSize * 1.3;
+  const totalHeight = bestLines.length * lineHeight;
+  const startY = y + padY + (availH - totalHeight) / 2 + lineHeight * 0.75;
+
+  ctx.fillStyle = '#111111';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'alphabetic';
+  ctx.direction = 'rtl';
+
+  bestLines.forEach((line, i) => {
+    ctx.fillText(line, x + w / 2, startY + i * lineHeight, availW);
   });
 }
 
