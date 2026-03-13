@@ -716,6 +716,15 @@ font-size: 18px !important;
     <span class="provider-check">✓</span>
   </div>
 
+  <div class="provider-btn" onclick="selectProvider('groq-deepl')" id="btn-groq-deepl">
+    <span>⚡🔀</span>
+    <div>
+      <strong>Groq + DeepL</strong>
+      <small>هجين مجاني • سريع + دقيق</small>
+    </div>
+    <span class="provider-check">✓</span>
+  </div>
+
 </div>
 
 <!-- API Key Input -->
@@ -877,14 +886,15 @@ function selectProvider(provider) {
   if (btn) btn.classList.add('active');
 
   const deeplGroup = document.getElementById('deeplKeyGroup');
-  const isHybrid = provider === 'deepl-hybrid';
+  const isHybrid = provider === 'deepl-hybrid' || provider === 'groq-deepl';
   deeplGroup.style.display = isHybrid ? 'block' : 'none';
 
   const links = {
     gemini: { placeholder: 'مفتاح Gemini API', url: 'https://aistudio.google.com/apikey', label: 'aistudio.google.com', hint: 'احصل على مفتاحك مجاناً من' },
     groq: { placeholder: 'مفتاح Groq API', url: 'https://console.groq.com/keys', label: 'console.groq.com', hint: 'احصل على مفتاحك مجاناً من' },
     openrouter: { placeholder: 'مفتاح OpenRouter API', url: 'https://openrouter.ai/keys', label: 'openrouter.ai', hint: 'احصل على مفتاحك مجاناً من' },
-    'deepl-hybrid': { placeholder: 'مفتاح Gemini API', url: 'https://www.deepl.com/pro-api', label: 'deepl.com/pro-api', hint: '① مفتاح Gemini أعلاه  ②' }
+    'deepl-hybrid': { placeholder: 'مفتاح Gemini API', url: 'https://www.deepl.com/pro-api', label: 'deepl.com/pro-api', hint: '① مفتاح Gemini أعلاه  ②' },
+    'groq-deepl': { placeholder: 'مفتاح Groq API', url: 'https://www.deepl.com/pro-api', label: 'deepl.com/pro-api', hint: '① مفتاح Groq أعلاه  ②' }
   };
   const info = links[provider];
   if (info) {
@@ -1513,13 +1523,13 @@ function updateSlideOverlay(index, show) {
 async function translatePageWithGemini(imageDataUrl, mimeType) {
   if (aiProvider === 'groq') return await translateWithGroq(imageDataUrl, mimeType);
   if (aiProvider === 'openrouter') return await translateWithOpenRouter(imageDataUrl, mimeType);
-  if (aiProvider === 'deepl-hybrid') return await translateWithDeepLHybrid(imageDataUrl, mimeType);
+  if (aiProvider === 'deepl-hybrid') return await translateWithDeepLHybrid(imageDataUrl, mimeType, 'gemini');
+  if (aiProvider === 'groq-deepl') return await translateWithDeepLHybrid(imageDataUrl, mimeType, 'groq');
   return await translateWithGemini(imageDataUrl, mimeType);
 }
 
 // ===== DEEPL HYBRID =====
-async function translateWithDeepLHybrid(imageDataUrl, mimeType) {
-  // Step 1: Use Gemini to detect text blocks and positions only
+async function translateWithDeepLHybrid(imageDataUrl, mimeType, detector = 'gemini') {
   const base64 = imageDataUrl.split(',')[1];
   const actualMime = mimeType || 'image/jpeg';
 
@@ -1533,31 +1543,52 @@ async function translateWithDeepLHybrid(imageDataUrl, mimeType) {
 - تجاهل العناوين الكبيرة
 - إذا لم يوجد نص: {"textBlocks":[]}`;
 
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-    {
+  let responseText;
+
+  if (detector === 'groq') {
+    // Use Groq for detection
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
       body: JSON.stringify({
-        contents: [{ parts: [
-          { inline_data: { mime_type: actualMime, data: base64 } },
-          { text: detectPrompt }
+        model: 'meta-llama/llama-4-scout-17b-16e-instruct',
+        messages: [{ role: 'user', content: [
+          { type: 'image_url', image_url: { url: imageDataUrl } },
+          { type: 'text', text: detectPrompt }
         ]}],
-        generationConfig: { temperature: 0.1, maxOutputTokens: 2048 }
+        temperature: 0.1, max_tokens: 2048
       })
-    }
-  );
+    });
+    await handleApiErrors(res);
+    const data = await res.json();
+    responseText = data.choices?.[0]?.message?.content || '{"textBlocks":[]}';
+  } else {
+    // Use Gemini for detection
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [
+            { inline_data: { mime_type: actualMime, data: base64 } },
+            { text: detectPrompt }
+          ]}],
+          generationConfig: { temperature: 0.1, maxOutputTokens: 2048 }
+        })
+      }
+    );
+    await handleApiErrors(res);
+    const data = await res.json();
+    responseText = data.candidates?.[0]?.content?.parts?.[0]?.text || '{"textBlocks":[]}';
+  }
 
-  await handleApiErrors(response);
-  const data = await response.json();
-  const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '{"textBlocks":[]}';
-  const clean = text.replace(/```json/g,'').replace(/```/g,'').trim();
-
+  const clean = responseText.replace(/```json/g,'').replace(/```/g,'').trim();
   let textBlocks = [];
   try { textBlocks = JSON.parse(clean).textBlocks || []; } catch(e) {}
   if (textBlocks.length === 0) return imageDataUrl;
 
-  // Step 2: Translate each text block with DeepL
+  // Step 2: Translate each text with DeepL
   const translated = await Promise.all(textBlocks.map(async block => {
     const arabic = await translateWithDeepL(block.original);
     return { ...block, arabic };
@@ -1737,46 +1768,51 @@ async function drawTranslationsOnImage(imageDataUrl, textBlocks) {
       ctx.drawImage(img, 0, 0);
 
       const imgData = ctx.getImageData(0, 0, img.width, img.height);
+      const W = img.width, H = img.height;
+
+      // Pre-compute all speech bubbles using connected components
+      const allBubbles = findAllBubbles(imgData.data, W, H);
 
       textBlocks.forEach(block => {
         if (!block.arabic || !block.arabic.trim()) return;
 
-        // AI hint coords
-        const hx = Math.max(0, block.x) * img.width;
-        const hy = Math.max(0, block.y) * img.height;
-        const hw = Math.min(block.width, 1 - block.x) * img.width;
-        const hh = Math.min(block.height, 1 - block.y) * img.height;
+        const hx = Math.max(0, block.x) * W;
+        const hy = Math.max(0, block.y) * H;
+        const hw = Math.min(block.width, 1 - block.x) * W;
+        const hh = Math.min(block.height, 1 - block.y) * H;
+        if (hw < 10 || hh < 10) return;
 
-        if (hw < 15 || hh < 15 || hw > img.width * 0.9) return;
+        const hcx = hx + hw / 2;
+        const hcy = hy + hh / 2;
 
-        // Find the actual speech bubble by expanding from the hint center
-        const cx = hx + hw / 2;
-        const cy = hy + hh / 2;
-        const bubble = findBubbleAt(imgData, img.width, img.height, cx, cy, hw, hh);
+        // Find the bubble that best matches the hint
+        let best = null, bestScore = Infinity;
+        for (const b of allBubbles) {
+          const bcx = b.x + b.w / 2;
+          const bcy = b.y + b.h / 2;
+          const dist = Math.hypot(bcx - hcx, bcy - hcy);
+          // Bonus if hint center is inside bubble
+          const inside = hcx >= b.x && hcx <= b.x+b.w && hcy >= b.y && hcy <= b.y+b.h;
+          const score = inside ? dist * 0.2 : dist;
+          if (score < bestScore) { bestScore = score; best = b; }
+        }
 
-        if (!bubble) return;
+        // Only use if reasonably close
+        const maxDist = Math.max(hw, hh) * 1.5;
+        if (!best || bestScore > maxDist) return;
 
-        // Sample background color of bubble (avoid edges)
-        const sampleX = Math.floor(bubble.x + bubble.w * 0.5);
-        const sampleY = Math.floor(bubble.y + bubble.h * 0.3);
-        const si = (sampleY * img.width + sampleX) * 4;
-        const bgR = imgData.data[si];
-        const bgG = imgData.data[si+1];
-        const bgB = imgData.data[si+2];
+        // Sample bg color from center of bubble
+        const sx = Math.floor(best.x + best.w * 0.5);
+        const sy = Math.floor(best.y + best.h * 0.4);
+        const si = (sy * W + sx) * 4;
+        const bgR = imgData.data[si], bgG = imgData.data[si+1], bgB = imgData.data[si+2];
 
-        // Fill bubble interior with its own background color (not plain white)
-        // Use slightly inset fill to preserve bubble border
-        const inset = Math.max(3, Math.min(bubble.w, bubble.h) * 0.04);
+        // Fill inside bubble (inset to preserve border)
+        const inset = Math.max(3, Math.min(best.w, best.h) * 0.05);
         ctx.fillStyle = `rgb(${bgR},${bgG},${bgB})`;
-        ctx.fillRect(
-          bubble.x + inset,
-          bubble.y + inset,
-          bubble.w - inset * 2,
-          bubble.h - inset * 2
-        );
+        ctx.fillRect(best.x + inset, best.y + inset, best.w - inset*2, best.h - inset*2);
 
-        // Draw Arabic text
-        drawFittedText(ctx, block.arabic, bubble.x, bubble.y, bubble.w, bubble.h);
+        drawFittedText(ctx, block.arabic, best.x, best.y, best.w, best.h);
       });
 
       resolve(canvas.toDataURL('image/jpeg', 0.92));
@@ -1786,56 +1822,54 @@ async function drawTranslationsOnImage(imageDataUrl, textBlocks) {
   });
 }
 
-function findBubbleAt(imgData, W, H, cx, cy, hintW, hintH) {
-  const d = imgData.data;
+function findAllBubbles(data, W, H) {
+  // Downsample for performance
+  const step = Math.max(2, Math.floor(Math.min(W, H) / 400));
+  const gW = Math.ceil(W / step);
+  const gH = Math.ceil(H / step);
+  const visited = new Uint8Array(gW * gH);
+  const bubbles = [];
 
-  function getPixel(x, y) {
-    const i = (Math.floor(y) * W + Math.floor(x)) * 4;
-    return [d[i], d[i+1], d[i+2]];
+  function isLight(px, py) {
+    const i = (Math.min(py, H-1) * W + Math.min(px, W-1)) * 4;
+    return data[i] > 175 && data[i+1] > 175 && data[i+2] > 175;
   }
 
-  function isLight(x, y) {
-    if (x < 0 || y < 0 || x >= W || y >= H) return false;
-    const [r,g,b] = getPixel(x, y);
-    return r > 180 && g > 180 && b > 180;
-  }
+  function floodFill(startGx, startGy) {
+    const stack = [startGy * gW + startGx];
+    let minX = startGx*step, maxX = startGx*step;
+    let minY = startGy*step, maxY = startGy*step;
+    let count = 0;
 
-  // Check center is light
-  if (!isLight(cx, cy)) {
-    // Try nearby points
-    const offsets = [[0,-hintH*0.3],[0,hintH*0.3],[-hintW*0.3,0],[hintW*0.3,0]];
-    let found = false;
-    for (const [ox,oy] of offsets) {
-      if (isLight(cx+ox, cy+oy)) { found = true; break; }
+    while (stack.length > 0 && count < 8000) {
+      const idx = stack.pop();
+      const gx = idx % gW, gy = Math.floor(idx / gW);
+      if (gx < 0 || gy < 0 || gx >= gW || gy >= gH) continue;
+      if (visited[idx]) continue;
+      const px = gx * step, py = gy * step;
+      if (!isLight(px, py)) continue;
+      visited[idx] = 1;
+      count++;
+      minX = Math.min(minX, px); maxX = Math.max(maxX, px);
+      minY = Math.min(minY, py); maxY = Math.max(maxY, py);
+      stack.push(gy*gW+(gx+1), gy*gW+(gx-1), (gy+1)*gW+gx, (gy-1)*gW+gx);
     }
-    if (!found) return null;
+    return { x: minX, y: minY, w: maxX-minX+step, h: maxY-minY+step };
   }
 
-  // Expand bounding box until we hit dark borders
-  let minX = Math.max(0, cx - hintW * 0.6);
-  let maxX = Math.min(W-1, cx + hintW * 0.6);
-  let minY = Math.max(0, cy - hintH * 0.6);
-  let maxY = Math.min(H-1, cy + hintH * 0.6);
-
-  // Expand each direction while center row/col is light
-  const step = 2;
-  // Expand left
-  while (minX > 0 && isLight(minX - step, cy)) minX = Math.max(0, minX - step);
-  // Expand right
-  while (maxX < W-1 && isLight(maxX + step, cy)) maxX = Math.min(W-1, maxX + step);
-  // Expand up
-  while (minY > 0 && isLight(cx, minY - step)) minY = Math.max(0, minY - step);
-  // Expand down
-  while (maxY < H-1 && isLight(cx, maxY + step)) maxY = Math.min(H-1, maxY + step);
-
-  const bw = maxX - minX;
-  const bh = maxY - minY;
-
-  // Sanity checks
-  if (bw < 20 || bh < 15) return null;
-  if (bw > W * 0.85 || bh > H * 0.6) return null;
-
-  return { x: minX, y: minY, w: bw, h: bh };
+  for (let gy = 0; gy < gH; gy++) {
+    for (let gx = 0; gx < gW; gx++) {
+      const idx = gy * gW + gx;
+      if (visited[idx]) continue;
+      if (!isLight(gx*step, gy*step)) continue;
+      const r = floodFill(gx, gy);
+      // Filter: reasonable bubble size
+      if (r.w > W*0.03 && r.h > H*0.015 && r.w < W*0.55 && r.h < H*0.45) {
+        bubbles.push(r);
+      }
+    }
+  }
+  return bubbles;
 }
 
 function drawFittedText(ctx, text, x, y, w, h) {
