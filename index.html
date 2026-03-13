@@ -848,67 +848,117 @@ async function handleFileSelect(event) {
   showLoading('جارٍ فتح الكوميكس...');
 
   try {
+    // Check file size
+    const fileSizeMB = file.size / (1024 * 1024);
+    if (fileSizeMB > 200) {
+      throw new Error(`حجم الملف كبير جداً (${fileSizeMB.toFixed(0)} MB). الحد الأقصى 200 MB`);
+    }
+
+    showLoading('جارٍ قراءة الملف...');
+    
     const zip = new JSZip();
-    const contents = await zip.loadAsync(file);
+    const contents = await zip.loadAsync(file, {
+      optimizedBinaryString: true
+    });
     
     // Find image files
     const imageFiles = [];
     contents.forEach((path, zipEntry) => {
       if (!zipEntry.dir) {
         const ext = path.split('.').pop().toLowerCase();
-        if (['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(ext)) {
-          imageFiles.push({ path, entry: zipEntry });
+        if (['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp'].includes(ext)) {
+          // Skip hidden files and Mac metadata
+          const filename = path.split('/').pop();
+          if (!filename.startsWith('.') && !path.includes('__MACOSX')) {
+            imageFiles.push({ path, entry: zipEntry });
+          }
         }
       }
     });
 
     if (imageFiles.length === 0) {
-      throw new Error('لم يتم العثور على صور في الملف');
+      throw new Error('لم يتم العثور على صور في الملف. تأكد أن الملف بصيغة CBZ صحيحة');
     }
 
-    // Sort by name
-    imageFiles.sort((a, b) => a.path.localeCompare(b.path, undefined, { numeric: true }));
+    // Sort by name naturally
+    imageFiles.sort((a, b) => {
+      const nameA = a.path.split('/').pop();
+      const nameB = b.path.split('/').pop();
+      return nameA.localeCompare(nameB, undefined, { numeric: true, sensitivity: 'base' });
+    });
 
-    showLoading(`جارٍ تحميل ${imageFiles.length} صفحة...`);
+    showLoading(`وجدت ${imageFiles.length} صفحة، جارٍ التحميل...`);
 
-    // Load images as base64
+    // Load images - limit to avoid memory issues
+    const maxPages = Math.min(imageFiles.length, 100);
     const pages = [];
-    for (let i = 0; i < imageFiles.length; i++) {
+    
+    for (let i = 0; i < maxPages; i++) {
       const { entry, path } = imageFiles[i];
-      const blob = await entry.async('blob');
-      const base64 = await blobToBase64(blob);
-      const ext = path.split('.').pop().toLowerCase();
-      const mimeType = ext === 'png' ? 'image/png' : 'image/jpeg';
       
-      pages.push({
-        original: base64,
-        translated: null,
-        translatedImg: null,
-        mimeType
-      });
+      try {
+        const blob = await entry.async('blob');
+        const ext = path.split('.').pop().toLowerCase();
+        const mimeType = ext === 'png' ? 'image/png' : 
+                         ext === 'webp' ? 'image/webp' : 'image/jpeg';
+        
+        // Resize large images to save memory
+        const base64 = await blobToBase64(blob);
+        
+        pages.push({
+          original: base64,
+          translated: false,
+          translating: false,
+          translatedImg: null,
+          mimeType
+        });
 
-      if (i % 5 === 0) {
-        showLoading(`جارٍ تحميل الصفحة ${i + 1} من ${imageFiles.length}...`);
+        if (i % 3 === 0) {
+          showLoading(`جارٍ تحميل الصفحة ${i + 1} من ${maxPages}...`);
+          await sleep(10); // Let UI update
+        }
+      } catch(pageErr) {
+        console.warn(`تخطي صفحة ${i + 1}:`, pageErr);
       }
+    }
+
+    if (pages.length === 0) {
+      throw new Error('فشل تحميل الصور');
     }
 
     const comic = {
       id: Date.now(),
-      title: file.name.replace('.cbz', '').replace('.CBZ', ''),
+      title: file.name.replace(/\.cbz$/i, ''),
       pages,
       cover: pages[0]?.original || null,
       dateAdded: new Date().toISOString()
     };
 
+    // Save to memory only (don't save to localStorage due to size)
     comics.unshift(comic);
-    saveLibrary();
+    
+    try {
+      saveLibrary();
+    } catch(e) {
+      // If storage fails, keep in memory only
+      console.warn('تعذر الحفظ في الذاكرة المحلية');
+    }
+    
     renderLibrary();
     hideLoading();
-    showToast(`تم تحميل ${pages.length} صفحة ✓`, 'success');
+    
+    const msg = imageFiles.length > maxPages 
+      ? `تم تحميل ${pages.length} صفحة (من أصل ${imageFiles.length}) ✓`
+      : `تم تحميل ${pages.length} صفحة ✓`;
+    showToast(msg, 'success');
+    
+    // Auto open the comic
+    openComic(0);
 
   } catch (error) {
     hideLoading();
-    showToast('خطأ: ' + error.message, 'error');
+    console.error('خطأ في فتح الملف:', error);
+    showToast('خطأ: ' + (error.message || 'فشل فتح الملف'), 'error');
   }
 }
 
