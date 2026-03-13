@@ -589,8 +589,9 @@ color: var(–text);
 font-family: ‘Cairo’, sans-serif;
 font-size: 14px;
 outline: none;
-text-align: right;
+text-align: left;
 direction: ltr;
+width: 100%;
 transition: border-color 0.2s;
 }
 
@@ -1641,7 +1642,6 @@ async function drawTranslationsOnImage(imageDataUrl, textBlocks) {
       canvas.height = img.height;
       const ctx = canvas.getContext('2d');
 
-      // Draw original image
       ctx.drawImage(img, 0, 0);
 
       textBlocks.forEach(block => {
@@ -1650,54 +1650,68 @@ async function drawTranslationsOnImage(imageDataUrl, textBlocks) {
         const w = block.width * img.width;
         const h = block.height * img.height;
 
-        // White background to cover English text
+        // Cover English text with white (slightly larger to ensure full coverage)
         ctx.fillStyle = 'white';
-        ctx.fillRect(x, y, w, h);
+        ctx.fillRect(x - 2, y - 2, w + 4, h + 4);
 
-        // Light border
-        ctx.strokeStyle = '#e0e0e0';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(x, y, w, h);
+        if (!block.arabic || block.arabic.trim() === '') return;
 
-        // Arabic text
-        const fontSize = Math.max(h * 0.3, 12);
-        ctx.font = `bold ${fontSize}px Cairo, Arial`;
-        ctx.fillStyle = '#1a1a1a';
+        const padding = w * 0.05;
+        const maxWidth = w - padding * 2;
+        const maxHeight = h - padding * 2;
+
+        // Auto-fit font size to fit inside the bubble
+        let fontSize = Math.min(h * 0.28, w * 0.12, 22);
+        fontSize = Math.max(fontSize, 8);
+
+        ctx.direction = 'rtl';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.direction = 'rtl';
 
-        // Word wrap
-        const words = block.arabic.split(' ');
-        const lineHeight = fontSize * 1.3;
+        // Shrink font until text fits
         let lines = [];
-        let currentLine = '';
+        while (fontSize >= 7) {
+          ctx.font = `600 ${fontSize}px Cairo, Arial`;
+          const lineHeight = fontSize * 1.35;
+          lines = wrapText(ctx, block.arabic, maxWidth);
+          const totalH = lines.length * lineHeight;
+          if (totalH <= maxHeight) break;
+          fontSize -= 0.5;
+        }
 
-        words.forEach(word => {
-          const testLine = currentLine ? `${currentLine} ${word}` : word;
-          const metrics = ctx.measureText(testLine);
-          if (metrics.width > w - 8 && currentLine) {
-            lines.push(currentLine);
-            currentLine = word;
-          } else {
-            currentLine = testLine;
-          }
-        });
-        if (currentLine) lines.push(currentLine);
-
+        const lineHeight = fontSize * 1.35;
         const totalHeight = lines.length * lineHeight;
         const startY = y + (h - totalHeight) / 2 + lineHeight / 2;
 
+        ctx.fillStyle = '#111';
         lines.forEach((line, i) => {
-          ctx.fillText(line, x + w / 2, startY + i * lineHeight, w - 8);
+          ctx.fillText(line, x + w / 2, startY + i * lineHeight, maxWidth);
         });
       });
 
-      resolve(canvas.toDataURL('image/jpeg', 0.9));
+      resolve(canvas.toDataURL('image/jpeg', 0.92));
     };
     img.onerror = () => reject(new Error('فشل تحميل الصورة'));
     img.src = imageDataUrl;
   });
+}
+
+function wrapText(ctx, text, maxWidth) {
+  const words = text.split(' ');
+  const lines = [];
+  let current = '';
+
+  for (const word of words) {
+    const test = current ? `${current} ${word}` : word;
+    if (ctx.measureText(test).width > maxWidth && current) {
+      lines.push(current);
+      current = word;
+    } else {
+      current = test;
+    }
+  }
+  if (current) lines.push(current);
+  return lines;
 }
 
 // ===== STORAGE =====
