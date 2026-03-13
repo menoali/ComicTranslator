@@ -1443,8 +1443,18 @@ async function translatePageWithGemini(imageDataUrl, mimeType) {
   );
 
   if (!response.ok) {
-    const err = await response.json();
-    throw new Error(err.error?.message || `خطأ HTTP ${response.status}`);
+    let errMsg = `خطأ HTTP ${response.status}`;
+    try {
+      const err = await response.json();
+      errMsg = err.error?.message || errMsg;
+    } catch(e) {}
+    
+    if (response.status === 400) errMsg = 'مفتاح API غير صحيح أو الطلب خاطئ';
+    if (response.status === 403) errMsg = 'مفتاح API غير مصرح له';
+    if (response.status === 429) errMsg = 'تجاوزت الحد المسموح - انتظر قليلاً وحاول مجدداً';
+    if (response.status === 503) errMsg = 'الخدمة غير متاحة مؤقتاً - حاول مجدداً';
+    
+    throw new Error(errMsg);
   }
 
   const data = await response.json();
