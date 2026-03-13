@@ -1878,9 +1878,14 @@ function findAllBubbles(data, W, H) {
   const visited = new Uint8Array(gW * gH);
   const bubbles = [];
 
+  function getPixel(px, py) {
+    const i = (Math.min(Math.max(py,0),H-1) * W + Math.min(Math.max(px,0),W-1)) * 4;
+    return [data[i], data[i+1], data[i+2]];
+  }
+
   function isLight(px, py) {
-    const i = (Math.min(Math.max(py,0), H-1) * W + Math.min(Math.max(px,0), W-1)) * 4;
-    return data[i] > 170 && data[i+1] > 170 && data[i+2] > 170;
+    const [r,g,b] = getPixel(px, py);
+    return r > 210 && g > 210 && b > 210; // Stricter: near-white only
   }
 
   function floodFill(startGx, startGy) {
@@ -1888,7 +1893,7 @@ function findAllBubbles(data, W, H) {
     let minX = startGx*step, maxX = startGx*step;
     let minY = startGy*step, maxY = startGy*step;
     let count = 0;
-    while (stack.length > 0 && count < 10000) {
+    while (stack.length > 0 && count < 6000) {
       const idx = stack.pop();
       const gx = idx % gW, gy = Math.floor(idx / gW);
       if (gx < 0 || gy < 0 || gx >= gW || gy >= gH) continue;
@@ -1901,7 +1906,9 @@ function findAllBubbles(data, W, H) {
       minY = Math.min(minY, py); maxY = Math.max(maxY, py);
       stack.push(gy*gW+(gx+1), gy*gW+(gx-1), (gy+1)*gW+gx, (gy-1)*gW+gx);
     }
-    return { x: minX, y: minY, w: maxX-minX+step, h: maxY-minY+step };
+    const w = maxX - minX + step;
+    const h = maxY - minY + step;
+    return { x: minX, y: minY, w, h, count };
   }
 
   for (let gy = 0; gy < gH; gy++) {
@@ -1910,7 +1917,19 @@ function findAllBubbles(data, W, H) {
       if (visited[idx]) continue;
       if (!isLight(gx*step, gy*step)) continue;
       const r = floodFill(gx, gy);
-      if (r.w > W*0.04 && r.h > H*0.02 && r.w < W*0.6 && r.h < H*0.5) {
+
+      const aspect = r.w / r.h;
+      const relW = r.w / W;
+      const relH = r.h / H;
+
+      // Speech bubbles: not too wide, not too tall, reasonable aspect ratio
+      // Reject wide backgrounds (relW > 0.45) and very tall regions
+      if (
+        relW > 0.04 && relH > 0.02 &&
+        relW < 0.45 && relH < 0.35 &&
+        aspect > 0.3 && aspect < 4.0 &&
+        r.count > 20
+      ) {
         bubbles.push(r);
       }
     }
