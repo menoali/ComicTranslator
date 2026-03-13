@@ -1583,29 +1583,24 @@ async function translateWithOpenRouter(imageDataUrl, mimeType) {
 
 // ===== SHARED HELPERS =====
 function getTranslationPrompt() {
-  return `أنت متخصص في ترجمة الكوميكس. قم بتحليل هذه الصفحة من الكوميكس بدقة.
+  return `أنت متخصص في ترجمة الكوميكس. حلل هذه الصفحة بدقة.
 
-ابحث عن كل النصوص الإنجليزية في فقاعات الكلام، التعليقات، الأصوات.
-لكل نص، أعطني:
-1. النص الإنجليزي الأصلي
-2. ترجمته العربية (طبيعية ومناسبة للكوميكس)
-3. موقعه التقريبي كنسبة مئوية من الصورة (x, y, width, height) من 0 إلى 1
+مهمتك: ابحث عن فقاعات الكلام والتعليقات النصية فقط (ليس النصوص الكبيرة في الخلفية أو العناوين الضخمة).
 
-أجب فقط بـ JSON صحيح بدون أي نص إضافي أو markdown:
-{
-  "textBlocks": [
-    {
-      "original": "النص الإنجليزي",
-      "arabic": "الترجمة العربية",
-      "x": 0.1,
-      "y": 0.05,
-      "width": 0.3,
-      "height": 0.1
-    }
-  ]
-}
+لكل فقاعة كلام أو نص صغير:
+- اكتب النص الإنجليزي الأصلي
+- اكتب ترجمته العربية بشكل طبيعي
+- حدد موقعه بدقة كنسبة من 0 إلى 1 (x,y = الزاوية اليسرى العليا، width,height = الحجم)
 
-إذا لم يوجد نص، أجب بـ: {"textBlocks": []}`;
+قواعد مهمة:
+- تجاهل النصوص الكبيرة جداً التي تغطي أكثر من 30% من عرض الصورة
+- الفقاعات عادة صغيرة (width: 0.05-0.25, height: 0.03-0.15)
+- كن دقيقاً في الإحداثيات
+
+أجب فقط بـ JSON:
+{"textBlocks":[{"original":"text","arabic":"ترجمة","x":0.1,"y":0.05,"width":0.2,"height":0.08}]}
+
+إذا لم يوجد نص: {"textBlocks":[]}`;
 }
 
 async function handleApiErrors(response) {
@@ -1641,51 +1636,62 @@ async function drawTranslationsOnImage(imageDataUrl, textBlocks) {
       canvas.width = img.width;
       canvas.height = img.height;
       const ctx = canvas.getContext('2d');
-
       ctx.drawImage(img, 0, 0);
 
       textBlocks.forEach(block => {
-        const x = block.x * img.width;
-        const y = block.y * img.height;
-        const w = block.width * img.width;
-        const h = block.height * img.height;
+        // Clamp coordinates to image bounds
+        let x = Math.max(0, Math.min(block.x, 0.99)) * img.width;
+        let y = Math.max(0, Math.min(block.y, 0.99)) * img.height;
+        let w = Math.max(0.02, Math.min(block.width, 1 - block.x)) * img.width;
+        let h = Math.max(0.02, Math.min(block.height, 1 - block.y)) * img.height;
 
-        // Cover English text with white (slightly larger to ensure full coverage)
+        // Skip blocks that are too large (likely wrong coordinates from AI)
+        if (w > img.width * 0.95 || h > img.height * 0.5) return;
+        if (w < 10 || h < 10) return;
+
+        // Cover English text
         ctx.fillStyle = 'white';
-        ctx.fillRect(x - 2, y - 2, w + 4, h + 4);
+        ctx.fillRect(x - 1, y - 1, w + 2, h + 2);
 
-        if (!block.arabic || block.arabic.trim() === '') return;
+        if (!block.arabic || !block.arabic.trim()) return;
 
-        const padding = w * 0.05;
-        const maxWidth = w - padding * 2;
-        const maxHeight = h - padding * 2;
+        const padX = Math.max(4, w * 0.06);
+        const padY = Math.max(4, h * 0.08);
+        const availW = w - padX * 2;
+        const availH = h - padY * 2;
 
-        // Auto-fit font size to fit inside the bubble
-        let fontSize = Math.min(h * 0.28, w * 0.12, 22);
-        fontSize = Math.max(fontSize, 8);
+        if (availW < 8 || availH < 8) return;
 
-        ctx.direction = 'rtl';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
+        // Find the right font size - start small and work up
+        let fontSize = 8;
+        let bestSize = 7;
+        let bestLines = [block.arabic];
 
-        // Shrink font until text fits
-        let lines = [];
-        while (fontSize >= 7) {
-          ctx.font = `600 ${fontSize}px Cairo, Arial`;
-          const lineHeight = fontSize * 1.35;
-          lines = wrapText(ctx, block.arabic, maxWidth);
-          const totalH = lines.length * lineHeight;
-          if (totalH <= maxHeight) break;
-          fontSize -= 0.5;
+        for (let size = 8; size <= 28; size += 0.5) {
+          ctx.font = `600 ${size}px Cairo, Arial`;
+          const lines = wrapText(ctx, block.arabic, availW);
+          const totalH = lines.length * size * 1.3;
+          if (totalH <= availH && lines.every(l => ctx.measureText(l).width <= availW)) {
+            bestSize = size;
+            bestLines = lines;
+          } else {
+            break;
+          }
         }
 
-        const lineHeight = fontSize * 1.35;
-        const totalHeight = lines.length * lineHeight;
-        const startY = y + (h - totalHeight) / 2 + lineHeight / 2;
+        fontSize = bestSize;
+        ctx.font = `600 ${fontSize}px Cairo, Arial`;
+        const lineHeight = fontSize * 1.3;
+        const totalHeight = bestLines.length * lineHeight;
+        const startY = y + padY + (availH - totalHeight) / 2 + lineHeight * 0.8;
 
-        ctx.fillStyle = '#111';
-        lines.forEach((line, i) => {
-          ctx.fillText(line, x + w / 2, startY + i * lineHeight, maxWidth);
+        ctx.fillStyle = '#111111';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'alphabetic';
+        ctx.direction = 'rtl';
+
+        bestLines.forEach((line, i) => {
+          ctx.fillText(line, x + w / 2, startY + i * lineHeight, availW);
         });
       });
 
@@ -1700,7 +1706,6 @@ function wrapText(ctx, text, maxWidth) {
   const words = text.split(' ');
   const lines = [];
   let current = '';
-
   for (const word of words) {
     const test = current ? `${current} ${word}` : word;
     if (ctx.measureText(test).width > maxWidth && current) {
