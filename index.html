@@ -1602,15 +1602,13 @@ async function translateWithDeepLHybrid(imageDataUrl, mimeType, detector = 'gemi
   const base64 = imageDataUrl.split(',')[1];
   const actualMime = mimeType || 'image/jpeg';
 
-  const detectPrompt = `أنت متخصص في تحليل صفحات الكوميكس. حلل هذه الصفحة وأخرج فقط مواضع النصوص الإنجليزية في فقاعات الكلام.
+  const detectPrompt = `أنت مترجم كوميكس. انظر لهذه الصفحة واقرأ كل النصوص الإنجليزية في فقاعات الكلام مرتبة من أعلى لأسفل.
 
 أجب فقط بـ JSON:
-{"textBlocks":[{"original":"النص الإنجليزي","x":0.1,"y":0.05,"width":0.2,"height":0.08}]}
+{"originals":["text1","text2"]}
 
-قواعد:
-- فقاعات الكلام الصغيرة فقط (width أقل من 0.35)
-- تجاهل العناوين الكبيرة
-- إذا لم يوجد نص: {"textBlocks":[]}`;
+إذا لم يوجد نص: {"originals":[]}
+لا تترجم، فقط اكتب النصوص الإنجليزية الأصلية مرتبة.`;
 
   let responseText;
 
@@ -1653,17 +1651,13 @@ async function translateWithDeepLHybrid(imageDataUrl, mimeType, detector = 'gemi
   }
 
   const clean = responseText.replace(/```json/g,'').replace(/```/g,'').trim();
-  let textBlocks = [];
-  try { textBlocks = JSON.parse(clean).textBlocks || []; } catch(e) {}
-  if (textBlocks.length === 0) return imageDataUrl;
+  let originals = [];
+  try { originals = JSON.parse(clean).originals || []; } catch(e) {}
+  if (originals.length === 0) return imageDataUrl;
 
-  // Step 2: Translate each text with DeepL
-  const translated = await Promise.all(textBlocks.map(async block => {
-    const arabic = await translateWithDeepL(block.original);
-    return { ...block, arabic };
-  }));
-
-  return await drawTranslationsOnImage(imageDataUrl, translated);
+  // Translate each text with DeepL
+  const arabicTranslations = await Promise.all(originals.map(t => translateWithDeepL(t)));
+  return await drawTranslationsOnImage(imageDataUrl, arabicTranslations);
 }
 
 async function translateWithDeepL(text) {
@@ -1781,18 +1775,16 @@ async function translateWithOpenRouter(imageDataUrl, mimeType) {
 
 // ===== SHARED HELPERS =====
 function getTranslationPrompt() {
-  return `أنت متخصص في ترجمة الكوميكس. حلل هذه الصفحة.
+  return `أنت مترجم كوميكس محترف. انظر لهذه الصفحة واقرأ كل النصوص الإنجليزية الموجودة في فقاعات الكلام والبالونات فقط.
 
-اقرأ كل فقاعات الكلام والنصوص الإنجليزية من أعلى الصفحة لأسفل، من اليسار لليمين.
+رتّبها من أعلى الصفحة لأسفلها (من اليسار لليمين في نفس الصف).
 
-أجب فقط بـ JSON - النصوص مرتبة من أعلى لأسفل:
-{"textBlocks":[
-  {"original":"النص الإنجليزي","arabic":"الترجمة العربية","x":0.1,"y":0.05,"width":0.2,"height":0.08}
-]}
+أجب فقط بـ JSON هكذا بدون أي نص إضافي:
+{"translations":["الترجمة1","الترجمة2","الترجمة3"]}
 
-إذا لم يوجد نص: {"textBlocks":[]}
-
-مهم: رتّب النصوص من أعلى الصفحة لأسفلها تماماً.`;
+- ترجم كل نص للعربية بشكل طبيعي مناسب للكوميكس
+- إذا لم يوجد نص: {"translations":[]}
+- لا تضع إحداثيات، فقط الترجمات مرتبة`;
 }
 
 async function handleApiErrors(response) {
@@ -1810,17 +1802,22 @@ async function handleApiErrors(response) {
 
 async function processTranslationResult(text, imageDataUrl) {
   const cleanText = text.replace(/```json/g, '').replace(/```/g, '').trim();
-  let textBlocks = [];
+  let translations = [];
   try {
     const parsed = JSON.parse(cleanText);
-    textBlocks = parsed.textBlocks || [];
-  } catch(e) { textBlocks = []; }
+    // Support both old format {textBlocks:[]} and new {translations:[]}
+    if (parsed.translations) {
+      translations = parsed.translations.filter(t => t && t.trim());
+    } else if (parsed.textBlocks) {
+      translations = parsed.textBlocks.map(b => b.arabic).filter(t => t && t.trim());
+    }
+  } catch(e) { translations = []; }
 
-  if (textBlocks.length === 0) return imageDataUrl;
-  return await drawTranslationsOnImage(imageDataUrl, textBlocks);
+  if (translations.length === 0) return imageDataUrl;
+  return await drawTranslationsOnImage(imageDataUrl, translations);
 }
 
-async function drawTranslationsOnImage(imageDataUrl, textBlocks) {
+async function drawTranslationsOnImage(imageDataUrl, translations) {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => {
@@ -1833,67 +1830,39 @@ async function drawTranslationsOnImage(imageDataUrl, textBlocks) {
       const imgData = ctx.getImageData(0, 0, img.width, img.height);
       const W = img.width, H = img.height;
 
-      // Detect all bubbles, sorted top-to-bottom left-to-right
-      const allBubbles = findAllBubbles(imgData.data, W, H);
-      allBubbles.sort((a, b) => {
-        const rowA = Math.floor(a.y / (H * 0.15));
-        const rowB = Math.floor(b.y / (H * 0.15));
+      // Detect all speech bubbles
+      const bubbles = findAllBubbles(imgData.data, W, H);
+
+      // Sort bubbles top-to-bottom, left-to-right (same reading order as AI)
+      const rowSize = H * 0.12;
+      bubbles.sort((a, b) => {
+        const rowA = Math.floor(a.y / rowSize);
+        const rowB = Math.floor(b.y / rowSize);
         if (rowA !== rowB) return rowA - rowB;
         return a.x - b.x;
       });
 
-      // For each textBlock, find best matching bubble by position
-      textBlocks.forEach(block => {
-        if (!block.arabic || !block.arabic.trim()) return;
+      // Match translations to bubbles by order
+      const count = Math.min(translations.length, bubbles.length);
+      for (let i = 0; i < count; i++) {
+        const b = bubbles[i];
+        const arabic = translations[i];
+        if (!arabic || !arabic.trim()) continue;
 
-        const hx = Math.max(0, block.x) * W;
-        const hy = Math.max(0, block.y) * H;
-        const hw = Math.min(block.width, 1 - Math.max(0, block.x)) * W;
-        const hh = Math.min(block.height, 1 - Math.max(0, block.y)) * H;
-        if (hw < 5 || hh < 5) return;
-
-        const hcx = hx + hw / 2;
-        const hcy = hy + hh / 2;
-
-        // Find closest bubble to hint center
-        let best = null, bestDist = Infinity;
-        for (const b of allBubbles) {
-          const bcx = b.x + b.w / 2;
-          const bcy = b.y + b.h / 2;
-          const dist = Math.hypot(bcx - hcx, bcy - hcy);
-          // Strong bonus if hint center is inside bubble
-          const inside = hcx >= b.x && hcx <= b.x+b.w && hcy >= b.y && hcy <= b.y+b.h;
-          const score = inside ? 0 : dist;
-          if (score < bestDist) { bestDist = score; best = b; }
-        }
-
-        // Fallback to AI hint if no bubble found nearby
-        if (!best || bestDist > W * 0.25) {
-          // Use AI hint directly, clamped
-          const rx = Math.max(0, hx);
-          const ry = Math.max(0, hy);
-          const rw = Math.min(hw, W - rx);
-          const rh = Math.min(hh, H - ry);
-          if (rw < 20 || rh < 15 || rw > W * 0.9) return;
-
-          // Sample bg
-          const si = (Math.floor(ry + rh*0.4) * W + Math.floor(rx + rw*0.5)) * 4;
-          const bgR = imgData.data[si], bgG = imgData.data[si+1], bgB = imgData.data[si+2];
-          if (bgR < 160) return; // Skip dark areas
-          ctx.fillStyle = `rgb(${bgR},${bgG},${bgB})`;
-          ctx.fillRect(rx+2, ry+2, rw-4, rh-4);
-          drawFittedText(ctx, block.arabic, rx, ry, rw, rh);
-          return;
-        }
-
-        // Use detected bubble
-        const si = (Math.floor(best.y + best.h*0.4) * W + Math.floor(best.x + best.w*0.5)) * 4;
+        // Sample background color from center of bubble
+        const sx = Math.floor(b.x + b.w * 0.5);
+        const sy = Math.floor(b.y + b.h * 0.4);
+        const si = (Math.max(0, Math.min(H-1, sy)) * W + Math.max(0, Math.min(W-1, sx))) * 4;
         const bgR = imgData.data[si], bgG = imgData.data[si+1], bgB = imgData.data[si+2];
-        const inset = Math.max(2, Math.min(best.w, best.h) * 0.05);
+
+        // Fill bubble interior preserving border
+        const inset = Math.max(2, Math.min(b.w, b.h) * 0.05);
         ctx.fillStyle = `rgb(${bgR},${bgG},${bgB})`;
-        ctx.fillRect(best.x+inset, best.y+inset, best.w-inset*2, best.h-inset*2);
-        drawFittedText(ctx, block.arabic, best.x, best.y, best.w, best.h);
-      });
+        ctx.fillRect(b.x + inset, b.y + inset, b.w - inset*2, b.h - inset*2);
+
+        // Draw Arabic text
+        drawFittedText(ctx, arabic, b.x, b.y, b.w, b.h);
+      }
 
       resolve(canvas.toDataURL('image/jpeg', 0.92));
     };
@@ -1903,16 +1872,15 @@ async function drawTranslationsOnImage(imageDataUrl, textBlocks) {
 }
 
 function findAllBubbles(data, W, H) {
-  // Downsample for performance
-  const step = Math.max(2, Math.floor(Math.min(W, H) / 400));
+  const step = Math.max(2, Math.floor(Math.min(W, H) / 450));
   const gW = Math.ceil(W / step);
   const gH = Math.ceil(H / step);
   const visited = new Uint8Array(gW * gH);
   const bubbles = [];
 
   function isLight(px, py) {
-    const i = (Math.min(py, H-1) * W + Math.min(px, W-1)) * 4;
-    return data[i] > 175 && data[i+1] > 175 && data[i+2] > 175;
+    const i = (Math.min(Math.max(py,0), H-1) * W + Math.min(Math.max(px,0), W-1)) * 4;
+    return data[i] > 170 && data[i+1] > 170 && data[i+2] > 170;
   }
 
   function floodFill(startGx, startGy) {
@@ -1920,8 +1888,7 @@ function findAllBubbles(data, W, H) {
     let minX = startGx*step, maxX = startGx*step;
     let minY = startGy*step, maxY = startGy*step;
     let count = 0;
-
-    while (stack.length > 0 && count < 8000) {
+    while (stack.length > 0 && count < 10000) {
       const idx = stack.pop();
       const gx = idx % gW, gy = Math.floor(idx / gW);
       if (gx < 0 || gy < 0 || gx >= gW || gy >= gH) continue;
@@ -1943,8 +1910,7 @@ function findAllBubbles(data, W, H) {
       if (visited[idx]) continue;
       if (!isLight(gx*step, gy*step)) continue;
       const r = floodFill(gx, gy);
-      // Filter: reasonable bubble size
-      if (r.w > W*0.03 && r.h > H*0.015 && r.w < W*0.55 && r.h < H*0.45) {
+      if (r.w > W*0.04 && r.h > H*0.02 && r.w < W*0.6 && r.h < H*0.5) {
         bubbles.push(r);
       }
     }
@@ -1953,37 +1919,32 @@ function findAllBubbles(data, W, H) {
 }
 
 function drawFittedText(ctx, text, x, y, w, h) {
-  const padX = Math.max(6, w * 0.07);
+  const padX = Math.max(6, w * 0.08);
   const padY = Math.max(6, h * 0.1);
   const availW = w - padX * 2;
   const availH = h - padY * 2;
-  if (availW < 10 || availH < 10) return;
+  if (availW < 8 || availH < 8) return;
 
-  let bestSize = 7;
-  let bestLines = [text];
-
-  for (let size = 8; size <= 36; size += 0.5) {
+  let bestSize = 7, bestLines = [text];
+  for (let size = 8; size <= 34; size += 0.5) {
     ctx.font = `600 ${size}px Cairo, Arial`;
     const lines = wrapText(ctx, text, availW);
     const totalH = lines.length * size * 1.3;
-    if (totalH <= availH) {
-      bestSize = size;
-      bestLines = lines;
-    } else break;
+    if (totalH <= availH) { bestSize = size; bestLines = lines; }
+    else break;
   }
 
   ctx.font = `600 ${bestSize}px Cairo, Arial`;
-  const lineHeight = bestSize * 1.3;
-  const totalHeight = bestLines.length * lineHeight;
-  const startY = y + padY + (availH - totalHeight) / 2 + lineHeight * 0.75;
+  const lineH = bestSize * 1.3;
+  const totalH = bestLines.length * lineH;
+  const startY = y + padY + (availH - totalH) / 2 + lineH * 0.75;
 
   ctx.fillStyle = '#111111';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'alphabetic';
   ctx.direction = 'rtl';
-
   bestLines.forEach((line, i) => {
-    ctx.fillText(line, x + w / 2, startY + i * lineHeight, availW);
+    ctx.fillText(line, x + w / 2, startY + i * lineH, availW);
   });
 }
 
