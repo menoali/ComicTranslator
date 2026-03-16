@@ -1,146 +1,544 @@
-#!/usr/bin/env python3
-“””
-Apply Arabic language support patches to the Cotrans userscript.
-Run: python3 apply_arabic.py input.js output.js
-“””
-import sys
+<!DOCTYPE html>
 
-if len(sys.argv) != 3:
-print(“Usage: python3 apply_arabic.py input.js output.js”)
-sys.exit(1)
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#0a0014" />
+  <title>Manga AR - مترجم المانغا</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
-with open(sys.argv[1], ‘r’, encoding=‘utf-8’) as f:
-content = f.read()
+```
+:root {
+  --pink: #ff6b9d;
+  --pink-dim: #ff6b9d55;
+  --pink-faint: #ff6b9d18;
+  --bg: #0a0014;
+  --bg2: #120022;
+  --card: rgba(255,255,255,0.05);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
 
-# ── 1. Arabic translation object ──────────────────────────────────────────────
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: #fff;
+  font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
 
-arabic_data = “””
-var data_ar = { common:{ source:{ “download-image”:“جارٍ تنزيل الصورة الأصلية”,
-“download-image-progress”:“جارٍ تنزيل الصورة الأصلية ({progress})”,
-“download-image-error”:“خطأ أثناء تنزيل الصورة الأصلية” },
-client:{ submit:“جارٍ إرسال الترجمة”,
-“submit-progress”:“جارٍ إرسال الترجمة ({progress})”,
-“submit-final”:“في انتظار معالجة الصورة”,
-“submit-error”:“خطأ أثناء إرسال الترجمة”,
-“download-image”:“جارٍ تنزيل الصورة المترجمة”,
-“download-image-progress”:“جارٍ تنزيل الصورة المترجمة ({progress})”,
-“download-image-error”:“خطأ أثناء تنزيل الصورة المترجمة”,
-resize:“جارٍ تغيير حجم الصورة”,
-merging:“جارٍ دمج الطبقات” },
-status:{ “default”:“حالة غير معروفة”,
-pending:“في الانتظار”,
-“pending-pos”:“في الانتظار، {pos} في قائمة الانتظار”,
-downloading:“جارٍ نقل الصورة”,
-preparing:“في انتظار نافذة فارغة”,
-colorizing:“جارٍ التلوين”,
-upscaling:“جارٍ تكبير الصورة”,
-downscaling:“جارٍ تصغير الصورة”,
-detection:“جارٍ اكتشاف النص”,
-ocr:“جارٍ مسح النص”,
-textline_merge:“جارٍ دمج أسطر النص”,
-“mask-generation”:“جارٍ إنشاء القناع”,
-inpainting:“جارٍ إصلاح الصورة”,
-translating:“جارٍ الترجمة”,
-rendering:“جارٍ العرض”,
-finished:“جارٍ الإنهاء”,
-saved:“تم الحفظ”,
-saving:“جارٍ حفظ النتيجة”,
-uploading:“جارٍ نقل النتيجة”,
-error:“خطأ أثناء الترجمة”,
-“error-download”:“فشل نقل الصورة”,
-“error-upload”:“فشل نقل النتيجة”,
-“error-lang”:“اللغة المستهدفة غير مدعومة من قِبل المترجم المختار”,
-“error-translating”:“لم يتم استلام أي نص من خدمة الترجمة”,
-“skip-no-regions”:“لم يتم اكتشاف مناطق نصية في الصورة”,
-“skip-no-text”:“لم يتم اكتشاف أي نص في الصورة”,
-“error-with-id”:“خطأ أثناء الترجمة (المعرّف: {id})” },
-control:{ translate:“ترجمة”,
-batch:“ترجمة الكل ({count})”,
-reset:“إعادة تعيين” },
-batch:{ progress:“جارٍ الترجمة ({count}/{total} مكتمل)”,
-finish:“اكتملت الترجمة”,
-error:“اكتملت الترجمة مع أخطاء” } },
-settings:{ “detection-resolution”:“دقة اكتشاف النص”,
-“render-text-orientation”:“اتجاه عرض النص”,
-“render-text-orientation-options”:{ auto:“تبع المصدر”,
-horizontal:“أفقي فقط”,
-vertical:“عمودي فقط” },
-reset:“إعادة تعيين الإعدادات”,
-“target-language”:“لغة الترجمة المستهدفة”,
-“target-language-options”:{ auto:“تبع الموقع” },
-“text-detector”:“كاشف النص”,
-“text-detector-options”:{ “default”:“افتراضي” },
-title:“إعدادات مترجم الصور Cotrans”,
-translator:“المترجم”,
-“script-language”:“لغة السكريبت”,
-“script-language-options”:{ auto:“تبع لغة الموقع” },
-“inline-options-title”:“الإعدادات الحالية”,
-“detection-resolution-desc”:“الدقة المستخدمة لمسح النصوص في الصورة، القيم الأعلى مناسبة للنصوص الصغيرة.”,
-“script-language-desc”:“لغة هذا السكريبت.”,
-“render-text-orientation-desc”:“تجاوز اتجاه النصوص المعروضة في الصورة المترجمة.”,
-“target-language-desc”:“اللغة التي تُترجم إليها الصور.”,
-“text-detector-desc”:“الكاشف المستخدم لمسح النصوص في الصورة.”,
-“translator-desc”:“خدمة الترجمة المستخدمة لترجمة النصوص.”,
-“translator-options”:{ none:“بلا (إزالة النصوص)” },
-“keep-instances-options”:{ “until-reload”:“حتى إعادة تحميل الصفحة”,
-“until-navigate”:“حتى التنقل التالي” },
-“keep-instances”:“الاحتفاظ بنسخ الترجمة”,
-“keep-instances-desc”:“المدة قبل حذف نسخة الترجمة. تشمل نسخة الترجمة حالة ترجمة الصورة ونتيجتها. الاحتفاظ بمزيد من النسخ يستهلك ذاكرة أكبر.”,
-“force-retry”:“إعادة المحاولة قسراً (تجاهل الذاكرة المؤقتة)” },
-sponsor:{ text:“إذا وجدت هذا السكريبت مفيداً، يرجى التفكير في دعمنا!” } };
-data_ar.common;
-data_ar.settings;
-data_ar.sponsor;
-“””
+body {
+  background: radial-gradient(ellipse at top right, #1a0030 0%, #0a0014 50%, #0d001e 100%);
+  min-height: 100dvh;
+  padding-top: var(--safe-top);
+  padding-bottom: calc(var(--safe-bottom) + 20px);
+}
 
-# Insert Arabic data block right after the English data references
+/* ── Header ── */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 20px 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: linear-gradient(to bottom, rgba(10,0,20,0.95) 80%, transparent);
+  padding-top: calc(var(--safe-top) + 16px);
+}
 
-anchor = “  data.common;\n  data.settings;\n  data.sponsor;”
-assert anchor in content, “ERROR: Could not find English data anchor”
-content = content.replace(anchor, anchor + “\n” + arabic_data, 1)
+.ai-badge {
+  background: linear-gradient(135deg, #ff6b9d, #c44569);
+  border-radius: 20px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 15px #ff6b9d44;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
 
-# ── 2. Register Arabic in the messages map ────────────────────────────────────
+.logo-wrap { text-align: left; }
 
-old = ’    “zh-CN”: data$1,\n    “en-US”: data\n  };’
-new = ’    “zh-CN”: data$1,\n    “en-US”: data,\n    “ar”: data_ar\n  };’
-assert old in content, “ERROR: Could not find messages map”
-content = content.replace(old, new, 1)
+.logo {
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, #ff6b9d, #ffb3cc, #ff6b9d);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s linear infinite;
+}
 
-# ── 3. tryMatchLang: detect Arabic browser language ───────────────────────────
+.logo-sub {
+  font-size: 11px;
+  color: var(--pink-dim);
+  letter-spacing: 1px;
+  text-align: right;
+  margin-top: 2px;
+}
 
-old = ‘if (lang2.startsWith(“en”)) return “en-US”;\n    return “en-US”;’
-new = ‘if (lang2.startsWith(“en”)) return “en-US”;\n    if (lang2.startsWith(“ar”)) return “ar”;\n    return “en-US”;’
-assert old in content, “ERROR: Could not find tryMatchLang”
-content = content.replace(old, new, 1)
+/* ── Content ── */
+.content {
+  padding: 20px 16px;
+  max-width: 480px;
+  margin: 0 auto;
+}
 
-# ── 4. Add Arabic to scriptLangOptionsMap ─────────────────────────────────────
+/* ── Upload Zone ── */
+.upload-zone {
+  border: 2px dashed var(--pink-dim);
+  border-radius: 24px;
+  padding: 44px 20px;
+  text-align: center;
+  cursor: pointer;
+  background: var(--pink-faint);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  transition: all 0.25s ease;
+  animation: pulseBorder 3s ease-in-out infinite;
+  position: relative;
+  overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+  min-height: 200px;
+}
 
-old = ’    “en-US”: () => “English”\n  };\n  const keepInstancesOptionsMap’
-new = ’    “en-US”: () => “English”,\n    “ar”: () => “العربية”\n  };\n  const keepInstancesOptionsMap’
-assert old in content, “ERROR: Could not find scriptLangOptionsMap”
-content = content.replace(old, new, 1)
+.upload-zone.has-image {
+  padding: 14px;
+  animation: none;
+  border-style: solid;
+  border-color: var(--pink-dim);
+  min-height: unset;
+}
 
-# ── 5. Add Arabic (ARA) to targetLangOptionsMap ───────────────────────────────
+.upload-zone:active { transform: scale(0.98); }
 
-old = ’    “TRK”: () => “Türk dili”\n  };\n  const scriptLangOptionsMap’
-new = ’    “TRK”: () => “Türk dili”,\n    “ARA”: () => “العربية”\n  };\n  const scriptLangOptionsMap’
-assert old in content, “ERROR: Could not find targetLangOptionsMap end”
-content = content.replace(old, new, 1)
+.upload-zone input[type=file] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  font-size: 0;
+}
 
-# ── 6. BCP47ToISO639: map ‘ar’ locale to ‘ARA’ ───────────────────────────────
+.upload-icon { font-size: 54px; line-height: 1; }
+.upload-title { font-size: 19px; font-weight: 700; color: #fff; }
+.upload-sub { font-size: 13px; color: rgba(255,255,255,0.4); }
 
-old = ’        case “uk”:\n          return “UKR”;’
-new = ’        case “uk”:\n          return “UKR”;\n        case “ar”:\n          return “ARA”;’
-assert old in content, “ERROR: Could not find BCP47ToISO639 uk case”
-content = content.replace(old, new, 1)
+.preview-img {
+  max-width: 100%;
+  max-height: 380px;
+  border-radius: 14px;
+  object-fit: contain;
+  display: block;
+}
 
-with open(sys.argv[2], ‘w’, encoding=‘utf-8’) as f:
-f.write(content)
+.change-hint {
+  font-size: 12px;
+  color: var(--pink-dim);
+  margin-top: 6px;
+}
 
-print(“✅  All 6 patches applied successfully.”)
-print(”   • Arabic translation strings added”)
-print(”   • ‘ar’ registered in messages map”)
-print(”   • tryMatchLang detects Arabic browser locale”)
-print(”   • ‘العربية’ added to script language selector”)
-print(”   • ‘العربية’ added to target language selector”)
-print(”   • BCP47 ‘ar’ mapped to ISO639 ‘ARA’”)
+/* ── Translate Button ── */
+.btn-translate {
+  width: 100%;
+  margin-top: 14px;
+  padding: 17px;
+  border-radius: 18px;
+  border: none;
+  background: linear-gradient(135deg, #ff6b9d, #c44569);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 6px 24px #ff6b9d44;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  letter-spacing: 0.5px;
+  -webkit-appearance: none;
+  touch-action: manipulation;
+}
+
+.btn-translate:active:not(:disabled) { transform: scale(0.97); box-shadow: 0 2px 12px #ff6b9d33; }
+.btn-translate:disabled { background: #2a1a2e; color: rgba(255,255,255,0.5); box-shadow: none; cursor: not-allowed; }
+
+/* ── Spinner ── */
+.spinner {
+  width: 20px; height: 20px;
+  border: 3px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+  flex-shrink: 0;
+}
+
+/* ── Loading bar ── */
+.loading-bar-wrap {
+  margin-top: 14px;
+  height: 3px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.loading-bar {
+  height: 100%;
+  width: 40%;
+  background: linear-gradient(90deg, #ff6b9d, #ffb3cc);
+  border-radius: 10px;
+  animation: loadingSlide 1.4s ease-in-out infinite;
+}
+
+/* ── Error ── */
+.error-box {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(255,60,60,0.12);
+  border: 1px solid rgba(255,80,80,0.35);
+  color: #ff9999;
+  font-size: 14px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* ── Results ── */
+.results-header {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--pink);
+  margin: 22px 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.result-count {
+  background: var(--pink-faint);
+  border: 1px solid var(--pink-dim);
+  color: var(--pink);
+  border-radius: 20px;
+  padding: 2px 10px;
+  font-size: 12px;
+}
+
+.cards { display: flex; flex-direction: column; gap: 12px; }
+
+.card {
+  background: var(--card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 18px;
+  padding: 14px 16px;
+  border: 1px solid rgba(255,255,255,0.07);
+  animation: fadeUp 0.35s ease forwards;
+  opacity: 0;
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.type-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.card-num { font-size: 11px; color: rgba(255,255,255,0.2); }
+
+.original-text {
+  font-size: 12px;
+  color: rgba(255,255,255,0.38);
+  direction: ltr;
+  text-align: left;
+  font-style: italic;
+  background: rgba(255,255,255,0.06);
+  padding: 8px 12px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.translated-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.7;
+}
+
+/* ── Empty hint ── */
+.hint {
+  text-align: center;
+  color: rgba(255,255,255,0.25);
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+/* ── BG particles ── */
+.particle {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  animation: floatPart ease-in-out infinite;
+}
+
+/* ── Keyframes ── */
+@keyframes shimmer {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+@keyframes pulseBorder {
+  0%, 100% { border-color: rgba(255,107,157,0.25); box-shadow: 0 0 20px rgba(255,107,157,0.08); }
+  50% { border-color: rgba(255,107,157,0.6); box-shadow: 0 0 36px rgba(255,107,157,0.2); }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes loadingSlide {
+  0% { transform: translateX(-150%); }
+  100% { transform: translateX(350%); }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes floatPart {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  33% { transform: translateY(-18px) translateX(8px); }
+  66% { transform: translateY(8px) translateX(-8px); }
+}
+```
+
+  </style>
+</head>
+<body>
+
+  <!-- BG Particles -->
+
+  <div id="particles"></div>
+
+  <!-- Header -->
+
+  <div class="header">
+    <div class="ai-badge">✦ AI</div>
+    <div class="logo-wrap">
+      <div class="logo">MANGA AR</div>
+      <div class="logo-sub">مترجم المانغا العربي</div>
+    </div>
+  </div>
+
+  <!-- Content -->
+
+  <div class="content">
+
+```
+<!-- Upload Zone -->
+<div class="upload-zone" id="uploadZone" onclick="triggerPick()">
+  <input type="file" accept="image/*" id="fileInput" onchange="onFileChange(event)" />
+  <div id="uploadInner">
+    <div class="upload-icon">🖼️</div>
+    <div class="upload-title">ارفع صورة المانغا</div>
+    <div class="upload-sub">اضغط هنا لاختيار صورة</div>
+  </div>
+</div>
+
+<!-- Translate Button -->
+<button class="btn-translate" id="translateBtn" onclick="translate()" style="display:none">
+  <span>✦ ترجم الآن</span>
+</button>
+
+<!-- Loading bar -->
+<div class="loading-bar-wrap" id="loadingBar" style="display:none">
+  <div class="loading-bar"></div>
+</div>
+
+<!-- Error -->
+<div class="error-box" id="errorBox" style="display:none"></div>
+
+<!-- Results -->
+<div id="resultsSection" style="display:none">
+  <div class="results-header">
+    <span>✦</span> نتائج الترجمة
+    <span class="result-count" id="resultCount"></span>
+  </div>
+  <div class="cards" id="cardsContainer"></div>
+</div>
+
+<div class="hint" id="hintText" style="display:none">اضغط "ترجم الآن" لبدء الترجمة</div>
+```
+
+  </div>
+
+  <script>
+    let imageBase64 = null;
+    let imageMime = null;
+
+    // Generate BG particles
+    const pContainer = document.getElementById('particles');
+    for (let i = 0; i < 18; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = Math.random() * 3 + 1;
+      const colors = ['#ff6b9d','#9b59b6','#6bceff','#ffb3cc'];
+      p.style.cssText = `
+        width:${size}px; height:${size}px;
+        background:${colors[Math.floor(Math.random()*colors.length)]};
+        top:${Math.random()*100}%; left:${Math.random()*100}%;
+        opacity:${Math.random()*0.5+0.1};
+        animation-duration:${Math.random()*8+5}s;
+        animation-delay:${Math.random()*4}s;
+      `;
+      pContainer.appendChild(p);
+    }
+
+    function triggerPick() {
+      document.getElementById('fileInput').click();
+    }
+
+    function onFileChange(e) {
+      const file = e.target.files[0];
+      if (!file || !file.type.startsWith('image/')) return;
+      loadImage(file);
+    }
+
+    function loadImage(file) {
+      imageMime = file.type;
+      const url = URL.createObjectURL(file);
+      const zone = document.getElementById('uploadZone');
+      zone.classList.add('has-image');
+      zone.innerHTML = `
+        <input type="file" accept="image/*" id="fileInput" onchange="onFileChange(event)" />
+        <img src="${url}" class="preview-img" />
+        <div class="change-hint">اضغط لاستبدال الصورة</div>
+      `;
+
+      const reader = new FileReader();
+      reader.onload = ev => {
+        imageBase64 = ev.target.result.split(',')[1];
+        document.getElementById('translateBtn').style.display = 'flex';
+        document.getElementById('hintText').style.display = 'block';
+        document.getElementById('resultsSection').style.display = 'none';
+        document.getElementById('errorBox').style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    const TYPE_LABEL = { dialogue: 'حوار', caption: 'تعليق', sfx: 'مؤثر صوتي' };
+    const TYPE_COLOR = { dialogue: '#ff6b9d', caption: '#ffd93d', sfx: '#6bceff' };
+
+    async function translate() {
+      if (!imageBase64) return;
+      const btn = document.getElementById('translateBtn');
+      btn.disabled = true;
+      btn.innerHTML = `<div class="spinner"></div><span>جاري الترجمة...</span>`;
+      document.getElementById('loadingBar').style.display = 'block';
+      document.getElementById('errorBox').style.display = 'none';
+      document.getElementById('resultsSection').style.display = 'none';
+      document.getElementById('hintText').style.display = 'none';
+
+      try {
+        const res = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-20250514',
+            max_tokens: 1000,
+            system: `You are an expert manga/comic translator specializing in Arabic translation.
+When given a manga image, identify ALL text bubbles, captions, and sound effects.
+Translate them accurately to Arabic.
+Return ONLY a JSON array, no markdown, no extra text:
+[{"original":"original text","translation":"Arabic translation","type":"dialogue|caption|sfx"}]
+If no text found, return: []`,
+            messages: [{
+              role: 'user',
+              content: [
+                { type: 'image', source: { type: 'base64', media_type: imageMime, data: imageBase64 } },
+                { type: 'text', text: 'Translate all text in this manga image to Arabic. Return only JSON.' }
+              ]
+            }]
+          })
+        });
+
+        const data = await res.json();
+        const text = (data.content || []).map(i => i.text || '').join('');
+        const clean = text.replace(/```json|```/g, '').trim();
+        let parsed;
+        try { parsed = JSON.parse(clean); } catch { parsed = []; }
+
+        renderResults(Array.isArray(parsed) ? parsed : []);
+      } catch (err) {
+        showError('حدث خطأ أثناء الترجمة. تحقق من الاتصال وحاول مجدداً.');
+      }
+
+      btn.disabled = false;
+      btn.innerHTML = '<span>✦ ترجم الآن</span>';
+      document.getElementById('loadingBar').style.display = 'none';
+    }
+
+    function renderResults(items) {
+      if (items.length === 0) {
+        showError('لم يتم العثور على نصوص في هذه الصورة.');
+        return;
+      }
+      document.getElementById('resultCount').textContent = items.length;
+      const container = document.getElementById('cardsContainer');
+      container.innerHTML = '';
+
+      items.forEach((item, i) => {
+        const color = TYPE_COLOR[item.type] || '#ff6b9d';
+        const label = TYPE_LABEL[item.type] || item.type;
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.style.animationDelay = (i * 0.08) + 's';
+        card.style.borderRight = `4px solid ${color}`;
+        card.innerHTML = `
+          <div class="card-top">
+            <span class="type-badge" style="background:${color}22;color:${color}">${label}</span>
+            <span class="card-num">#${i + 1}</span>
+          </div>
+          <div class="original-text">${escapeHtml(item.original)}</div>
+          <div class="translated-text">${escapeHtml(item.translation)}</div>
+        `;
+        container.appendChild(card);
+      });
+
+      document.getElementById('resultsSection').style.display = 'block';
+    }
+
+    function showError(msg) {
+      const box = document.getElementById('errorBox');
+      box.textContent = msg;
+      box.style.display = 'block';
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;');
+    }
+  </script>
+
+</body>
+</html>
