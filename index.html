@@ -2,108 +2,111 @@
 
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="theme-color" content="#0a0014" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="theme-color" content="#0a0014"/>
   <title>Manga AR</title>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    :root { --pink: #ff6b9d; --safe-top: env(safe-area-inset-top,44px); --safe-bottom: env(safe-area-inset-bottom,20px); }
-    html { height: -webkit-fill-available; }
-    body { min-height:100vh; min-height:-webkit-fill-available; background:radial-gradient(ellipse at top right,#1a0030 0%,#0a0014 55%,#0d001e 100%); color:#fff; font-family:-apple-system,'Helvetica Neue',sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden; padding-top:var(--safe-top); padding-bottom:calc(var(--safe-bottom)+24px); }
-    .header { display:flex; justify-content:space-between; align-items:center; padding:16px 20px 14px; }
-    .ai-badge { background:linear-gradient(135deg,#ff6b9d,#c44569); border-radius:20px; padding:7px 14px; font-size:13px; font-weight:800; box-shadow:0 4px 15px #ff6b9d44; }
-    .logo { font-size:26px; font-weight:900; letter-spacing:4px; text-transform:uppercase; background:linear-gradient(90deg,#ff6b9d,#ffb3cc,#ff6b9d); background-size:200%; -webkit-background-clip:text; -webkit-text-fill-color:transparent; animation:shimmer 3s linear infinite; }
-    .logo-sub { font-size:11px; color:#ff6b9d66; text-align:right; margin-top:2px; }
-    .content { padding:0 16px; max-width:500px; margin:0 auto; }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    :root{--pink:#ff6b9d;--safe-top:env(safe-area-inset-top,44px);--safe-bottom:env(safe-area-inset-bottom,20px)}
+    html{height:-webkit-fill-available}
+    body{min-height:100vh;min-height:-webkit-fill-available;background:radial-gradient(ellipse at top right,#1a0030,#0a0014 55%,#0d001e);color:#fff;font-family:-apple-system,'Helvetica Neue',sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;padding-top:var(--safe-top);padding-bottom:calc(var(--safe-bottom)+24px)}
+    .header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px 14px}
+    .ai-badge{background:linear-gradient(135deg,#ff6b9d,#c44569);border-radius:20px;padding:7px 14px;font-size:13px;font-weight:800;box-shadow:0 4px 15px #ff6b9d44}
+    .logo{font-size:26px;font-weight:900;letter-spacing:4px;text-transform:uppercase;background:linear-gradient(90deg,#ff6b9d,#ffb3cc,#ff6b9d);background-size:200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 3s linear infinite}
+    .logo-sub{font-size:11px;color:#ff6b9d66;text-align:right;margin-top:2px}
+    .content{padding:0 16px;max-width:500px;margin:0 auto}
 
 ```
-/* Provider selector */
-.provider-box { background:rgba(255,107,157,0.06); border:1px solid rgba(255,107,157,0.2); border-radius:20px; padding:16px; margin-bottom:14px; }
-.provider-title { font-size:13px; font-weight:700; color:var(--pink); margin-bottom:10px; }
-.provider-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
-.provider-btn {
-  padding:10px 12px; border-radius:14px; border:1px solid rgba(255,255,255,0.1);
-  background:rgba(255,255,255,0.05); cursor:pointer; text-align:right;
-  transition:all .2s;
-}
-.provider-btn.active { border-color:var(--pink); background:rgba(255,107,157,0.15); }
-.provider-btn:active { transform:scale(0.97); }
-.pv-name { font-size:13px; font-weight:700; color:#fff; }
-.pv-model { font-size:10px; color:rgba(255,255,255,0.4); margin-top:2px; }
-.pv-free { font-size:10px; color:#6bceff; margin-top:3px; font-weight:600; }
+/* Provider */
+.provider-box{background:rgba(255,107,157,0.06);border:1px solid rgba(255,107,157,0.2);border-radius:20px;padding:14px;margin-bottom:14px}
+.provider-title{font-size:13px;font-weight:700;color:var(--pink);margin-bottom:10px}
+.provider-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.pv{padding:9px 10px;border-radius:13px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);cursor:pointer;text-align:right;transition:all .2s}
+.pv.active{border-color:var(--pink);background:rgba(255,107,157,0.15)}
+.pv:active{transform:scale(0.97)}
+.pv-name{font-size:12px;font-weight:700;color:#fff}
+.pv-model{font-size:9px;color:rgba(255,255,255,0.38);margin-top:2px}
+.pv-free{font-size:9px;color:#6bceff;margin-top:2px;font-weight:600}
 
-/* API Key */
-.api-box { background:rgba(255,107,157,0.07); border:1px solid rgba(255,107,157,0.25); border-radius:20px; padding:16px; margin-bottom:16px; }
-.api-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; }
-.api-title { font-size:13px; font-weight:700; color:var(--pink); }
-.api-link { font-size:11px; color:#6bceff; text-decoration:none; }
-.api-row { display:flex; gap:8px; align-items:stretch; }
-.api-input { flex:1; padding:13px 14px; background:rgba(0,0,0,0.35); border:1px solid rgba(255,107,157,0.3); border-radius:14px; color:#fff; font-size:13px; font-family:'Courier New',monospace; outline:none; -webkit-appearance:none; direction:ltr; text-align:left; }
-.api-input:focus { border-color:rgba(255,107,157,0.7); }
-.api-input::placeholder { color:rgba(255,255,255,0.2); font-family:-apple-system,sans-serif; }
-.btn-test { padding:0 16px; background:rgba(255,107,157,0.15); border:1px solid rgba(255,107,157,0.4); border-radius:14px; color:var(--pink); font-size:13px; font-weight:700; cursor:pointer; white-space:nowrap; }
-.btn-test:active { background:rgba(255,107,157,0.28); }
-.api-status { font-size:11px; margin-top:8px; min-height:16px; line-height:1.5; }
-.api-hint { font-size:11px; color:rgba(255,255,255,0.3); margin-top:6px; line-height:1.5; }
+/* API */
+.api-box{background:rgba(255,107,157,0.07);border:1px solid rgba(255,107,157,0.25);border-radius:20px;padding:14px;margin-bottom:14px}
+.api-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.api-title{font-size:13px;font-weight:700;color:var(--pink)}
+.api-link{font-size:11px;color:#6bceff;text-decoration:none}
+.api-row{display:flex;gap:8px}
+.api-input{flex:1;padding:12px 13px;background:rgba(0,0,0,0.35);border:1px solid rgba(255,107,157,0.3);border-radius:13px;color:#fff;font-size:12px;font-family:'Courier New',monospace;outline:none;-webkit-appearance:none;direction:ltr;text-align:left}
+.api-input:focus{border-color:rgba(255,107,157,0.7)}
+.api-input::placeholder{color:rgba(255,255,255,0.2);font-family:-apple-system,sans-serif}
+.btn-test{padding:0 14px;background:rgba(255,107,157,0.15);border:1px solid rgba(255,107,157,0.4);border-radius:13px;color:var(--pink);font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap}
+.btn-test:active{background:rgba(255,107,157,0.28)}
+.api-status{font-size:11px;margin-top:7px;min-height:16px}
+.api-hint{font-size:11px;color:rgba(255,255,255,0.28);margin-top:5px;line-height:1.5}
 
-.upload-label { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; min-height:165px; border:2px dashed #ff6b9d55; border-radius:24px; background:#ff6b9d10; cursor:pointer; text-align:center; padding:28px 20px; -webkit-user-select:none; user-select:none; animation:pulseBorder 3s ease-in-out infinite; transition:background .2s,transform .15s; }
-.upload-label:active { background:#ff6b9d1e; transform:scale(0.985); }
-#fileInput { position:absolute; width:1px; height:1px; opacity:0; pointer-events:none; }
-.upload-icon { font-size:46px; }
-.upload-title { font-size:17px; font-weight:700; }
-.upload-sub { font-size:13px; color:rgba(255,255,255,0.4); }
-.upload-cap { font-size:12px; color:#ff6b9d99; background:#ff6b9d15; border:1px solid #ff6b9d33; border-radius:12px; padding:4px 12px; }
+/* Upload */
+.upload-label{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:155px;border:2px dashed #ff6b9d55;border-radius:22px;background:#ff6b9d10;cursor:pointer;text-align:center;padding:28px 20px;-webkit-user-select:none;user-select:none;animation:pulseBorder 3s ease-in-out infinite;transition:background .2s,transform .15s}
+.upload-label:active{background:#ff6b9d1e;transform:scale(0.985)}
+#fileInput{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.upload-icon{font-size:44px}
+.upload-title{font-size:17px;font-weight:700}
+.upload-sub{font-size:13px;color:rgba(255,255,255,0.4)}
+.upload-cap{font-size:11px;color:#ff6b9d99;background:#ff6b9d15;border:1px solid #ff6b9d33;border-radius:10px;padding:3px 10px}
 
-.reading-bar { background:rgba(255,107,157,0.1); border:1px solid rgba(255,107,157,0.2); border-radius:14px; padding:12px 16px; margin-top:12px; display:none; align-items:center; gap:10px; font-size:13px; color:rgba(255,255,255,0.6); }
-.queue-header { display:flex; justify-content:space-between; align-items:center; margin:16px 0 10px; }
-.queue-title { font-size:15px; font-weight:700; color:var(--pink); display:flex; align-items:center; gap:6px; }
-.badge { background:#ff6b9d20; border:1px solid #ff6b9d55; color:var(--pink); border-radius:20px; padding:2px 10px; font-size:12px; }
-.btn-sm { background:rgba(255,255,255,0.07); border:none; color:rgba(255,255,255,0.45); border-radius:10px; padding:6px 12px; font-size:12px; cursor:pointer; }
-.btn-sm:active { background:rgba(255,255,255,0.13); }
-.grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:14px; }
-.thumb-wrap { position:relative; aspect-ratio:1; border-radius:12px; overflow:hidden; background:#1a0a2e; }
-.thumb-wrap img { width:100%; height:100%; object-fit:cover; display:block; }
-.thumb-overlay { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:20px; }
-.thumb-overlay.processing { background:rgba(0,0,0,0.5); }
-.thumb-overlay.done { background:rgba(0,0,0,0.2); }
-.thumb-overlay.error { background:rgba(180,0,0,0.35); }
-.thumb-num { position:absolute; top:4px; right:5px; font-size:10px; font-weight:700; background:rgba(0,0,0,0.6); border-radius:6px; padding:1px 5px; color:rgba(255,255,255,0.7); }
-.prog-wrap { margin-bottom:12px; }
-.prog-info { display:flex; justify-content:space-between; font-size:13px; color:rgba(255,255,255,0.45); margin-bottom:6px; }
-.prog-bg { height:4px; background:rgba(255,255,255,0.08); border-radius:10px; overflow:hidden; }
-.prog-fill { height:100%; background:linear-gradient(90deg,#ff6b9d,#ffb3cc); border-radius:10px; transition:width .4s; }
-.btn-main { width:100%; padding:17px; border-radius:18px; border:none; background:linear-gradient(135deg,#ff6b9d,#c44569); color:#fff; font-size:18px; font-weight:800; cursor:pointer; box-shadow:0 6px 24px #ff6b9d44; display:flex; align-items:center; justify-content:center; gap:10px; -webkit-appearance:none; touch-action:manipulation; transition:transform .15s; }
-.btn-main:active:not(:disabled) { transform:scale(0.97); }
-.btn-main:disabled { background:#1e0e30; color:rgba(255,255,255,0.3); box-shadow:none; cursor:not-allowed; }
-.spinner { width:20px; height:20px; border:3px solid rgba(255,255,255,0.3); border-top-color:#fff; border-radius:50%; animation:spin .75s linear infinite; flex-shrink:0; }
-.mini-spin { width:18px; height:18px; border:2.5px solid rgba(255,255,255,0.25); border-top-color:#fff; border-radius:50%; animation:spin .7s linear infinite; }
-.results-sec { margin-top:22px; }
-.results-hdr { font-size:15px; font-weight:700; color:var(--pink); margin-bottom:12px; display:flex; align-items:center; gap:8px; }
-.r-card { background:rgba(255,255,255,0.05); border-radius:18px; margin-bottom:14px; overflow:hidden; border:1px solid rgba(255,255,255,0.07); animation:fadeUp .3s ease forwards; opacity:0; }
-.rc-head { display:flex; align-items:center; gap:10px; padding:10px 14px; background:rgba(255,255,255,0.03); border-bottom:1px solid rgba(255,255,255,0.06); }
-.rc-thumb { width:38px; height:38px; border-radius:8px; object-fit:cover; flex-shrink:0; }
-.rc-name { font-size:12px; color:rgba(255,255,255,0.4); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; direction:ltr; text-align:left; }
-.rc-count { font-size:11px; color:var(--pink); background:#ff6b9d18; border-radius:10px; padding:2px 8px; white-space:nowrap; }
-.rc-body { padding:10px 14px; display:flex; flex-direction:column; gap:10px; }
-.ri { padding-right:10px; }
-.ri-type { font-size:10px; font-weight:700; margin-bottom:3px; }
-.ri-orig { font-size:11px; color:rgba(255,255,255,0.32); direction:ltr; font-style:italic; margin-bottom:3px; }
-.ri-trans { font-size:15px; font-weight:600; line-height:1.65; }
-.err-detail { font-size:11px; color:#ff9999; padding:8px 14px 10px; direction:ltr; text-align:left; word-break:break-all; }
+/* Reading bar */
+.reading-bar{background:rgba(255,107,157,0.1);border:1px solid rgba(255,107,157,0.2);border-radius:13px;padding:12px 16px;margin-top:12px;display:none;align-items:center;gap:10px;font-size:13px;color:rgba(255,255,255,0.6)}
 
-@keyframes shimmer { to{background-position:200% center} }
-@keyframes pulseBorder { 0%,100%{border-color:#ff6b9d33} 50%{border-color:#ff6b9d88} }
-@keyframes spin { to{transform:rotate(360deg)} }
-@keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+/* Queue */
+.queue-hdr{display:flex;justify-content:space-between;align-items:center;margin:14px 0 10px}
+.queue-title{font-size:15px;font-weight:700;color:var(--pink);display:flex;align-items:center;gap:6px}
+.badge{background:#ff6b9d20;border:1px solid #ff6b9d55;color:var(--pink);border-radius:20px;padding:2px 10px;font-size:12px}
+.btn-sm{background:rgba(255,255,255,0.07);border:none;color:rgba(255,255,255,0.45);border-radius:10px;padding:6px 12px;font-size:12px;cursor:pointer}
+.btn-sm:active{background:rgba(255,255,255,0.13)}
+
+/* Thumbs */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.thumb-wrap{position:relative;aspect-ratio:auto;border-radius:12px;overflow:hidden;background:#1a0a2e}
+.thumb-wrap img{width:100%;display:block}
+.thumb-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:22px}
+.thumb-overlay.processing{background:rgba(0,0,0,0.55)}
+.thumb-overlay.done{background:rgba(0,0,0,0.15)}
+.thumb-overlay.error{background:rgba(180,0,0,0.4)}
+.thumb-num{position:absolute;top:5px;right:6px;font-size:11px;font-weight:700;background:rgba(0,0,0,0.65);border-radius:6px;padding:1px 6px;color:rgba(255,255,255,0.8)}
+
+/* Progress */
+.prog-wrap{margin-bottom:12px}
+.prog-info{display:flex;justify-content:space-between;font-size:13px;color:rgba(255,255,255,0.45);margin-bottom:6px}
+.prog-bg{height:4px;background:rgba(255,255,255,0.08);border-radius:10px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,#ff6b9d,#ffb3cc);border-radius:10px;transition:width .4s}
+
+/* Buttons */
+.btn-main{width:100%;padding:17px;border-radius:18px;border:none;background:linear-gradient(135deg,#ff6b9d,#c44569);color:#fff;font-size:18px;font-weight:800;cursor:pointer;box-shadow:0 6px 24px #ff6b9d44;display:flex;align-items:center;justify-content:center;gap:10px;-webkit-appearance:none;touch-action:manipulation;transition:transform .15s;margin-bottom:8px}
+.btn-main:active:not(:disabled){transform:scale(0.97)}
+.btn-main:disabled{background:#1e0e30;color:rgba(255,255,255,0.3);box-shadow:none;cursor:not-allowed}
+.spinner{width:20px;height:20px;border:3px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin .75s linear infinite;flex-shrink:0}
+.mini-spin{width:20px;height:20px;border:2.5px solid rgba(255,255,255,0.25);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+
+/* Results */
+.results-sec{margin-top:16px}
+.results-hdr{font-size:15px;font-weight:700;color:var(--pink);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.r-card{background:rgba(255,255,255,0.05);border-radius:16px;margin-bottom:14px;overflow:hidden;border:1px solid rgba(255,255,255,0.07);animation:fadeUp .3s ease forwards;opacity:0}
+.rc-head{display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,0.03);border-bottom:1px solid rgba(255,255,255,0.06)}
+.rc-name{font-size:12px;color:rgba(255,255,255,0.4);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;direction:ltr;text-align:left}
+.rc-dl{background:rgba(255,107,157,0.15);border:1px solid rgba(255,107,157,0.35);color:var(--pink);border-radius:10px;padding:5px 14px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.rc-dl:active{background:rgba(255,107,157,0.28)}
+.rc-img{width:100%;display:block}
+.err-detail{font-size:11px;color:#ff9999;padding:10px 14px;direction:ltr;text-align:left;word-break:break-all}
+
+@keyframes shimmer{to{background-position:200% center}}
+@keyframes pulseBorder{0%,100%{border-color:#ff6b9d33}50%{border-color:#ff6b9d88}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 ```
 
   </style>
 </head>
 <body>
-
 <div class="header">
   <div class="ai-badge">✦ AI</div>
   <div><div class="logo">MANGA AR</div><div class="logo-sub">مترجم المانغا العربي</div></div>
@@ -111,41 +114,17 @@
 
 <div class="content">
 
-  <!-- Provider Selection -->
+  <!-- Provider -->
 
   <div class="provider-box">
     <div class="provider-title">🤖 اختر نموذج الذكاء الاصطناعي</div>
-    <div class="provider-grid" id="providerGrid">
-      <div class="provider-btn active" onclick="selectProvider('openai')" id="pv-openai">
-        <div class="pv-name">OpenAI</div>
-        <div class="pv-model">GPT-4o mini</div>
-        <div class="pv-free">مدفوع — رخيص</div>
-      </div>
-      <div class="provider-btn" onclick="selectProvider('groq')" id="pv-groq">
-        <div class="pv-name">Groq</div>
-        <div class="pv-model">Llama 4 Scout</div>
-        <div class="pv-free">🆓 مجاني تماماً</div>
-      </div>
-      <div class="provider-btn" onclick="selectProvider('mistral')" id="pv-mistral">
-        <div class="pv-name">Mistral</div>
-        <div class="pv-model">Pixtral Latest</div>
-        <div class="pv-free">🆓 مجاني</div>
-      </div>
-      <div class="provider-btn" onclick="selectProvider('together')" id="pv-together">
-        <div class="pv-name">Together AI</div>
-        <div class="pv-model">Llama 3.2 Vision</div>
-        <div class="pv-free">🆓 رصيد $1</div>
-      </div>
-      <div class="provider-btn" onclick="selectProvider('claude')" id="pv-claude">
-        <div class="pv-name">Claude</div>
-        <div class="pv-model">claude-3-5-haiku</div>
-        <div class="pv-free">مدفوع — رخيص</div>
-      </div>
-      <div class="provider-btn" onclick="selectProvider('gemini')" id="pv-gemini">
-        <div class="pv-name">Gemini</div>
-        <div class="pv-model">gemini-2.0-flash</div>
-        <div class="pv-free">🆓 مجاني تماماً</div>
-      </div>
+    <div class="provider-grid">
+      <div class="pv active" onclick="selectP('claude')" id="pv-claude"><div class="pv-name">Claude</div><div class="pv-model">Haiku 3.5</div><div class="pv-free">مدفوع — رخيص</div></div>
+      <div class="pv" onclick="selectP('gemini')" id="pv-gemini"><div class="pv-name">Gemini</div><div class="pv-model">2.0 Flash</div><div class="pv-free">🆓 مجاني</div></div>
+      <div class="pv" onclick="selectP('openai')" id="pv-openai"><div class="pv-name">OpenAI</div><div class="pv-model">GPT-4o mini</div><div class="pv-free">مدفوع — رخيص</div></div>
+      <div class="pv" onclick="selectP('groq')" id="pv-groq"><div class="pv-name">Groq</div><div class="pv-model">Llama 4 Scout</div><div class="pv-free">🆓 مجاني</div></div>
+      <div class="pv" onclick="selectP('mistral')" id="pv-mistral"><div class="pv-name">Mistral</div><div class="pv-model">Pixtral</div><div class="pv-free">🆓 مجاني</div></div>
+      <div class="pv" onclick="selectP('together')" id="pv-together"><div class="pv-name">Together</div><div class="pv-model">Llama Vision</div><div class="pv-free">🆓 رصيد $1</div></div>
     </div>
   </div>
 
@@ -153,18 +132,18 @@
 
   <div class="api-box">
     <div class="api-header">
-      <div class="api-title" id="apiTitle">🔑 OpenAI API Key</div>
+      <div class="api-title" id="apiTitle">🔑 Anthropic API Key</div>
       <a href="#" id="apiLink" target="_blank" class="api-link">احصل على مفتاحك</a>
     </div>
     <div class="api-row">
-      <input class="api-input" type="text" id="apiKeyInput"
-        placeholder="sk-..." autocomplete="off" autocorrect="off" spellcheck="false"
-        oninput="onKeyChange()" />
+      <input class="api-input" type="text" id="apiKeyInput" placeholder="sk-ant-..." autocomplete="off" autocorrect="off" spellcheck="false" oninput="onKeyChange()"/>
       <button class="btn-test" id="testBtn" onclick="testKey()">تحقق</button>
     </div>
     <div class="api-status" id="apiStatus"></div>
     <div class="api-hint" id="apiHint"></div>
   </div>
+
+  <!-- Upload -->
 
   <label class="upload-label" for="fileInput">
     <div class="upload-icon">🖼️</div>
@@ -172,15 +151,15 @@
     <div class="upload-sub">اضغط هنا لاختيار الصور</div>
     <div class="upload-cap">حتى 50 صورة دفعة واحدة</div>
   </label>
-  <input type="file" id="fileInput" accept="image/*" multiple onchange="onFilesSelected(event)" />
+  <input type="file" id="fileInput" accept="image/*" multiple onchange="onFiles(event)"/>
 
   <div class="reading-bar" id="readingBar">
     <div class="spinner"></div>
-    <span id="readingText">جاري معالجة الصور...</span>
+    <span id="readingText">جاري المعالجة...</span>
   </div>
 
-  <div id="queueSection" style="display:none">
-    <div class="queue-header">
+  <div id="queueSec" style="display:none">
+    <div class="queue-hdr">
       <div class="queue-title">✦ الصور <span class="badge" id="queueBadge">0</span></div>
       <button class="btn-sm" onclick="clearAll()">مسح الكل</button>
     </div>
@@ -189,488 +168,400 @@
       <div class="prog-info"><span id="progText">0 / 0</span><span id="progPct">0%</span></div>
       <div class="prog-bg"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
     </div>
-    <button class="btn-main" id="mainBtn" onclick="translateAll()">✦ ترجم الكل</button>
+    <button class="btn-main" id="mainBtn" onclick="translateAll()">✦ ترجم وضع على الصورة</button>
   </div>
 
   <div class="results-sec" id="resultsSec" style="display:none">
-    <div class="results-hdr">✦ نتائج الترجمة <span class="badge" id="resBadge"></span></div>
+    <div class="results-hdr">✦ الصور المترجمة <span class="badge" id="resBadge"></span></div>
     <div id="resList"></div>
   </div>
 
 </div>
 
 <script>
-  const MAX=50, CONCURRENCY=3;
-  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const TYPE_LABEL = {dialogue:'حوار',caption:'تعليق',sfx:'مؤثر صوتي'};
-  const TYPE_COLOR  = {dialogue:'#ff6b9d',caption:'#ffd93d',sfx:'#6bceff'};
+const PROVIDERS = {
+  claude:  {title:'🔑 Anthropic API Key',  placeholder:'sk-ant-api03-...',  link:'https://console.anthropic.com/settings/keys',    hint:'اضغط "Create Key" — Haiku رخيص جداً',               storageKey:'mgk_claude'},
+  gemini:  {title:'🔑 Google Gemini Key',   placeholder:'AIzaSy...',         link:'https://aistudio.google.com/app/apikey',          hint:'مجاني تماماً — اضغط "Create API key"',              storageKey:'mgk_gemini'},
+  openai:  {title:'🔑 OpenAI API Key',      placeholder:'sk-proj-...',       link:'https://platform.openai.com/api-keys',            hint:'اضغط "Create new secret key"',                       storageKey:'mgk_openai'},
+  groq:    {title:'🔑 Groq API Key',        placeholder:'gsk_...',           link:'https://console.groq.com/keys',                   hint:'مجاني تماماً — سجّل واضغط "Create API Key"',        storageKey:'mgk_groq'},
+  mistral: {title:'🔑 Mistral API Key',     placeholder:'...',               link:'https://console.mistral.ai/api-keys/',            hint:'مجاني مع حد يومي — اضغط "Create new key"',          storageKey:'mgk_mistral'},
+  together:{title:'🔑 Together AI Key',     placeholder:'...',               link:'https://api.together.xyz/settings/api-keys',      hint:'رصيد $1 مجاني عند التسجيل',                         storageKey:'mgk_together'},
+};
 
-  // ── Provider configs ──
-  const PROVIDERS = {
-    openai: {
-      name:'OpenAI GPT-4o mini',
-      title:'🔑 OpenAI API Key',
-      placeholder:'sk-proj-...',
-      link:'https://platform.openai.com/api-keys',
-      linkText:'platform.openai.com/api-keys',
-      hint:'اضغط "Create new secret key" ← مدفوع لكن رخيص جداً (~$0.01/100 صورة)',
-      storageKey:'manga_key_openai',
-    },
-    groq: {
-      name:'Groq Llama 4',
-      title:'🔑 Groq API Key',
-      placeholder:'gsk_...',
-      link:'https://console.groq.com/keys',
-      linkText:'console.groq.com/keys',
-      hint:'مجاني تماماً — اضغط "Create API Key" بعد التسجيل',
-      storageKey:'manga_key_groq',
-    },
-    mistral: {
-      name:'Mistral Pixtral',
-      title:'🔑 Mistral API Key',
-      placeholder:'...',
-      link:'https://console.mistral.ai/api-keys/',
-      linkText:'console.mistral.ai/api-keys',
-      hint:'مجاني مع حد يومي — اضغط "Create new key"',
-      storageKey:'manga_key_mistral',
-    },
-    together: {
-      name:'Together AI',
-      title:'🔑 Together AI API Key',
-      placeholder:'...',
-      link:'https://api.together.xyz/settings/api-keys',
-      linkText:'api.together.xyz/settings/api-keys',
-      hint:'يعطيك $1 مجاني عند التسجيل — اضغط "Create API key"',
-      storageKey:'manga_key_together',
-    },
-    claude: {
-      name:'Claude Haiku',
-      title:'🔑 Anthropic API Key',
-      placeholder:'sk-ant-api03-...',
-      link:'https://console.anthropic.com/settings/keys',
-      linkText:'console.anthropic.com/settings/keys',
-      hint:'اضغط "Create Key" — مدفوع لكن Haiku رخيص جداً',
-      storageKey:'manga_key_claude',
-    },
-    gemini: {
-      name:'Gemini Flash',
-      title:'🔑 Google Gemini API Key',
-      placeholder:'AIzaSy...',
-      link:'https://aistudio.google.com/app/apikey',
-      linkText:'aistudio.google.com/app/apikey',
-      hint:'مجاني تماماً — اضغط "Create API key" بعد تسجيل الدخول بـ Google',
-      storageKey:'manga_key_gemini',
-    },
+const PROMPT = `You are analyzing a manga/comic page. Find every speech bubble, thought bubble, caption box, and text element.
+
+For each text element return its position as a percentage of image dimensions (0-100).
+Return ONLY a JSON array, no markdown:
+[{
+  "original": "original english text",
+  "translation": "الترجمة العربية",
+  "type": "bubble|caption|sfx",
+  "x": 45,
+  "y": 30,
+  "w": 20,
+  "h": 10,
+  "bg": "#ffffff"
+}]
+x,y = top-left corner as % of image width/height
+w,h = width/height as % of image dimensions
+bg = approximate background color of the bubble (hex)
+type: bubble=speech/thought, caption=narration box, sfx=sound effect
+If no text: []`;
+
+let curP = 'claude', apiKey = '', queue = [];
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+// Init
+selectP('claude');
+
+function selectP(id) {
+  curP = id;
+  document.querySelectorAll('.pv').forEach(b=>b.classList.remove('active'));
+  document.getElementById('pv-'+id).classList.add('active');
+  const p = PROVIDERS[id];
+  document.getElementById('apiTitle').textContent = p.title;
+  document.getElementById('apiLink').href = p.link;
+  document.getElementById('apiLink').textContent = p.link.replace('https://','').split('/')[0];
+  document.getElementById('apiHint').textContent = p.hint;
+  document.getElementById('apiKeyInput').placeholder = p.placeholder;
+  apiKey = localStorage.getItem(p.storageKey)||'';
+  document.getElementById('apiKeyInput').value = apiKey;
+  setSt(apiKey?'saved':'');
+}
+
+function onKeyChange() {
+  apiKey = document.getElementById('apiKeyInput').value.trim();
+  apiKey ? localStorage.setItem(PROVIDERS[curP].storageKey,apiKey) : localStorage.removeItem(PROVIDERS[curP].storageKey);
+  setSt(apiKey?'saved':'');
+}
+
+function setSt(s,msg) {
+  const el = document.getElementById('apiStatus');
+  if(s==='')       el.innerHTML='';
+  else if(s==='saved')   el.innerHTML='<span style="color:#6bceff">✓</span> <span style="color:rgba(255,255,255,.4)">محفوظ</span>';
+  else if(s==='testing') el.innerHTML='<span style="color:rgba(255,255,255,.4)">⏳ جاري التحقق...</span>';
+  else if(s==='valid')   el.innerHTML='<span style="color:#6bceff">✅ المفتاح يعمل!</span>';
+  else                   el.innerHTML=`<span style="color:#ff8888">❌ ${esc(msg||'خطأ')}</span>`;
+}
+
+async function testKey() {
+  if(!apiKey) return;
+  const btn=document.getElementById('testBtn');
+  btn.disabled=true; btn.textContent='...'; setSt('testing');
+  try {
+    await pingProvider(curP, apiKey);
+    setSt('valid');
+  } catch(e) { setSt('invalid', e.message); }
+  btn.disabled=false; btn.textContent='تحقق';
+}
+
+async function pingProvider(id,key) {
+  const ping = {
+    claude:  ()=>fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:5,messages:[{role:'user',content:'Hi'}]})}),
+    gemini:  ()=>fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:'Hi'}]}],generationConfig:{maxOutputTokens:5}})}),
+    openai:  ()=>fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},body:JSON.stringify({model:'gpt-4o-mini',max_tokens:3,messages:[{role:'user',content:'Hi'}]})}),
+    groq:    ()=>fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},body:JSON.stringify({model:'meta-llama/llama-4-scout-17b-16e-instruct',max_tokens:3,messages:[{role:'user',content:'Hi'}]})}),
+    mistral: ()=>fetch('https://api.mistral.ai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},body:JSON.stringify({model:'pixtral-12b-2409',max_tokens:3,messages:[{role:'user',content:[{type:'text',text:'Hi'}]}]})}),
+    together:()=>fetch('https://api.together.xyz/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},body:JSON.stringify({model:'meta-llama/Llama-3.2-11B-Vision-Instruct-Turbo',max_tokens:3,messages:[{role:'user',content:'Hi'}]})}),
   };
+  const r = await ping[id]();
+  const d = await r.json();
+  if(!r.ok) throw new Error(d.error?.message||d.message||`HTTP ${r.status}`);
+  return true;
+}
 
-  let currentProvider = 'openai';
-  let apiKey = '';
-  let queue  = [];
-
-  function selectProvider(id) {
-    currentProvider = id;
-    document.querySelectorAll('.provider-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('pv-'+id).classList.add('active');
-    const p = PROVIDERS[id];
-    document.getElementById('apiTitle').textContent   = p.title;
-    document.getElementById('apiLink').href           = p.link;
-    document.getElementById('apiLink').textContent    = p.linkText;
-    document.getElementById('apiHint').textContent    = p.hint;
-    document.getElementById('apiKeyInput').placeholder = p.placeholder;
-    apiKey = localStorage.getItem(p.storageKey) || '';
-    document.getElementById('apiKeyInput').value = apiKey;
-    setStatus(apiKey ? 'saved' : '');
-  }
-
-  // Init
-  selectProvider('openai');
-
-  function onKeyChange() {
-    const p = PROVIDERS[currentProvider];
-    apiKey = document.getElementById('apiKeyInput').value.trim();
-    apiKey ? localStorage.setItem(p.storageKey, apiKey) : localStorage.removeItem(p.storageKey);
-    setStatus(apiKey ? 'saved' : '');
-  }
-
-  function setStatus(s, msg) {
-    const el = document.getElementById('apiStatus');
-    if (s==='')        el.innerHTML='';
-    else if(s==='saved')   el.innerHTML='<span style="color:#6bceff">✓</span> <span style="color:rgba(255,255,255,.4)">محفوظ — اضغط تحقق للتأكد</span>';
-    else if(s==='testing') el.innerHTML='<span style="color:rgba(255,255,255,.4)">⏳ جاري التحقق...</span>';
-    else if(s==='valid')   el.innerHTML='<span style="color:#6bceff">✅ المفتاح يعمل!</span>';
-    else                   el.innerHTML=`<span style="color:#ff8888">❌ ${esc(msg||'خطأ')}</span>`;
-  }
-
-  async function testKey() {
-    if (!apiKey) return;
-    const btn = document.getElementById('testBtn');
-    btn.disabled=true; btn.textContent='...';
-    setStatus('testing');
-    try {
-      const ok = await pingProvider(currentProvider, apiKey);
-      setStatus(ok ? 'valid' : 'invalid', 'فشل الاتصال');
-    } catch(e) { setStatus('invalid', e.message); }
-    btn.disabled=false; btn.textContent='تحقق';
-  }
-
-  async function pingProvider(id, key) {
-    // Tiny test — each provider has different endpoint
-    if (id === 'openai') {
-      const r = await fetch('https://api.openai.com/v1/chat/completions',{
-        method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},
-        body:JSON.stringify({model:'gpt-4o-mini',max_tokens:3,messages:[{role:'user',content:'Hi'}]})
-      });
-      const d = await r.json();
-      if (!r.ok) throw new Error(d.error?.message||`HTTP ${r.status}`);
-      return true;
-    }
-    if (id === 'groq') {
-      const r = await fetch('https://api.groq.com/openai/v1/chat/completions',{
-        method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},
-        body:JSON.stringify({model:'meta-llama/llama-4-scout-17b-16e-instruct',max_tokens:3,messages:[{role:'user',content:'Hi'}]})
-      });
-      const d = await r.json();
-      if (!r.ok) throw new Error(d.error?.message||`HTTP ${r.status}`);
-      return true;
-    }
-    if (id === 'mistral') {
-      const r = await fetch('https://api.mistral.ai/v1/chat/completions',{
-        method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},
-        body:JSON.stringify({model:'pixtral-12b-2409',max_tokens:3,messages:[{role:'user',content:[{type:'text',text:'Hi'}]}]})
-      });
-      const d = await r.json();
-      if (!r.ok) throw new Error(d.error?.message||d.message||`HTTP ${r.status}`);
-      return true;
-    }
-    if (id === 'together') {
-      const r = await fetch('https://api.together.xyz/v1/chat/completions',{
-        method:'POST', headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},
-        body:JSON.stringify({model:'meta-llama/Llama-3.2-11B-Vision-Instruct-Turbo',max_tokens:3,messages:[{role:'user',content:'Hi'}]})
-      });
-      const d = await r.json();
-      if (!r.ok) throw new Error(d.error?.message||`HTTP ${r.status}`);
-      return true;
-    }
-    if (id === 'claude') {
-      const r = await fetch('https://api.anthropic.com/v1/messages',{
-        method:'POST',
-        headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-        body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:5,messages:[{role:'user',content:'Hi'}]})
-      });
-      const d = await r.json();
-      if (!r.ok) throw new Error(d.error?.message||`HTTP ${r.status}`);
-      return true;
-    }
-    if (id === 'gemini') {
-      const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,{
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({contents:[{parts:[{text:'Hi'}]}],generationConfig:{maxOutputTokens:5}})
-      });
-      const d = await r.json();
-      if (!r.ok) throw new Error(d.error?.message||`HTTP ${r.status}`);
-      return true;
-    }
-    return false;
-  }
-
-  // ── Image processing ──
-  function readDataURL(file) {
-    return new Promise((res,rej)=>{
-      const fr=new FileReader();
-      fr.onload=()=>res(fr.result);
-      fr.onerror=()=>rej(new Error('FileReader failed'));
-      fr.readAsDataURL(file);
-    });
-  }
-  function toJpeg(dataURL,maxDim,q) {
-    return new Promise((res,rej)=>{
-      const img=new Image();
-      img.onload=()=>{
-        let w=img.naturalWidth, h=img.naturalHeight;
-        if(!w||!h){rej(new Error('0 dim'));return;}
-        if(w>maxDim||h>maxDim){
-          if(w>=h){h=Math.round(h*maxDim/w);w=maxDim;}
-          else{w=Math.round(w*maxDim/h);h=maxDim;}
-        }
-        const c=document.createElement('canvas');
-        c.width=w;c.height=h;
-        const ctx=c.getContext('2d');
-        ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);
-        ctx.drawImage(img,0,0,w,h);
-        const out=c.toDataURL('image/jpeg',q);
-        const b64=out.split(',')[1];
-        if(!b64||b64.length<50){rej(new Error('canvas empty'));return;}
-        res(b64);
-      };
-      img.onerror=()=>rej(new Error('img decode fail'));
-      img.src=dataURL;
-    });
-  }
-  async function processFile(file) {
-    const dataURL=await readDataURL(file);
-    let b64=await toJpeg(dataURL,1024,0.82);
-    if(b64.length>2_800_000) b64=await toJpeg(dataURL,768,0.7);
-    return {b64,thumb:dataURL};
-  }
-
-  async function onFilesSelected(e) {
-    const files=Array.from(e.target.files||[]).filter(f=>f.type.startsWith('image/'));
-    e.target.value='';
-    const toAdd=files.slice(0,MAX-queue.length);
-    if(!toAdd.length) return;
-    const bar=document.getElementById('readingBar');
-    const txt=document.getElementById('readingText');
-    bar.style.display='flex';
-    const items=[];
-    for(let i=0;i<toAdd.length;i++){
-      txt.textContent=`${i+1} / ${toAdd.length} — جاري المعالجة...`;
-      try{
-        const {b64,thumb}=await processFile(toAdd[i]);
-        items.push({file:toAdd[i],thumb,b64,status:'pending',tr:[],errMsg:''});
-      }catch(e){console.error(toAdd[i].name,e.message);}
-    }
-    bar.style.display='none';
-    if(!items.length) return;
-    queue.push(...items);
-    renderQueue();
-  }
-
-  function renderQueue() {
-    const sec=document.getElementById('queueSection');
-    if(!queue.length){sec.style.display='none';return;}
-    sec.style.display='block';
-    document.getElementById('queueBadge').textContent=queue.length;
-    rebuildGrid();
-    const btn=document.getElementById('mainBtn');
-    btn.disabled=false;
-    btn.innerHTML=`✦ ترجم الكل (${queue.length})`;
-  }
-  function rebuildGrid(){
-    const g=document.getElementById('thumbGrid');g.innerHTML='';
-    queue.forEach((item,i)=>{
-      const w=document.createElement('div');
-      w.className='thumb-wrap';w.id='th'+i;
-      w.innerHTML=`<img src="${item.thumb}"/><div class="thumb-num">${i+1}</div>${ol(item.status)}`;
-      g.appendChild(w);
-    });
-  }
-  function ol(s){
-    if(s==='processing') return `<div class="thumb-overlay processing"><div class="mini-spin"></div></div>`;
-    if(s==='done')  return `<div class="thumb-overlay done" style="font-size:22px">✅</div>`;
-    if(s==='error') return `<div class="thumb-overlay error" style="font-size:22px">❌</div>`;
-    return '';
-  }
-  function pt(i){
-    const w=document.getElementById('th'+i);if(!w)return;
-    const old=w.querySelector('.thumb-overlay');if(old)old.remove();
-    w.insertAdjacentHTML('beforeend',ol(queue[i].status));
-  }
-  function clearAll(){
-    queue=[];
-    document.getElementById('resultsSec').style.display='none';
-    document.getElementById('resList').innerHTML='';
-    renderQueue();
-  }
-
-  const PROMPT = `You are a manga translator. Find ALL text in this image: speech bubbles, thought bubbles, captions, narration, sound effects, signs.
-Translate each to Arabic.
-Return ONLY raw JSON array (no markdown, no explanation):
-[{"original":"text","translation":"الترجمة","type":"dialogue"}]
-type: dialogue=speech/thought, caption=narration, sfx=sound effect.
-No text → []`;
-
-  async function callProvider(item) {
-    const id=currentProvider, key=apiKey, b64=item.b64;
-
-    let res, txt;
-
-    if(id==='openai'){
-      res=await fetch('https://api.openai.com/v1/chat/completions',{
-        method:'POST',
-        headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},
-        body:JSON.stringify({
-          model:'gpt-4o-mini', max_tokens:2048,
-          messages:[{role:'user',content:[
-            {type:'image_url',image_url:{url:`data:image/jpeg;base64,${b64}`,detail:'high'}},
-            {type:'text',text:PROMPT}
-          ]}]
-        })
-      });
-      txt=await res.text();
-      if(!res.ok){let m=`HTTP ${res.status}`;try{m=JSON.parse(txt).error?.message||m;}catch{}throw new Error(m);}
-      const d=JSON.parse(txt);
-      return parseJSON(d.choices?.[0]?.message?.content||'');
-    }
-
-    if(id==='groq'){
-      res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
-        method:'POST',
-        headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},
-        body:JSON.stringify({
-          model:'meta-llama/llama-4-scout-17b-16e-instruct', max_tokens:2048,
-          messages:[{role:'user',content:[
-            {type:'image_url',image_url:{url:`data:image/jpeg;base64,${b64}`}},
-            {type:'text',text:PROMPT}
-          ]}]
-        })
-      });
-      txt=await res.text();
-      if(!res.ok){let m=`HTTP ${res.status}`;try{m=JSON.parse(txt).error?.message||m;}catch{}throw new Error(m);}
-      const d=JSON.parse(txt);
-      return parseJSON(d.choices?.[0]?.message?.content||'');
-    }
-
-    if(id==='mistral'){
-      res=await fetch('https://api.mistral.ai/v1/chat/completions',{
-        method:'POST',
-        headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},
-        body:JSON.stringify({
-          model:'pixtral-large-latest', max_tokens:2048,
-          messages:[{role:'user',content:[
-            {type:'image_url',image_url:{url:`data:image/jpeg;base64,${b64}`}},
-            {type:'text',text:PROMPT}
-          ]}]
-        })
-      });
-      txt=await res.text();
-      if(!res.ok){let m=`HTTP ${res.status}`;try{m=JSON.parse(txt).error?.message||m;}catch{}throw new Error(m);}
-      const d=JSON.parse(txt);
-      return parseJSON(d.choices?.[0]?.message?.content||'');
-    }
-
-    if(id==='together'){
-      res=await fetch('https://api.together.xyz/v1/chat/completions',{
-        method:'POST',
-        headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},
-        body:JSON.stringify({
-          model:'meta-llama/Llama-3.2-11B-Vision-Instruct-Turbo', max_tokens:2048,
-          messages:[{role:'user',content:[
-            {type:'image_url',image_url:{url:`data:image/jpeg;base64,${b64}`}},
-            {type:'text',text:PROMPT}
-          ]}]
-        })
-      });
-      txt=await res.text();
-      if(!res.ok){let m=`HTTP ${res.status}`;try{m=JSON.parse(txt).error?.message||m;}catch{}throw new Error(m);}
-      const d=JSON.parse(txt);
-      return parseJSON(d.choices?.[0]?.message?.content||'');
-    }
-
-    if(id==='claude'){
-      res=await fetch('https://api.anthropic.com/v1/messages',{
-        method:'POST',
-        headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-        body:JSON.stringify({
-          model:'claude-haiku-4-5-20251001', max_tokens:2048,
-          messages:[{role:'user',content:[
-            {type:'image',source:{type:'base64',media_type:'image/jpeg',data:b64}},
-            {type:'text',text:PROMPT}
-          ]}]
-        })
-      });
-      txt=await res.text();
-      if(!res.ok){let m=`HTTP ${res.status}`;try{m=JSON.parse(txt).error?.message||m;}catch{}throw new Error(m);}
-      const d=JSON.parse(txt);
-      return parseJSON((d.content||[]).map(c=>c.text||'').join(''));
-    }
-
-    if(id==='gemini'){
-      res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,{
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({
-          contents:[{parts:[
-            {inline_data:{mime_type:'image/jpeg',data:b64}},
-            {text:PROMPT}
-          ]}],
-          generationConfig:{temperature:0.1,maxOutputTokens:2048}
-        })
-      });
-      txt=await res.text();
-      if(!res.ok){let m=`HTTP ${res.status}`;try{m=JSON.parse(txt).error?.message||m;}catch{}throw new Error(m);}
-      const d=JSON.parse(txt);
-      if(!d.candidates?.length) throw new Error('Gemini blocked: '+(d.promptFeedback?.blockReason||'no candidates'));
-      return parseJSON(d.candidates[0]?.content?.parts?.[0]?.text||'');
-    }
-
-    throw new Error('Unknown provider');
-  }
-
-  function parseJSON(raw) {
-    if(!raw) throw new Error('Empty response');
-    const c=raw.replace(/^```(?:json)?\s*/i,'').replace(/\s*```\s*$/,'').trim();
-    try{const p=JSON.parse(c);return Array.isArray(p)?p:[];}catch{}
-    const m=c.match(/\[[\s\S]*?\]/);
-    if(m){try{return JSON.parse(m[0]);}catch{}}
-    if(/no text|empty|\[\]/i.test(c)) return [];
-    throw new Error('JSON fail: '+c.slice(0,60));
-  }
-
-  async function translateAll(){
-    if(!queue.length) return;
-    if(!apiKey){document.getElementById('apiKeyInput').focus();return;}
-    const btn=document.getElementById('mainBtn');
-    btn.disabled=true;btn.innerHTML='<div class="spinner"></div> جاري الترجمة...';
-    document.getElementById('resultsSec').style.display='none';
-    document.getElementById('resList').innerHTML='';
-    document.getElementById('progWrap').style.display='block';
-    queue.forEach(i=>{i.status='pending';i.tr=[];i.errMsg='';});
-    rebuildGrid();
-    let done=0,idx=0;
-    const total=queue.length;
-    const upd=()=>{
-      const p=Math.round(done/total*100);
-      document.getElementById('progFill').style.width=p+'%';
-      document.getElementById('progText').textContent=done+' / '+total;
-      document.getElementById('progPct').textContent=p+'%';
-    };
-    upd();
-    async function worker(){
-      while(idx<queue.length){
-        const i=idx++;const item=queue[i];
-        item.status='processing';pt(i);
-        try{item.tr=await callProvider(item);item.status='done';}
-        catch(e){item.status='error';item.errMsg=e.message;}
-        pt(i);done++;upd();
+// ── File reading & compression ──
+function readDataURL(file) {
+  return new Promise((res,rej)=>{
+    const fr=new FileReader();
+    fr.onload=()=>res(fr.result);
+    fr.onerror=()=>rej(new Error('FileReader failed'));
+    fr.readAsDataURL(file);
+  });
+}
+function toJpeg(dataURL,maxDim,q) {
+  return new Promise((res,rej)=>{
+    const img=new Image();
+    img.onload=()=>{
+      let w=img.naturalWidth,h=img.naturalHeight;
+      if(!w||!h){rej(new Error('0 dim'));return;}
+      if(w>maxDim||h>maxDim){
+        if(w>=h){h=Math.round(h*maxDim/w);w=maxDim;}
+        else{w=Math.round(w*maxDim/h);h=maxDim;}
       }
-    }
-    await Promise.all(Array.from({length:CONCURRENCY},worker));
-    renderResults();
-    btn.disabled=false;btn.innerHTML='✦ ترجم الكل مجدداً';
-    document.getElementById('progWrap').style.display='none';
+      const c=document.createElement('canvas');
+      c.width=w;c.height=h;
+      const ctx=c.getContext('2d');
+      ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);
+      ctx.drawImage(img,0,0,w,h);
+      const out=c.toDataURL('image/jpeg',q);
+      res({b64:out.split(',')[1],w,h,dataURL:out});
+    };
+    img.onerror=()=>rej(new Error('decode fail'));
+    img.src=dataURL;
+  });
+}
+
+async function onFiles(e) {
+  const files=Array.from(e.target.files||[]).filter(f=>f.type.startsWith('image/'));
+  e.target.value='';
+  const toAdd=files.slice(0,50-queue.length);
+  if(!toAdd.length) return;
+  const bar=document.getElementById('readingBar');
+  const txt=document.getElementById('readingText');
+  bar.style.display='flex';
+  const items=[];
+  for(let i=0;i<toAdd.length;i++){
+    txt.textContent=`${i+1}/${toAdd.length} — جاري المعالجة...`;
+    try{
+      const orig=await readDataURL(toAdd[i]);
+      let {b64,w,h,dataURL}=await toJpeg(orig,1280,0.88);
+      if(b64.length>3_000_000){const r=await toJpeg(orig,900,0.78);b64=r.b64;w=r.w;h=r.h;dataURL=r.dataURL;}
+      items.push({file:toAdd[i],orig,b64,w,h,dataURL,status:'pending',texts:[],resultDataURL:null,errMsg:''});
+    }catch(e){console.error(toAdd[i].name,e.message);}
+  }
+  bar.style.display='none';
+  if(!items.length) return;
+  queue.push(...items);
+  renderQueue();
+}
+
+function renderQueue() {
+  const sec=document.getElementById('queueSec');
+  if(!queue.length){sec.style.display='none';return;}
+  sec.style.display='block';
+  document.getElementById('queueBadge').textContent=queue.length;
+  rebuildGrid();
+  const btn=document.getElementById('mainBtn');
+  btn.disabled=false;
+  btn.innerHTML=`✦ ترجم وضع على الصورة (${queue.length})`;
+}
+
+function rebuildGrid() {
+  const g=document.getElementById('thumbGrid');g.innerHTML='';
+  queue.forEach((item,i)=>{
+    const w=document.createElement('div');
+    w.className='thumb-wrap';w.id='th'+i;
+    w.innerHTML=`<img src="${item.orig}"/><div class="thumb-num">${i+1}</div>${ol(item.status)}`;
+    g.appendChild(w);
+  });
+}
+function ol(s){
+  if(s==='processing') return `<div class="thumb-overlay processing"><div class="mini-spin"></div></div>`;
+  if(s==='done')  return `<div class="thumb-overlay done">✅</div>`;
+  if(s==='error') return `<div class="thumb-overlay error">❌</div>`;
+  return '';
+}
+function pt(i){
+  const w=document.getElementById('th'+i);if(!w)return;
+  const old=w.querySelector('.thumb-overlay');if(old)old.remove();
+  w.insertAdjacentHTML('beforeend',ol(queue[i].status));
+}
+function clearAll(){queue=[];document.getElementById('resultsSec').style.display='none';document.getElementById('resList').innerHTML='';renderQueue();}
+
+// ── Call AI to get text positions ──
+async function callAI(item) {
+  const b64=item.b64, key=apiKey, id=curP;
+  let raw='';
+
+  if(id==='claude'){
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:4096,messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:b64}},{type:'text',text:PROMPT}]}]})});
+    const d=await r.json();if(!r.ok)throw new Error(d.error?.message||`HTTP ${r.status}`);
+    raw=(d.content||[]).map(c=>c.text||'').join('');
+  } else if(id==='gemini'){
+    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{inline_data:{mime_type:'image/jpeg',data:b64}},{text:PROMPT}]}],generationConfig:{temperature:0.1,maxOutputTokens:4096}})});
+    const d=await r.json();if(!r.ok)throw new Error(d.error?.message||`HTTP ${r.status}`);
+    if(!d.candidates?.length)throw new Error('Gemini blocked');
+    raw=d.candidates[0]?.content?.parts?.[0]?.text||'';
+  } else if(id==='openai'){
+    const r=await fetch('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},body:JSON.stringify({model:'gpt-4o-mini',max_tokens:4096,messages:[{role:'user',content:[{type:'image_url',image_url:{url:`data:image/jpeg;base64,${b64}`,detail:'high'}},{type:'text',text:PROMPT}]}]})});
+    const d=await r.json();if(!r.ok)throw new Error(d.error?.message||`HTTP ${r.status}`);
+    raw=d.choices?.[0]?.message?.content||'';
+  } else if(id==='groq'){
+    const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},body:JSON.stringify({model:'meta-llama/llama-4-scout-17b-16e-instruct',max_tokens:4096,messages:[{role:'user',content:[{type:'image_url',image_url:{url:`data:image/jpeg;base64,${b64}`}},{type:'text',text:PROMPT}]}]})});
+    const d=await r.json();if(!r.ok)throw new Error(d.error?.message||`HTTP ${r.status}`);
+    raw=d.choices?.[0]?.message?.content||'';
+  } else if(id==='mistral'){
+    const r=await fetch('https://api.mistral.ai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},body:JSON.stringify({model:'pixtral-large-latest',max_tokens:4096,messages:[{role:'user',content:[{type:'image_url',image_url:{url:`data:image/jpeg;base64,${b64}`}},{type:'text',text:PROMPT}]}]})});
+    const d=await r.json();if(!r.ok)throw new Error(d.error?.message||`HTTP ${r.status}`);
+    raw=d.choices?.[0]?.message?.content||'';
+  } else if(id==='together'){
+    const r=await fetch('https://api.together.xyz/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},body:JSON.stringify({model:'meta-llama/Llama-3.2-11B-Vision-Instruct-Turbo',max_tokens:4096,messages:[{role:'user',content:[{type:'image_url',image_url:{url:`data:image/jpeg;base64,${b64}`}},{type:'text',text:PROMPT}]}]})});
+    const d=await r.json();if(!r.ok)throw new Error(d.error?.message||`HTTP ${r.status}`);
+    raw=d.choices?.[0]?.message?.content||'';
   }
 
-  function renderResults(){
-    const total=queue.reduce((s,i)=>s+i.tr.length,0);
-    document.getElementById('resBadge').textContent=total+' نص';
-    const list=document.getElementById('resList');list.innerHTML='';
-    queue.forEach((item,qi)=>{
-      const card=document.createElement('div');
-      card.className='r-card';card.style.animationDelay=(qi*.05)+'s';
-      const st=item.status==='error'
-        ?`<span style="color:#ff8888;font-size:12px">فشل ❌</span>`
-        :item.tr.length===0
-          ?`<span style="color:rgba(255,255,255,.28);font-size:12px">لا نصوص</span>`
-          :`<span class="rc-count">${item.tr.length} نص</span>`;
-      let body='';
-      if(item.status==='error'&&item.errMsg) body=`<div class="err-detail">⚠ ${esc(item.errMsg)}</div>`;
-      else if(item.tr.length>0) body=`<div class="rc-body">${item.tr.map(t=>{
-        const c=TYPE_COLOR[t.type]||'#ff6b9d';
-        return `<div class="ri" style="border-right:3px solid ${c}">
-          <div class="ri-type" style="color:${c}">${TYPE_LABEL[t.type]||t.type}</div>
-          <div class="ri-orig">${esc(t.original)}</div>
-          <div class="ri-trans">${esc(t.translation)}</div>
-        </div>`;
-      }).join('')}</div>`;
-      card.innerHTML=`<div class="rc-head">
-        <img class="rc-thumb" src="${item.thumb}"/>
-        <div class="rc-name">${esc(item.file.name||`صورة ${qi+1}`)}</div>
-        ${st}
-      </div>${body}`;
-      list.appendChild(card);
-    });
-    document.getElementById('resultsSec').style.display='block';
-    setTimeout(()=>document.getElementById('resultsSec').scrollIntoView({behavior:'smooth'}),150);
+  if(!raw) throw new Error('Empty response');
+  const cleaned=raw.replace(/^```(?:json)?\s*/i,'').replace(/\s*```\s*$/,'').trim();
+  let parsed;
+  try{parsed=JSON.parse(cleaned);}catch{
+    const m=cleaned.match(/\[[\s\S]*\]/);
+    if(m)try{parsed=JSON.parse(m[0]);}catch{}
   }
+  if(!parsed||!Array.isArray(parsed)) return [];
+  return parsed;
+}
+
+// ── Draw Arabic text on canvas ──
+async function renderOnCanvas(item) {
+  const texts=item.texts;
+  return new Promise((res,rej)=>{
+    const img=new Image();
+    img.onload=()=>{
+      const W=img.naturalWidth, H=img.naturalHeight;
+      const c=document.createElement('canvas');
+      c.width=W; c.height=H;
+      const ctx=c.getContext('2d');
+      ctx.drawImage(img,0,0,W,H);
+
+      texts.forEach(t=>{
+        if(!t.translation||!t.x==null) return;
+        const px = t.x/100*W;
+        const py = t.y/100*H;
+        const pw = t.w/100*W;
+        const ph = t.h/100*H;
+
+        // Fill bubble background to erase English text
+        const bg = t.bg||'#ffffff';
+        ctx.fillStyle = bg;
+        // Add slight padding around the bubble area
+        const pad = Math.min(pw,ph)*0.08;
+        ctx.beginPath();
+        ctx.roundRect(px-pad, py-pad, pw+pad*2, ph+pad*2, 6);
+        ctx.fill();
+
+        // Draw Arabic text
+        ctx.save();
+        ctx.textAlign='center';
+        ctx.textBaseline='middle';
+        ctx.direction='rtl';
+
+        // Dynamic font size based on bubble size
+        let fontSize=Math.max(10, Math.min(ph*0.28, pw*0.12, 18));
+        ctx.font=`bold ${fontSize}px 'Helvetica Neue',Arial,sans-serif`;
+
+        // Pick text color based on bg brightness
+        const r=parseInt(bg.slice(1,3),16)||255;
+        const g2=parseInt(bg.slice(3,5),16)||255;
+        const b2=parseInt(bg.slice(5,7),16)||255;
+        const brightness=(r*299+g2*587+b2*114)/1000;
+        ctx.fillStyle = brightness>128 ? '#111111' : '#ffffff';
+
+        // Word wrap
+        const words=t.translation.split(' ');
+        const maxW=pw*0.88;
+        const lines=[];
+        let line='';
+        for(const word of words){
+          const test=line?line+' '+word:word;
+          if(ctx.measureText(test).width>maxW && line){
+            lines.push(line);
+            line=word;
+          } else { line=test; }
+        }
+        if(line) lines.push(line);
+
+        // Reduce font if too many lines
+        if(lines.length*fontSize*1.3>ph*0.9){
+          fontSize=Math.max(8,Math.floor(ph*0.9/(lines.length*1.3)));
+          ctx.font=`bold ${fontSize}px 'Helvetica Neue',Arial,sans-serif`;
+        }
+
+        const lineH=fontSize*1.3;
+        const totalH=lines.length*lineH;
+        const startY=py+ph/2-totalH/2+lineH/2;
+        lines.forEach((ln,li)=>{
+          ctx.fillText(ln, px+pw/2, startY+li*lineH);
+        });
+        ctx.restore();
+      });
+
+      res(c.toDataURL('image/jpeg',0.92));
+    };
+    img.onerror=()=>rej(new Error('canvas render fail'));
+    img.src=item.dataURL;
+  });
+}
+
+async function translateAll() {
+  if(!queue.length) return;
+  if(!apiKey){document.getElementById('apiKeyInput').focus();return;}
+  const btn=document.getElementById('mainBtn');
+  btn.disabled=true; btn.innerHTML='<div class="spinner"></div> جاري الترجمة...';
+  document.getElementById('resultsSec').style.display='none';
+  document.getElementById('resList').innerHTML='';
+  document.getElementById('progWrap').style.display='block';
+  queue.forEach(i=>{i.status='pending';i.texts=[];i.resultDataURL=null;i.errMsg='';});
+  rebuildGrid();
+
+  let done=0,idx=0;
+  const total=queue.length;
+  const upd=()=>{
+    const p=Math.round(done/total*100);
+    document.getElementById('progFill').style.width=p+'%';
+    document.getElementById('progText').textContent=done+' / '+total;
+    document.getElementById('progPct').textContent=p+'%';
+  };
+  upd();
+
+  async function worker(){
+    while(idx<queue.length){
+      const i=idx++; const item=queue[i];
+      item.status='processing'; pt(i);
+      try{
+        item.texts=await callAI(item);
+        if(item.texts.length>0){
+          item.resultDataURL=await renderOnCanvas(item);
+        } else {
+          item.resultDataURL=item.dataURL; // no text found, return as-is
+        }
+        item.status='done';
+      }catch(e){item.status='error';item.errMsg=e.message;}
+      pt(i); done++; upd();
+    }
+  }
+
+  await Promise.all([worker(),worker(),worker()]);
+  renderResults();
+  btn.disabled=false; btn.innerHTML=`✦ ترجم وضع على الصورة مجدداً`;
+  document.getElementById('progWrap').style.display='none';
+}
+
+function renderResults(){
+  const done=queue.filter(i=>i.status==='done').length;
+  document.getElementById('resBadge').textContent=done+' صورة';
+  const list=document.getElementById('resList'); list.innerHTML='';
+  queue.forEach((item,qi)=>{
+    const card=document.createElement('div');
+    card.className='r-card'; card.style.animationDelay=(qi*.06)+'s';
+    const name=item.file.name||`صورة ${qi+1}`;
+    if(item.status==='error'){
+      card.innerHTML=`<div class="rc-head"><div class="rc-name">${esc(name)}</div><span style="color:#ff8888;font-size:12px">فشل ❌</span></div><div class="err-detail">⚠ ${esc(item.errMsg)}</div>`;
+    } else {
+      const dlId='dl'+qi;
+      card.innerHTML=`
+        <div class="rc-head">
+          <div class="rc-name">${esc(name)}</div>
+          <button class="rc-dl" id="${dlId}" onclick="dlImg(${qi})">⬇ تحميل</button>
+        </div>
+        <img class="rc-img" src="${item.resultDataURL||item.dataURL}"/>
+        ${item.texts.length===0?'<div style="padding:8px 14px;font-size:12px;color:rgba(255,255,255,.3)">لم يتم العثور على نصوص</div>':''}
+      `;
+    }
+    list.appendChild(card);
+  });
+  document.getElementById('resultsSec').style.display='block';
+  setTimeout(()=>document.getElementById('resultsSec').scrollIntoView({behavior:'smooth'}),150);
+}
+
+function dlImg(qi){
+  const item=queue[qi];
+  if(!item.resultDataURL) return;
+  const a=document.createElement('a');
+  a.href=item.resultDataURL;
+  a.download=(item.file.name||`manga_${qi+1}`).replace(/\.[^.]+$/,'')+`_ar.jpg`;
+  a.click();
+}
 </script>
 
 </body>
