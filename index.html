@@ -20,9 +20,15 @@
     .content{padding:0 16px;max-width:500px;margin:0 auto}
 
 ```
-.info-box{background:rgba(107,206,255,0.08);border:1px solid rgba(107,206,255,0.25);border-radius:18px;padding:14px 16px;margin-bottom:14px}
-.info-title{font-size:13px;font-weight:700;color:#6bceff;margin-bottom:6px}
-.info-text{font-size:12px;color:rgba(255,255,255,0.5);line-height:1.6}
+/* Worker URL box */
+.worker-box{background:rgba(255,211,0,0.08);border:1px solid rgba(255,211,0,0.3);border-radius:18px;padding:14px 16px;margin-bottom:14px}
+.worker-title{font-size:13px;font-weight:700;color:#ffd93d;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.worker-input{width:100%;padding:11px 14px;background:rgba(0,0,0,0.35);border:1px solid rgba(255,211,0,0.3);border-radius:12px;color:#fff;font-size:12px;font-family:'Courier New',monospace;outline:none;-webkit-appearance:none;direction:ltr;text-align:left}
+.worker-input:focus{border-color:rgba(255,211,0,0.7)}
+.worker-input::placeholder{color:rgba(255,255,255,0.25);font-family:-apple-system,sans-serif}
+.worker-hint{font-size:11px;color:rgba(255,255,255,0.35);margin-top:7px;line-height:1.6}
+.worker-hint a{color:#ffd93d}
+.worker-status{font-size:11px;margin-top:6px;min-height:16px}
 
 .settings-box{background:rgba(255,107,157,0.06);border:1px solid rgba(255,107,157,0.2);border-radius:18px;padding:14px 16px;margin-bottom:14px}
 .settings-title{font-size:13px;font-weight:700;color:var(--pink);margin-bottom:10px}
@@ -31,7 +37,7 @@
 .setting-select{background:rgba(0,0,0,0.3);border:1px solid rgba(255,107,157,0.3);border-radius:10px;color:#fff;font-size:12px;padding:6px 10px;outline:none;-webkit-appearance:none;cursor:pointer;min-width:140px}
 .setting-select option{background:#1a0030}
 
-.upload-label{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:160px;border:2px dashed #ff6b9d55;border-radius:22px;background:#ff6b9d10;cursor:pointer;text-align:center;padding:28px 20px;-webkit-user-select:none;user-select:none;animation:pulseBorder 3s ease-in-out infinite;transition:background .2s,transform .15s}
+.upload-label{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:155px;border:2px dashed #ff6b9d55;border-radius:22px;background:#ff6b9d10;cursor:pointer;text-align:center;padding:28px 20px;-webkit-user-select:none;user-select:none;animation:pulseBorder 3s ease-in-out infinite;transition:background .2s,transform .15s}
 .upload-label:active{background:#ff6b9d1e;transform:scale(0.985)}
 #fileInput{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
 .upload-icon{font-size:44px}
@@ -45,7 +51,6 @@
 .badge{background:#ff6b9d20;border:1px solid #ff6b9d55;color:var(--pink);border-radius:20px;padding:2px 10px;font-size:12px}
 .btn-sm{background:rgba(255,255,255,0.07);border:none;color:rgba(255,255,255,0.45);border-radius:10px;padding:6px 12px;font-size:12px;cursor:pointer}
 .btn-sm:active{background:rgba(255,255,255,0.13)}
-
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
 .thumb-wrap{position:relative;border-radius:12px;overflow:hidden;background:#1a0a2e}
 .thumb-wrap img{width:100%;display:block}
@@ -54,18 +59,15 @@
 .thumb-overlay.done{background:rgba(0,0,0,0.15)}
 .thumb-overlay.error{background:rgba(180,0,0,0.4)}
 .thumb-num{position:absolute;top:4px;right:5px;font-size:10px;font-weight:700;background:rgba(0,0,0,0.65);border-radius:6px;padding:1px 6px;color:rgba(255,255,255,0.8)}
-
 .prog-wrap{margin-bottom:12px}
 .prog-info{display:flex;justify-content:space-between;font-size:13px;color:rgba(255,255,255,0.45);margin-bottom:6px}
 .prog-bg{height:4px;background:rgba(255,255,255,0.08);border-radius:10px;overflow:hidden}
 .prog-fill{height:100%;background:linear-gradient(90deg,#ff6b9d,#ffb3cc);border-radius:10px;transition:width .4s}
-
 .btn-main{width:100%;padding:17px;border-radius:18px;border:none;background:linear-gradient(135deg,#ff6b9d,#c44569);color:#fff;font-size:18px;font-weight:800;cursor:pointer;box-shadow:0 6px 24px #ff6b9d44;display:flex;align-items:center;justify-content:center;gap:10px;-webkit-appearance:none;touch-action:manipulation;transition:transform .15s;margin-bottom:8px}
 .btn-main:active:not(:disabled){transform:scale(0.97)}
 .btn-main:disabled{background:#1e0e30;color:rgba(255,255,255,0.3);box-shadow:none;cursor:not-allowed}
 .spinner{width:20px;height:20px;border:3px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin .75s linear infinite;flex-shrink:0}
 .mini-spin{width:16px;height:16px;border:2px solid rgba(255,255,255,0.25);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
-
 .results-sec{margin-top:18px}
 .results-hdr{font-size:15px;font-weight:700;color:var(--pink);margin-bottom:12px;display:flex;align-items:center;gap:8px}
 .r-card{background:rgba(255,255,255,0.05);border-radius:16px;margin-bottom:14px;overflow:hidden;border:1px solid rgba(255,255,255,0.07);animation:fadeUp .3s ease forwards;opacity:0}
@@ -93,13 +95,24 @@
 
 <div class="content">
 
-  <div class="info-box">
-    <div class="info-title">🌐 Cotrans — مجاني بدون API Key</div>
-    <div class="info-text">
-      يكتشف النصوص تلقائياً ويضع الترجمة على الصورة مباشرة.
-      يستغرق ~30 ثانية للصورة الواحدة حسب الطابور.
+  <!-- Worker URL -->
+
+  <div class="worker-box">
+    <div class="worker-title">⚡ رابط Cloudflare Worker</div>
+    <input class="worker-input" type="url" id="workerUrl"
+      placeholder="https://your-worker.your-name.workers.dev"
+      autocomplete="off" autocorrect="off" spellcheck="false"
+      oninput="onWorkerChange()"/>
+    <div class="worker-status" id="workerStatus"></div>
+    <div class="worker-hint">
+      1. روح <a href="https://workers.cloudflare.com" target="_blank">workers.cloudflare.com</a> (مجاني)<br/>
+      2. سجّل دخول ← Create Worker<br/>
+      3. احذف الكود الموجود ← الصق كود الملف <b>worker.js</b><br/>
+      4. اضغط Deploy ← انسخ الرابط والصقه هنا
     </div>
   </div>
+
+  <!-- Settings -->
 
   <div class="settings-box">
     <div class="settings-title">⚙️ إعدادات الترجمة</div>
@@ -181,53 +194,33 @@
 </div>
 
 <script>
-// ── Proxy list — tries each one until success ──
-const PROXIES = [
-  url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
-  url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
-  url => url  // direct last attempt
-];
-
-const COTRANS = 'https://api.cotrans.touhou.ai';
 const MAX = 50;
 const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 let queue = [];
+let workerBase = localStorage.getItem('manga_worker') || '';
 
-// Fetch with proxy fallback
-async function fetchProxy(url, options={}) {
-  let lastErr;
-  for (const proxyFn of PROXIES) {
-    try {
-      const proxiedUrl = proxyFn(url);
-      const res = await fetch(proxiedUrl, options);
-      if (res.ok || res.status < 500) return res;
-    } catch(e) {
-      lastErr = e;
-    }
-  }
-  throw lastErr || new Error('All proxies failed');
+if (workerBase) {
+  document.getElementById('workerUrl').value = workerBase;
+  setWorkerStatus('saved');
 }
 
-// POST FormData with proxy
-async function postFormData(url, formData) {
-  let lastErr;
-  // Try direct first (works if CORS headers are present)
-  for (const proxyFn of PROXIES) {
-    try {
-      const proxiedUrl = proxyFn(url);
-      const res = await fetch(proxiedUrl, {
-        method: 'POST',
-        body: formData,
-        mode: 'cors'
-      });
-      if (res.ok) return res;
-      const t = await res.text();
-      lastErr = new Error(`HTTP ${res.status}: ${t.slice(0,100)}`);
-    } catch(e) {
-      lastErr = e;
-    }
-  }
-  throw lastErr || new Error('Upload failed');
+function onWorkerChange() {
+  workerBase = document.getElementById('workerUrl').value.trim().replace(/\/+$/, '');
+  if (workerBase) localStorage.setItem('manga_worker', workerBase);
+  else localStorage.removeItem('manga_worker');
+  setWorkerStatus(workerBase ? 'saved' : '');
+}
+
+function setWorkerStatus(s, msg) {
+  const el = document.getElementById('workerStatus');
+  if (s==='')       el.innerHTML = '';
+  else if(s==='saved')   el.innerHTML = '<span style="color:#ffd93d">✓ محفوظ</span>';
+  else if(s==='error')   el.innerHTML = `<span style="color:#ff8888">❌ ${esc(msg||'خطأ')}</span>`;
+}
+
+function apiUrl(path) {
+  if (!workerBase) throw new Error('أدخل رابط Worker أولاً');
+  return workerBase + path;
 }
 
 function readDataURL(file) {
@@ -244,19 +237,16 @@ function resizeToBlob(dataURL) {
     const img = new Image();
     img.onload = () => {
       let w=img.naturalWidth, h=img.naturalHeight;
-      const MAX_DIM=4096;
-      if (w>MAX_DIM||h>MAX_DIM) {
-        const s=Math.min(MAX_DIM/w,MAX_DIM/h);
+      if (w>4096||h>4096) {
+        const s=Math.min(4096/w,4096/h);
         w=Math.floor(w*s); h=Math.floor(h*s);
       }
       const c=document.createElement('canvas');
       c.width=w; c.height=h;
-      const ctx=c.getContext('2d');
-      ctx.imageSmoothingQuality='high';
-      ctx.drawImage(img,0,0,w,h);
-      c.toBlob(b => b ? res(b) : rej(new Error('toBlob failed')), 'image/png');
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      c.toBlob(b=>b?res(b):rej(new Error('toBlob failed')),'image/png');
     };
-    img.onerror=()=>rej(new Error('img decode failed'));
+    img.onerror=()=>rej(new Error('decode failed'));
     img.src=dataURL;
   });
 }
@@ -299,13 +289,13 @@ function rebuildGrid() {
   queue.forEach((item,i)=>{
     const w=document.createElement('div');
     w.className='thumb-wrap';w.id='th'+i;
-    w.innerHTML=`<img src="${item.dataURL}"/><div class="thumb-num">${i+1}</div>${ol(item)}`;
+    w.innerHTML=`<img src="${item.dataURL}"/><div class="thumb-num">${i+1}</div>${olHtml(item)}`;
     g.appendChild(w);
   });
 }
 
-function ol(item) {
-  if(item.status==='processing') return `<div class="thumb-overlay processing"><div class="mini-spin"></div><div style="color:rgba(255,255,255,.75);margin-top:4px;font-size:9px;max-width:95%">${esc(item.statusMsg||'...')}</div></div>`;
+function olHtml(item) {
+  if(item.status==='processing') return `<div class="thumb-overlay processing"><div class="mini-spin"></div><div style="color:rgba(255,255,255,.8);margin-top:4px;font-size:9px;max-width:95%">${esc(item.statusMsg||'...')}</div></div>`;
   if(item.status==='done')  return `<div class="thumb-overlay done" style="font-size:22px">✅</div>`;
   if(item.status==='error') return `<div class="thumb-overlay error" style="font-size:22px">❌</div>`;
   return '';
@@ -314,7 +304,7 @@ function ol(item) {
 function patchThumb(i) {
   const w=document.getElementById('th'+i);if(!w)return;
   const old=w.querySelector('.thumb-overlay');if(old)old.remove();
-  w.insertAdjacentHTML('beforeend',ol(queue[i]));
+  w.insertAdjacentHTML('beforeend',olHtml(queue[i]));
 }
 
 function clearAll() {
@@ -324,27 +314,6 @@ function clearAll() {
   renderQueue();
 }
 
-// ── Polling fallback (when WebSocket unavailable) ──
-async function pollStatus(taskId, onStatus) {
-  for (let attempt=0; attempt<180; attempt++) {
-    await new Promise(r=>setTimeout(r,2000));
-    try {
-      const res = await fetchProxy(`${COTRANS}/task/${taskId}/status/v1`);
-      const msg = await res.json();
-      if (msg.type==='result') return msg.result.translation_mask;
-      if (msg.type==='error') throw new Error('API error: '+(msg.error_id||'unknown'));
-      const statusMap = {
-        pending:'في الانتظار...',downloading:'تحميل...',detection:'كشف النصوص...',
-        ocr:'قراءة النصوص...',translating:'ترجمة...',rendering:'رسم الترجمة...',
-        inpainting:'معالجة...',mask_generation:'توليد...',finished:'انتهى...'
-      };
-      onStatus(statusMap[msg.status] || msg.status || 'معالجة...');
-    } catch(e) { /* keep polling */ }
-  }
-  throw new Error('Timeout');
-}
-
-// ── Main translation function ──
 async function translateWithCotrans(item, onStatus) {
   const targetLang = document.getElementById('targetLang').value;
   const translator  = document.getElementById('translator').value;
@@ -355,54 +324,43 @@ async function translateWithCotrans(item, onStatus) {
   const blob = await resizeToBlob(item.dataURL);
 
   onStatus('رفع الصورة...');
-  const formData = new FormData();
-  formData.append('file', blob, 'image.png');
-  formData.append('target_language', targetLang);
-  formData.append('detector', 'default');
-  formData.append('direction', textDir);
-  formData.append('translator', translator);
-  formData.append('size', detRes);
-  formData.append('retry', 'false');
+  const fd = new FormData();
+  fd.append('file', blob, 'image.png');
+  fd.append('target_language', targetLang);
+  fd.append('detector', 'default');
+  fd.append('direction', textDir);
+  fd.append('translator', translator);
+  fd.append('size', detRes);
+  fd.append('retry', 'false');
 
-  const uploadRes = await postFormData(`${COTRANS}/task/upload/v1`, formData);
+  const uploadRes = await fetch(apiUrl('/task/upload/v1'), { method:'POST', body:fd });
+  if (!uploadRes.ok) throw new Error(`Upload ${uploadRes.status}: ${(await uploadRes.text()).slice(0,80)}`);
   const task = await uploadRes.json();
 
   if (task.result?.translation_mask) {
     return await mergeWithMask(item.dataURL, blob, task.result.translation_mask, onStatus);
   }
-
-  if (!task.id) throw new Error('No task ID: '+JSON.stringify(task).slice(0,80));
+  if (!task.id) throw new Error('No task ID: '+JSON.stringify(task).slice(0,60));
 
   onStatus('في الانتظار...');
 
-  // Try WebSocket first, fallback to polling
-  let maskUrl;
-  try {
-    maskUrl = await new Promise((res,rej) => {
-      const ws = new WebSocket(`wss://api.cotrans.touhou.ai/task/${task.id}/event/v1`);
-      const to = setTimeout(()=>{ws.close();rej(new Error('WS timeout'));},180000);
-      const statusMap = {
-        pending:'في الانتظار...',downloading:'تحميل...',detection:'كشف النصوص...',
-        ocr:'قراءة النصوص...',translating:'ترجمة...',rendering:'رسم الترجمة...',
-        inpainting:'معالجة...',mask_generation:'توليد...',finished:'انتهى...'
-      };
-      ws.onmessage = ev => {
-        try {
-          const msg=JSON.parse(ev.data);
-          if (msg.type==='result'){clearTimeout(to);ws.close();res(msg.result.translation_mask);}
-          else if (msg.type==='error'){clearTimeout(to);ws.close();rej(new Error('API: '+(msg.error_id||'?')));}
-          else if (msg.type==='status') onStatus(statusMap[msg.status]||msg.status||'معالجة...');
-          else if (msg.type==='pending') onStatus(`انتظار — رتبة: ${msg.pos||'?'}`);
-        } catch{}
-      };
-      ws.onerror = ()=>{clearTimeout(to);rej(new Error('WebSocket error'));};
-      ws.onclose = ev=>{if(ev.code!==1000&&ev.code!==1005){clearTimeout(to);rej(new Error(`WS closed ${ev.code}`));}};
-    });
-  } catch(wsErr) {
-    // Fallback to HTTP polling
-    onStatus('تبديل لـ polling...');
-    maskUrl = await pollStatus(task.id, onStatus);
-  }
+  // WebSocket directly to Cotrans (WS doesn't have CORS issues)
+  const maskUrl = await new Promise((res,rej) => {
+    const ws = new WebSocket(`wss://api.cotrans.touhou.ai/task/${task.id}/event/v1`);
+    const to = setTimeout(()=>{ws.close();rej(new Error('Timeout 3 دقائق'));},180000);
+    const MAP = {pending:'انتظار...',downloading:'تحميل...',detection:'كشف نصوص...',ocr:'قراءة...',translating:'ترجمة...',rendering:'رسم...',inpainting:'معالجة...',finished:'انتهى...'};
+    ws.onmessage = ev => {
+      try {
+        const m=JSON.parse(ev.data);
+        if(m.type==='result'){clearTimeout(to);ws.close();res(m.result.translation_mask);}
+        else if(m.type==='error'){clearTimeout(to);ws.close();rej(new Error('API error: '+(m.error_id||'?')));}
+        else if(m.type==='status') onStatus(MAP[m.status]||m.status||'معالجة...');
+        else if(m.type==='pending') onStatus(`انتظار رتبة: ${m.pos||'?'}`);
+      } catch{}
+    };
+    ws.onerror=()=>{clearTimeout(to);rej(new Error('WebSocket فشل'));};
+    ws.onclose=ev=>{if(ev.code!==1000&&ev.code!==1005){clearTimeout(to);rej(new Error(`WS أُغلق: ${ev.code}`));}};
+  });
 
   return await mergeWithMask(item.dataURL, blob, maskUrl, onStatus);
 }
@@ -410,23 +368,39 @@ async function translateWithCotrans(item, onStatus) {
 async function mergeWithMask(originalDataURL, resizedBlob, maskUrl, onStatus) {
   onStatus('تحميل الترجمة...');
 
-  // Download mask via proxy
-  const maskRes = await fetchProxy(maskUrl);
-  if (!maskRes.ok) throw new Error(`Mask download failed: ${maskRes.status}`);
-  const maskBlob = await maskRes.blob();
-  const maskObjURL = URL.createObjectURL(maskBlob);
+  // Download mask via Worker (to avoid CORS on mask URL)
+  const proxyMaskUrl = apiUrl('/') + '?__mask=' + encodeURIComponent(maskUrl);
 
+  // Try direct first (mask might allow CORS), fallback to worker proxy
+  let maskBlob;
+  try {
+    const r = await fetch(maskUrl);
+    if (!r.ok) throw new Error('direct failed');
+    maskBlob = await r.blob();
+  } catch {
+    // Proxy the mask URL through worker using a simple GET proxy
+    // Worker will receive it as path: we pass as query param trick
+    // Actually simpler: just fetch mask directly since it's from r2.cotrans.touhou.ai which likely allows CORS
+    try {
+      const r = await fetch(`https://corsproxy.io/?${encodeURIComponent(maskUrl)}`);
+      maskBlob = await r.blob();
+    } catch {
+      const r = await fetch(maskUrl, {mode:'no-cors'});
+      maskBlob = await r.blob();
+    }
+  }
+
+  const maskObjURL = URL.createObjectURL(maskBlob);
   onStatus('دمج الطبقات...');
 
   return new Promise((res,rej) => {
-    const imgOrig = new Image();
-    imgOrig.onload = () => {
+    const imgOrig=new Image();
+    imgOrig.onload=()=>{
       const W=imgOrig.naturalWidth, H=imgOrig.naturalHeight;
       const c=document.createElement('canvas');
       c.width=W; c.height=H;
       const ctx=c.getContext('2d');
       ctx.drawImage(imgOrig,0,0);
-
       const imgMask=new Image();
       imgMask.crossOrigin='anonymous';
       imgMask.onload=()=>{
@@ -437,19 +411,23 @@ async function mergeWithMask(originalDataURL, resizedBlob, maskUrl, onStatus) {
           else rej(new Error('canvas export failed'));
         },'image/png');
       };
-      imgMask.onerror=()=>{URL.revokeObjectURL(maskObjURL);rej(new Error('mask img load failed'));};
+      imgMask.onerror=()=>{URL.revokeObjectURL(maskObjURL);rej(new Error('mask load failed'));};
       imgMask.src=maskObjURL;
     };
-    imgOrig.onerror=()=>rej(new Error('original img load failed'));
+    imgOrig.onerror=()=>rej(new Error('original load failed'));
     imgOrig.src=URL.createObjectURL(resizedBlob);
   });
 }
 
 async function translateAll() {
   if (!queue.length) return;
+  if (!workerBase) {
+    document.getElementById('workerUrl').focus();
+    setWorkerStatus('error','أدخل رابط Worker أولاً');
+    return;
+  }
   const btn=document.getElementById('mainBtn');
-  btn.disabled=true;
-  btn.innerHTML='<div class="spinner"></div> جاري الترجمة...';
+  btn.disabled=true; btn.innerHTML='<div class="spinner"></div> جاري الترجمة...';
   document.getElementById('resultsSec').style.display='none';
   document.getElementById('resList').innerHTML='';
   document.getElementById('progWrap').style.display='block';
@@ -473,33 +451,30 @@ async function translateAll() {
       item.resultDataURL=await translateWithCotrans(item,(msg)=>{item.statusMsg=msg;patchThumb(i);});
       item.status='done';
     } catch(e) {
-      item.status='error';
-      item.errMsg=e.message||'خطأ';
+      item.status='error'; item.errMsg=e.message||'خطأ';
       console.error(item.file.name, e);
     }
     patchThumb(i); done++; upd();
   }
 
   renderResults();
-  btn.disabled=false;
-  btn.innerHTML=`✦ ترجم الكل مجدداً`;
+  btn.disabled=false; btn.innerHTML=`✦ ترجم الكل مجدداً`;
   document.getElementById('progWrap').style.display='none';
 }
 
 function renderResults() {
   const done=queue.filter(i=>i.status==='done').length;
   document.getElementById('resBadge').textContent=done+' صورة';
-  const list=document.getElementById('resList');
-  list.innerHTML='';
+  const list=document.getElementById('resList'); list.innerHTML='';
   queue.forEach((item,qi)=>{
     const card=document.createElement('div');
     card.className='r-card'; card.style.animationDelay=(qi*.06)+'s';
     const name=item.file.name||`صورة ${qi+1}`;
-    if (item.status==='error') {
+    if(item.status==='error') {
       card.innerHTML=`<div class="rc-head"><div class="rc-name">${esc(name)}</div><span style="color:#ff8888;font-size:12px">فشل ❌</span></div><div class="err-detail">⚠ ${esc(item.errMsg)}</div>`;
     } else {
       const src=item.resultDataURL||item.dataURL;
-      card.innerHTML=`<div class="rc-head"><div class="rc-name">${esc(name)}</div><button class="rc-dl" onclick="dlImg(${qi})">⬇ تحميل</button></div><img class="rc-img" src="${src}"${!item.resultDataURL?' style="opacity:.6"':''}/>`;
+      card.innerHTML=`<div class="rc-head"><div class="rc-name">${esc(name)}</div><button class="rc-dl" onclick="dlImg(${qi})">⬇ تحميل</button></div><img class="rc-img" src="${src}"${!item.resultDataURL?' style="opacity:.5"':''}/>`;
     }
     list.appendChild(card);
   });
@@ -510,7 +485,7 @@ function renderResults() {
 function dlImg(qi) {
   const item=queue[qi];
   const src=item.resultDataURL||item.dataURL;
-  if (!src) return;
+  if(!src)return;
   const a=document.createElement('a');
   a.href=src;
   a.download=(item.file.name||`manga_${qi+1}`).replace(/\.[^.]+$/,'')+'_ar.png';
