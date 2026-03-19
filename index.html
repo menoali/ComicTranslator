@@ -4,137 +4,104 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>مترجم المانغا v3</title>
+<title>مترجم المانغا v4</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --ink:#0d0d12; --paper:#f0ebe0; --red:#e63946;
-  --gold:#c8a84b; --gold-bg:rgba(200,168,75,0.92);
-  --bubble-bg:rgba(255,255,255,0.93);
-  --bubble-dark:rgba(20,20,30,0.88);
-  --dim:#666; --panel:#181825;
-}
+:root{--ink:#0d0d12;--paper:#f0ebe0;--red:#e63946;--gold:#c8a84b;--dim:#666;--panel:#181825}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-
-body{background:var(–ink);color:var(–paper);font-family:‘Tajawal’,sans-serif;min-height:100dvh}
-body::before{content:’’;position:fixed;inset:0;z-index:0;pointer-events:none;
-background-image:linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),
-linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px);
-background-size:42px 42px}
-
+body{background:var(--ink);color:var(--paper);font-family:'Tajawal',sans-serif;min-height:100dvh}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:42px 42px}
 .wrap{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:0 13px 50px}
 
-/* ── HEADER ── */
-header{padding:24px 0 16px;text-align:center}
-.badge{display:inline-block;background:var(–red);color:#fff;
-font-family:‘Space Mono’,monospace;font-size:9px;font-weight:700;
-letter-spacing:3px;padding:3px 13px;text-transform:uppercase;
-clip-path:polygon(0 0,calc(100% - 7px) 0,100% 50%,calc(100% - 7px) 100%,0 100%,7px 50%);
-margin-bottom:9px}
-h1{font-size:25px;font-weight:900;letter-spacing:-1px}
+header{padding:22px 0 14px;text-align:center}
+.badge{display:inline-block;background:var(–red);color:#fff;font-family:‘Space Mono’,monospace;
+font-size:9px;font-weight:700;letter-spacing:3px;padding:3px 13px;text-transform:uppercase;
+clip-path:polygon(0 0,calc(100% - 7px) 0,100% 50%,calc(100% - 7px) 100%,0 100%,7px 50%);margin-bottom:8px}
+h1{font-size:24px;font-weight:900;letter-spacing:-1px}
 h1 small{display:block;font-size:11px;font-weight:300;letter-spacing:2px;color:var(–dim);margin-top:3px}
 
-/* ── API BOX ── */
-.api-box{background:var(–panel);border-radius:14px;padding:13px;
-margin-bottom:13px;border:1px solid rgba(255,255,255,.07)}
-.lbl{font-size:11px;font-weight:700;letter-spacing:2px;color:var(–dim);margin-bottom:8px}
+.api-box{background:var(–panel);border-radius:13px;padding:13px;margin-bottom:12px;border:1px solid rgba(255,255,255,.07)}
+.lbl{font-size:11px;font-weight:700;letter-spacing:2px;color:var(–dim);margin-bottom:7px}
 .row{display:flex;gap:7px;align-items:center}
-input{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
-color:#fff;border-radius:10px;padding:10px 12px;font-size:13px;
-font-family:‘Space Mono’,monospace;outline:none;direction:ltr;transition:border-color .2s}
+input[type=password],input[type=text]{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+color:#fff;border-radius:9px;padding:9px 11px;font-size:13px;font-family:‘Space Mono’,monospace;
+outline:none;direction:ltr;transition:border-color .2s}
 input:focus{border-color:var(–gold)}
-.eye{background:rgba(255,255,255,.07);border:none;color:var(–dim);
-border-radius:8px;padding:10px 11px;cursor:pointer;font-size:14px}
+.eye{background:rgba(255,255,255,.07);border:none;color:var(–dim);border-radius:8px;padding:9px 11px;cursor:pointer;font-size:14px}
 .hint{font-size:11px;color:var(–dim);margin-top:6px}
 .hint a{color:var(–gold);text-decoration:none}
 
-/* ── UPLOAD ── */
-.dz{border:2px dashed rgba(255,255,255,.16);border-radius:15px;
-padding:36px 16px;text-align:center;cursor:pointer;
-background:rgba(255,255,255,.023);margin-bottom:13px;transition:all .22s;
+.dz{border:2px dashed rgba(255,255,255,.15);border-radius:14px;padding:34px 14px;text-align:center;
+cursor:pointer;background:rgba(255,255,255,.02);margin-bottom:12px;transition:all .2s;
 position:relative;overflow:hidden}
-.dz.over{border-color:var(–gold);background:rgba(200,168,75,.05)}
+.dz.over{border-color:var(–gold);background:rgba(200,168,75,.04)}
 .dz.filled{padding:0;border-color:var(–red)}
-.dz img.prev{width:100%;display:block;border-radius:13px;
-max-height:60dvh;object-fit:contain;background:#000}
-.di{font-size:42px;margin-bottom:9px;display:block}
-.dm{font-size:15px;font-weight:700;margin-bottom:4px}
+.dz img.prev{width:100%;display:block;border-radius:12px;max-height:58dvh;object-fit:contain;background:#000}
+.di{font-size:40px;margin-bottom:8px;display:block}
+.dm{font-size:14px;font-weight:700;margin-bottom:4px}
 .ds{font-size:12px;color:var(–dim)}
 #fi{display:none}
-.chg{position:absolute;top:9px;left:9px;background:rgba(0,0,0,.72);
-border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:7px;
-padding:5px 10px;font-size:12px;font-family:‘Tajawal’,sans-serif;cursor:pointer;
-backdrop-filter:blur(8px)}
+.chg{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.18);
+color:#fff;border-radius:7px;padding:5px 10px;font-size:12px;font-family:‘Tajawal’,sans-serif;cursor:pointer;backdrop-filter:blur(8px)}
 
-/* ── BUTTON ── */
-.go{width:100%;background:var(–red);border:none;color:#fff;
-font-family:‘Tajawal’,sans-serif;font-size:17px;font-weight:900;
-padding:16px;border-radius:13px;cursor:pointer;letter-spacing:.5px;
-transition:all .2s;margin-bottom:13px;
+.go{width:100%;background:var(–red);border:none;color:#fff;font-family:‘Tajawal’,sans-serif;
+font-size:17px;font-weight:900;padding:15px;border-radius:12px;cursor:pointer;
+transition:all .2s;margin-bottom:12px;
 clip-path:polygon(0 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,0 100%,10px 50%)}
-.go:disabled{background:#2a2a2a;cursor:not-allowed}
+.go:disabled{background:#252525;cursor:not-allowed;color:#555}
 .go:not(:disabled):active{transform:scale(.98)}
 
-/* ── PROGRESS ── */
-.pw{display:none;background:rgba(255,255,255,.06);border-radius:99px;height:5px;overflow:hidden;margin-bottom:6px}
+.pw{display:none;background:rgba(255,255,255,.06);border-radius:99px;height:4px;overflow:hidden;margin-bottom:6px}
 .pf{height:100%;background:linear-gradient(90deg,var(–red),var(–gold));border-radius:99px;transition:width .4s ease;width:0}
-.pt{display:none;font-size:11px;color:var(–dim);text-align:center;margin-bottom:13px;font-family:‘Space Mono’,monospace}
+.pt{display:none;font-size:11px;color:var(–dim);text-align:center;margin-bottom:12px;font-family:‘Space Mono’,monospace}
 .err{display:none;background:rgba(230,57,70,.1);border:1px solid rgba(230,57,70,.3);
-border-radius:12px;padding:12px;color:#ff7070;font-size:13px;line-height:1.6;margin-bottom:13px}
+border-radius:11px;padding:12px;color:#ff7070;font-size:13px;line-height:1.6;margin-bottom:12px}
 
-/* ── RESULTS ── */
 .res{display:none}
-.tabs{display:flex;gap:5px;background:rgba(255,255,255,.05);border-radius:11px;padding:4px;margin-bottom:13px}
-.tab{flex:1;background:transparent;border:none;color:var(–dim);
-font-family:‘Tajawal’,sans-serif;font-size:14px;font-weight:700;
-padding:9px;border-radius:9px;cursor:pointer;transition:all .2s}
+.tabs{display:flex;gap:5px;background:rgba(255,255,255,.05);border-radius:10px;padding:3px;margin-bottom:12px}
+.tab{flex:1;background:transparent;border:none;color:var(–dim);font-family:‘Tajawal’,sans-serif;
+font-size:14px;font-weight:700;padding:8px;border-radius:8px;cursor:pointer;transition:all .2s}
 .tab.on{background:var(–red);color:#fff}
 .pane{display:none}.pane.on{display:block}
 
-/* ══════════════════════════════
-IMAGE OVERLAY PANE
-The core: canvas-based rendering
-══════════════════════════════ */
-.canvas-wrap{position:relative;border-radius:14px;overflow:hidden;
-border:1px solid rgba(255,255,255,.08);margin-bottom:7px;background:#000}
+.cvs-wrap{border-radius:13px;overflow:hidden;border:1px solid rgba(255,255,255,.08);background:#000;margin-bottom:6px}
 #cvs{display:block;width:100%;height:auto}
-.save-hint{font-size:11px;color:var(–dim);text-align:center;margin-top:5px}
+.save-hint{font-size:11px;color:var(–dim);text-align:center;margin-bottom:12px}
 
-/* ── CARDS PANE ── */
-.stitle{font-size:11px;font-weight:700;letter-spacing:3px;color:var(–dim);
-margin-bottom:11px;display:flex;align-items:center;gap:7px;text-transform:uppercase}
-.stitle::after{content:’’;flex:1;height:1px;background:rgba(255,255,255,.08)}
+.dl-btn{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);
+color:var(–paper);font-family:‘Tajawal’,sans-serif;font-size:14px;font-weight:700;
+padding:12px;border-radius:11px;cursor:pointer;margin-bottom:6px;transition:background .2s;display:block;text-align:center;text-decoration:none}
+.dl-btn:active{background:rgba(255,255,255,.12)}
 
-.card{background:var(–panel);border-radius:12px;padding:12px 13px;
-margin-bottom:8px;border:1px solid rgba(255,255,255,.06);
-position:relative;overflow:hidden;animation:slin .32s ease backwards}
+/* cards */
+.stitle{font-size:10px;font-weight:700;letter-spacing:3px;color:var(–dim);
+margin-bottom:10px;display:flex;align-items:center;gap:7px;text-transform:uppercase}
+.stitle::after{content:’’;flex:1;height:1px;background:rgba(255,255,255,.07)}
+.card{background:var(–panel);border-radius:11px;padding:11px 12px;margin-bottom:8px;
+border:1px solid rgba(255,255,255,.05);position:relative;overflow:hidden;animation:slin .3s ease backwards}
 .card::before{content:’’;position:absolute;top:0;right:0;width:3px;height:100%;background:var(–red)}
 .card.nar::before{background:var(–gold)}
-.card.sfx::before{background:var(–gold);opacity:.6}
-@keyframes slin{from{opacity:0;transform:translateY(13px)}to{opacity:1;transform:translateY(0)}}
-.cnum{font-family:‘Space Mono’,monospace;font-size:10px;color:var(–red);font-weight:700;margin-bottom:5px;letter-spacing:2px}
-.card.nar .cnum{color:var(–gold)}.card.sfx .cnum{color:var(–gold);opacity:.8}
-.corig{font-family:‘Space Mono’,monospace;font-size:11px;color:var(–dim);
-direction:ltr;text-align:left;background:rgba(0,0,0,.3);
-padding:6px 8px;border-radius:7px;margin-bottom:8px;word-break:break-word}
+@keyframes slin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.cnum{font-family:‘Space Mono’,monospace;font-size:10px;color:var(–red);font-weight:700;margin-bottom:4px;letter-spacing:2px}
+.card.nar .cnum{color:var(–gold)}
+.corig{font-family:‘Space Mono’,monospace;font-size:10px;color:var(–dim);direction:ltr;text-align:left;
+background:rgba(0,0,0,.28);padding:6px 8px;border-radius:6px;margin-bottom:7px;word-break:break-word}
 .car{font-size:16px;font-weight:700;line-height:1.6;color:var(–paper)}
-
-.copyall{width:100%;background:transparent;border:1px solid rgba(255,255,255,.12);
-color:var(–paper);font-family:‘Tajawal’,sans-serif;font-size:14px;font-weight:700;
-padding:12px;border-radius:12px;cursor:pointer;margin-top:7px;transition:background .2s}
+.copyall{width:100%;background:transparent;border:1px solid rgba(255,255,255,.11);color:var(–paper);
+font-family:‘Tajawal’,sans-serif;font-size:14px;font-weight:700;padding:11px;border-radius:11px;
+cursor:pointer;margin-top:6px;transition:background .2s}
 .copyall:active{background:rgba(255,255,255,.07)}
 
-/* ── HOW ── */
-.how{margin-top:24px;padding:17px;background:var(–panel);border-radius:13px;border:1px solid rgba(255,255,255,.06)}
-.step{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
+.how{margin-top:22px;padding:16px;background:var(–panel);border-radius:12px;border:1px solid rgba(255,255,255,.05)}
+.step{display:flex;align-items:flex-start;gap:10px;margin-bottom:11px}
 .step:last-child{margin-bottom:0}
-.sn{background:var(–red);color:#fff;font-family:‘Space Mono’,monospace;font-size:10px;
-font-weight:700;width:25px;height:25px;border-radius:7px;display:flex;
-align-items:center;justify-content:center;flex-shrink:0}
+.sn{background:var(–red);color:#fff;font-family:‘Space Mono’,monospace;font-size:10px;font-weight:700;
+width:24px;height:24px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .st{font-size:13px;line-height:1.5;padding-top:2px}
 .st strong{color:var(–gold)}
-
-footer{text-align:center;padding-top:26px;font-size:10px;color:rgba(255,255,255,.17);font-family:‘Space Mono’,monospace}
+footer{text-align:center;padding-top:24px;font-size:10px;color:rgba(255,255,255,.15);font-family:‘Space Mono’,monospace}
 </style>
 
 </head>
@@ -142,8 +109,8 @@ footer{text-align:center;padding-top:26px;font-size:10px;color:rgba(255,255,255,
 <div class="wrap">
 
 <header>
-  <div class="badge">AutoScanlate AR · v3</div>
-  <h1>مترجم المانغا <small>إنجليزي → عربي · Claude Vision</small></h1>
+  <div class="badge">AutoScanlate AR · v4</div>
+  <h1>مترجم المانغا <small>يمسح الإنجليزي ويكتب العربي مكانه</small></h1>
 </header>
 
 <div class="api-box">
@@ -152,37 +119,31 @@ footer{text-align:center;padding-top:26px;font-size:10px;color:rgba(255,255,255,
     <input type="password" id="ak" placeholder="sk-ant-..." autocomplete="off" spellcheck="false">
     <button class="eye" onclick="toggleVis()">👁</button>
   </div>
-  <div class="hint">من <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> — يُحفظ على جهازك فقط</div>
+  <div class="hint">من <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> — يُحفظ محلياً فقط</div>
 </div>
 
 <div class="dz" id="dz" onclick="document.getElementById('fi').click()">
   <span class="di">🖼️</span>
-  <div class="dm">ارفع صفحة الكوميك أو المانغا</div>
-  <div class="ds">PNG · JPG · WEBP — اضغط أو اسحب</div>
+  <div class="dm">ارفع صفحة الكوميك / المانغا</div>
+  <div class="ds">PNG · JPG · WEBP</div>
 </div>
 <input type="file" id="fi" accept="image/*" onchange="loadFile(event)">
 
 <div class="err" id="err"></div>
 <div class="pw" id="pw"><div class="pf" id="pf"></div></div>
 <div class="pt" id="pt"></div>
-
 <button class="go" id="goBtn" onclick="run()" disabled>← ترجم الآن</button>
 
 <div class="res" id="res">
   <div class="tabs">
-    <button class="tab on" onclick="swTab('img')">🖼️ على الصورة</button>
+    <button class="tab on" onclick="swTab('img')">🖼️ الصورة المترجمة</button>
     <button class="tab"    onclick="swTab('crd')">📋 البطاقات</button>
   </div>
-
   <div class="pane on" id="imgPane">
-    <div class="canvas-wrap">
-      <canvas id="cvs"></canvas>
-    </div>
-    <div class="save-hint">اضغط مطولاً على الصورة لحفظها</div>
-    <!-- Hidden download link for share -->
-    <a id="dlLink" style="display:none"></a>
+    <div class="cvs-wrap"><canvas id="cvs"></canvas></div>
+    <div class="save-hint">اضغط مطولاً لحفظ الصورة · أو</div>
+    <a class="dl-btn" id="dlBtn" download="manga_translated.png">⬇️ تحميل الصورة</a>
   </div>
-
   <div class="pane" id="crdPane">
     <div class="stitle">النصوص المترجمة</div>
     <div id="cards"></div>
@@ -192,138 +153,124 @@ footer{text-align:center;padding-top:26px;font-size:10px;color:rgba(255,255,255,
 
 <div class="how">
   <div class="stitle">كيف يعمل</div>
-  <div class="step"><div class="sn">١</div><div class="st">ارفع صورة الصفحة بأي جودة</div></div>
-  <div class="step"><div class="sn">٢</div><div class="st"><strong>Claude Vision</strong> يحلل الصورة ويحدد مواقع الفقاعات بدقة</div></div>
-  <div class="step"><div class="sn">٣</div><div class="st">يُميّز بين <strong>حوار / سرد / مؤثرات صوتية</strong> ويترجم كلاً بأسلوبه</div></div>
-  <div class="step"><div class="sn">٤</div><div class="st">الترجمة تُرسم مباشرة على الصورة بـ <strong>Canvas</strong> بشكل نظيف</div></div>
+  <div class="step"><div class="sn">١</div><div class="st">Claude يقرأ الصورة ويحدد <strong>إحداثيات النص الإنجليزي</strong> بالضبط</div></div>
+  <div class="step"><div class="sn">٢</div><div class="st">يسحب <strong>لون خلفية</strong> كل فقاعة من الصورة نفسها ويمسح النص الإنجليزي</div></div>
+  <div class="step"><div class="sn">٣</div><div class="st">يكتب الترجمة العربية <strong>بنفس المكان والحجم</strong> — بدون فقاعات جديدة</div></div>
 </div>
 
-<footer>AutoScanlate AR v3 — Claude Vision + Canvas · يعمل في المتصفح بالكامل</footer>
+<footer>AutoScanlate AR v4 — Claude Vision + Canvas Inpainting</footer>
 </div>
 
 <script>
-// ── state ──
-let imgEl     = null;   // HTMLImageElement of original
-let imgDURL   = null;
-let bubbles   = [];
+let imgEl   = null;
+let imgDURL = null;
+let bubbles = [];
 
-// ── api key ──
-window.addEventListener('load', () => {
-  const s = localStorage.getItem('ak'); if (s) document.getElementById('ak').value = s;
-});
-document.getElementById('ak').addEventListener('input', () => {
-  const v = document.getElementById('ak').value.trim();
-  if (v.startsWith('sk-')) localStorage.setItem('ak', v);
-});
-function toggleVis(){ const i=document.getElementById('ak'); i.type = i.type==='password'?'text':'password'; }
+// persist key
+window.addEventListener('load',()=>{ const s=localStorage.getItem('ak'); if(s) document.getElementById('ak').value=s; });
+document.getElementById('ak').addEventListener('input',()=>{ const v=document.getElementById('ak').value.trim(); if(v.startsWith('sk-')) localStorage.setItem('ak',v); });
+function toggleVis(){ const i=document.getElementById('ak'); i.type=i.type==='password'?'text':'password'; }
 
-// ── upload ──
-const dz = document.getElementById('dz');
-dz.addEventListener('dragover',  e=>{ e.preventDefault(); dz.classList.add('over'); });
-dz.addEventListener('dragleave', ()=> dz.classList.remove('over'));
-dz.addEventListener('drop', e=>{ e.preventDefault(); dz.classList.remove('over'); const f=e.dataTransfer.files[0]; if(f&&f.type.startsWith('image/')) readFile(f); });
-function loadFile(ev){ const f=ev.target.files[0]; if(f) readFile(f); }
-
+// upload
+const dz=document.getElementById('dz');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('over');});
+dz.addEventListener('dragleave',()=>dz.classList.remove('over'));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('over');const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/'))readFile(f);});
+function loadFile(ev){const f=ev.target.files[0];if(f)readFile(f);}
 function readFile(f){
-  const r = new FileReader();
-  r.onload = e => {
-    imgDURL = e.target.result;
-    dz.innerHTML = `<img class="prev" src="${imgDURL}" alt="صورة"><button class="chg" onclick="resetImg(event)">تغيير</button>`;
+  const r=new FileReader();
+  r.onload=e=>{
+    imgDURL=e.target.result;
+    dz.innerHTML=`<img class="prev" src="${imgDURL}" alt=""><button class="chg" onclick="resetImg(event)">تغيير</button>`;
     dz.classList.add('filled');
-    document.getElementById('goBtn').disabled = false;
-    document.getElementById('res').style.display = 'none';
-    document.getElementById('cards').innerHTML = '';
-    bubbles = [];
-    clearErr();
+    document.getElementById('goBtn').disabled=false;
+    document.getElementById('res').style.display='none';
+    document.getElementById('cards').innerHTML='';
+    bubbles=[];clearErr();
   };
   r.readAsDataURL(f);
 }
 function resetImg(e){
-  e.stopPropagation();
-  imgDURL = null; imgEl = null;
-  dz.innerHTML = `<span class="di">🖼️</span><div class="dm">ارفع صفحة الكوميك أو المانغا</div><div class="ds">PNG · JPG · WEBP — اضغط أو اسحب</div>`;
-  dz.classList.remove('filled');
-  document.getElementById('goBtn').disabled = true;
-  document.getElementById('fi').value = '';
+  e.stopPropagation();imgDURL=null;imgEl=null;
+  dz.innerHTML=`<span class="di">🖼️</span><div class="dm">ارفع صفحة الكوميك / المانغا</div><div class="ds">PNG · JPG · WEBP</div>`;
+  dz.classList.remove('filled');document.getElementById('goBtn').disabled=true;document.getElementById('fi').value='';
 }
 
-// ── tabs ──
-function swTab(name){
+function swTab(n){
   ['img','crd'].forEach((t,i)=>{
-    document.querySelectorAll('.tab')[i].classList.toggle('on', t===name);
-    document.getElementById(t==='img'?'imgPane':'crdPane').classList.toggle('on', t===name);
+    document.querySelectorAll('.tab')[i].classList.toggle('on',t===n);
+    document.getElementById(t==='img'?'imgPane':'crdPane').classList.toggle('on',t===n);
   });
-  if(name==='img' && bubbles.length) drawCanvas();
+  if(n==='img'&&bubbles.length) drawCanvas();
 }
 
-// ── main ──
 async function run(){
-  const key = document.getElementById('ak').value.trim();
-  if(!key)    { showErr('أدخل مفتاح API أولاً'); return; }
-  if(!imgDURL){ showErr('ارفع صورة أولاً'); return; }
-
+  const key=document.getElementById('ak').value.trim();
+  if(!key){showErr('أدخل مفتاح API أولاً');return;}
+  if(!imgDURL){showErr('ارفع صورة أولاً');return;}
   clearErr();
-  prog(true,'Claude يحلل الصورة ويترجم...',15);
-  document.getElementById('goBtn').disabled = true;
-  document.getElementById('res').style.display = 'none';
-
-  try {
-    // load image element first (need natural dimensions)
-    imgEl = await loadImage(imgDURL);
-
-    prog(true,'جاري الترجمة...',40);
-    bubbles = await callClaude(imgDURL, key);
-
-    prog(true,'يرسم النتيجة...',85);
+  prog(true,'Claude يحلل الصورة...',10);
+  document.getElementById('goBtn').disabled=true;
+  document.getElementById('res').style.display='none';
+  try{
+    imgEl=await loadImg(imgDURL);
+    prog(true,'جاري الترجمة...',35);
+    bubbles=await callClaude(imgDURL,key);
+    prog(true,'يرسم النتيجة...',80);
     renderCards();
     drawCanvas();
-
     prog(false);
-    document.getElementById('res').style.display = 'block';
+    document.getElementById('res').style.display='block';
     document.getElementById('res').scrollIntoView({behavior:'smooth'});
-  } catch(err){
-    showErr('خطأ: '+err.message);
-    prog(false);
-  } finally {
-    document.getElementById('goBtn').disabled = false;
-  }
+  }catch(err){showErr('خطأ: '+err.message);prog(false);}
+  finally{document.getElementById('goBtn').disabled=false;}
 }
 
-function loadImage(src){
+function loadImg(src){
   return new Promise((res,rej)=>{
-    const img = new Image();
-    img.onload = ()=>res(img);
-    img.onerror = ()=>rej(new Error('فشل تحميل الصورة'));
-    img.src = src;
+    const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(new Error('فشل تحميل الصورة'));i.src=src;
   });
 }
 
-// ── Claude Vision ──
-async function callClaude(dataURL, key){
-  const b64  = dataURL.split(',')[1];
-  const mime = dataURL.split(';')[0].split(':')[1];
+// ── Claude call ──
+async function callClaude(dataURL,key){
+  const b64=dataURL.split(',')[1];
+  const mime=dataURL.split(';')[0].split(':')[1];
 
-  const sys = `أنت محلل ومترجم متخصص في كوميكس المانغا وكتب الرسوم المصورة.
+  const sys=`أنت نظام استخراج نصوص من صفحات الكوميكس والمانغا.
 
-مهمتك: قراءة الصورة واستخراج كل النصوص الإنجليزية مع إحداثيات مراكزها بالنسبة المئوية، ثم ترجمتها للعربية الفصحى المبسطة.
+مهمتك: حدد كل فقاعة/صندوق نص إنجليزي في الصورة بإحداثيات دقيقة، وترجمه للعربية.
 
-أجب بـ JSON خالص فقط، بدون أي نص قبله أو بعده، بهذا الشكل:
-{"bubbles":[{"id":1,"type":"dialogue","original":"...","arabic":"...","cx":45.2,"cy":23.7,"w":18,"h":8}]}
+أجب بـ JSON خالص فقط، بدون أي نص قبله أو بعده:
+{
+  "bubbles": [
+    {
+      "id": 1,
+      "type": "dialogue",
+      "original": "النص الإنجليزي كاملاً",
+      "arabic": "الترجمة العربية",
+      "x1": 12.5,
+      "y1": 8.3,
+      "x2": 35.0,
+      "y2": 22.1
+    }
+  ]
+}
 
-تعريفات الحقول:
-- type: "dialogue" = فقاعة حوار بيضاء بيضوية | "narration" = صندوق سرد ذهبي/بيج | "sfx" = مؤثر صوتي | "title" = عنوان كبير
-- cx,cy: مركز النص بالنسبة المئوية من أبعاد الصورة (0-100)
-- w,h: العرض والارتفاع التقريبيين بالنسبة المئوية
+الحقول:
+- type: "dialogue" = فقاعة حوار بيضاء | "narration" = صندوق سرد بيج/ذهبي | "sfx" = مؤثر صوتي | "title" = عنوان
+- x1,y1: الزاوية العلوية اليسرى للفقاعة (نسبة مئوية من أبعاد الصورة 0-100)
+- x2,y2: الزاوية السفلية اليمنى للفقاعة (نسبة مئوية من أبعاد الصورة 0-100)
+- كن دقيقاً: الإحداثيات يجب أن تغطي منطقة النص بالضبط وليس أكثر
 
 قواعد الترجمة:
-- الحوار: طبيعي وأسلوب شخصية محددة، قصير ومباشر
+- الحوار: طبيعي بلهجة الشخصية
 - السرد: أدبي وواضح
-- المؤثرات: عرّب الصوت (BANG=دوي، CLANG=قرقعة، إلخ)
+- المؤثرات: عرّبها (BANG=دوي، CLANG=قرقعة)
 - العناوين: ترجمها (PROLOGUE=المقدمة)
-- الأسماء: اكتبها كما تنطق بالعربية (Cressen=كريسن)
-- إذا كان النص قصيراً جداً (حرف أو رقم) فلا تدرجه`;
+- الأسماء: بالعربية كما تنطق`;
 
-  const resp = await fetch('https://api.anthropic.com/v1/messages',{
+  const resp=await fetch('https://api.anthropic.com/v1/messages',{
     method:'POST',
     headers:{
       'Content-Type':'application/json',
@@ -337,209 +284,182 @@ async function callClaude(dataURL, key){
       system:sys,
       messages:[{role:'user',content:[
         {type:'image',source:{type:'base64',media_type:mime,data:b64}},
-        {type:'text',text:'استخرج كل النصوص مع إحداثياتها وترجمتها. JSON فقط.'}
+        {type:'text',text:'استخرج كل الفقاعات والنصوص مع إحداثياتها الدقيقة. JSON فقط.'}
       ]}]
     })
   });
-
-  if(!resp.ok){ const e=await resp.json().catch(()=>({})); throw new Error(e.error?.message||`API Error ${resp.status}`); }
-
-  const data = await resp.json();
-  let raw = data.content[0].text.trim();
-  raw = raw.replace(/^```json\s*/,'').replace(/^```\s*/,'').replace(/\s*```$/,'').trim();
-  const parsed = JSON.parse(raw);
+  if(!resp.ok){const e=await resp.json().catch(()=>({}));throw new Error(e.error?.message||`API Error ${resp.status}`);}
+  const data=await resp.json();
+  let raw=data.content[0].text.trim();
+  raw=raw.replace(/^```json\s*/,'').replace(/^```\s*/,'').replace(/\s*```$/,'').trim();
+  const parsed=JSON.parse(raw);
   return parsed.bubbles||[];
 }
 
-// ══════════════════════════════════════
-//  CANVAS RENDERER — the heart of v3
-// ══════════════════════════════════════
+// ══════════════════════════════════════════
+//  CANVAS RENDERER v4
+//  Strategy:
+//  1. Draw original image
+//  2. For each bubble:
+//     a. Sample bg color from border of bubble area
+//     b. Fill the text area with that color (erase English)
+//     c. Write Arabic text in same area
+// ══════════════════════════════════════════
 function drawCanvas(){
-  const cvs = document.getElementById('cvs');
-  const ctx = cvs.getContext('2d');
+  const cvs=document.getElementById('cvs');
+  const ctx=cvs.getContext('2d');
+  const W=imgEl.naturalWidth, H=imgEl.naturalHeight;
+  cvs.width=W; cvs.height=H;
 
-  const NW = imgEl.naturalWidth;
-  const NH = imgEl.naturalHeight;
+  // Draw original
+  ctx.drawImage(imgEl,0,0,W,H);
 
-  // Set canvas to natural image size for crisp output
-  cvs.width  = NW;
-  cvs.height = NH;
+  bubbles.forEach(b=>{
+    // Convert % to px
+    const x1=Math.round((b.x1/100)*W);
+    const y1=Math.round((b.y1/100)*H);
+    const x2=Math.round((b.x2/100)*W);
+    const y2=Math.round((b.y2/100)*H);
+    const bw=x2-x1, bh=y2-y1;
+    if(bw<4||bh<4) return;
 
-  // 1. Draw original image
-  ctx.drawImage(imgEl, 0, 0, NW, NH);
-
-  // 2. Draw each bubble overlay
-  bubbles.forEach(b => {
-    const cx = (b.cx/100)*NW;
-    const cy = (b.cy/100)*NH;
-    const bw = (b.w /100)*NW;
-    const bh = (b.h /100)*NH;
-
-    const half_w = bw/2;
-    const half_h = bh/2;
-    const x = cx - half_w;
-    const y = cy - half_h;
-
-    switch(b.type){
-      case 'title':     drawTitle(ctx, b.arabic, cx, cy, bw, NW, NH); break;
-      case 'narration': drawNarration(ctx, b.arabic, x, y, bw, bh, NW); break;
-      case 'sfx':       drawSFX(ctx, b.arabic, cx, cy, bw, NW); break;
-      default:          drawDialogue(ctx, b.arabic, cx, cy, bw, bh, NW); break;
+    if(b.type==='sfx'){
+      // SFX: don't fill, just write over
+      drawSFXText(ctx,b.arabic,x1,y1,bw,bh);
+      return;
     }
+
+    // 1. Sample background color from the bubble itself
+    //    Take a small patch from near the center, avoiding text pixels
+    const bgColor=sampleBgColor(ctx,x1,y1,bw,bh);
+
+    // 2. Fill region with sampled bg color to erase English text
+    //    Use a slightly inset area to preserve bubble borders
+    const inset=Math.max(2, Math.min(6, bw*0.04));
+    ctx.save();
+    roundRectClip(ctx, x1+inset, y1+inset, bw-inset*2, bh-inset*2, Math.max(4,bw*0.06));
+    ctx.fillStyle=bgColor;
+    ctx.fill();
+    ctx.restore();
+
+    // 3. Write Arabic text inside
+    const cx=x1+bw/2, cy=y1+bh/2;
+    drawArabicText(ctx, b.arabic, cx, cy, bw-inset*4, bh-inset*2, b.type);
   });
 
-  // Make canvas downloadable via long-press on iOS
-  // (Safari allows long-press save on canvas)
+  // Update download link
+  const dl=document.getElementById('dlBtn');
+  dl.href=cvs.toDataURL('image/png');
 }
 
-// ── Dialogue bubble (white background, rounded rect) ──
-function drawDialogue(ctx, text, cx, cy, bw, bh, NW){
-  const pad   = NW*0.012;
-  const fs    = Math.max(NW*0.022, Math.min(NW*0.038, bw/Math.max(text.length*0.5,3)));
-  ctx.font    = `bold ${fs}px Tajawal, Arial`;
-
-  const lines = wrapTextAr(ctx, text, bw - pad*2);
-  const lineH = fs*1.35;
-  const boxW  = bw;
-  const boxH  = Math.max(bh, lines.length*lineH + pad*2);
-
-  const x = cx - boxW/2;
-  const y = cy - boxH/2;
-
-  // White fill
-  ctx.save();
-  roundRect(ctx, x, y, boxW, boxH, NW*0.015);
-  ctx.fillStyle = 'rgba(255,255,255,0.93)';
-  ctx.fill();
-  // Border
-  ctx.strokeStyle = 'rgba(30,30,40,0.4)';
-  ctx.lineWidth   = NW*0.003;
-  ctx.stroke();
-  ctx.restore();
-
-  // Arabic text (right-to-left, dark)
-  ctx.save();
-  ctx.fillStyle = '#111';
-  ctx.font      = `bold ${fs}px Tajawal, Arial`;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-
-  const totalH = lines.length*lineH;
-  const startY = cy - totalH/2 + lineH/2;
-  lines.forEach((line,i)=> ctx.fillText(line, cx, startY + i*lineH));
-  ctx.restore();
+// ── Sample dominant background color from bubble ──
+function sampleBgColor(ctx, x1, y1, bw, bh){
+  // Sample multiple points from corners and center of bubble, pick most common light color
+  const samples=[];
+  const pts=[
+    {x:x1+bw*0.1, y:y1+bh*0.1},
+    {x:x1+bw*0.9, y:y1+bh*0.1},
+    {x:x1+bw*0.1, y:y1+bh*0.9},
+    {x:x1+bw*0.9, y:y1+bh*0.9},
+    {x:x1+bw*0.5, y:y1+bh*0.15},
+    {x:x1+bw*0.5, y:y1+bh*0.85},
+    {x:x1+bw*0.15, y:y1+bh*0.5},
+    {x:x1+bw*0.85, y:y1+bh*0.5},
+  ];
+  for(const p of pts){
+    const px=Math.round(Math.max(0,Math.min(ctx.canvas.width-1,p.x)));
+    const py=Math.round(Math.max(0,Math.min(ctx.canvas.height-1,p.y)));
+    const d=ctx.getImageData(px,py,1,1).data;
+    samples.push({r:d[0],g:d[1],b:d[2],bright:d[0]+d[1]+d[2]});
+  }
+  // Pick the brightest sample (most likely the bubble background, not text)
+  samples.sort((a,b2)=>b2.bright-a.bright);
+  // Use average of top 4 brightest
+  const top=samples.slice(0,4);
+  const r=Math.round(top.reduce((s,c)=>s+c.r,0)/top.length);
+  const g=Math.round(top.reduce((s,c)=>s+c.g,0)/top.length);
+  const bv=Math.round(top.reduce((s,c)=>s+c.b,0)/top.length);
+  return `rgb(${r},${g},${bv})`;
 }
 
-// ── Narration box (gold/beige background like caption boxes) ──
-function drawNarration(ctx, text, x, y, bw, bh, NW){
-  const pad   = NW*0.012;
-  const fs    = Math.max(NW*0.020, Math.min(NW*0.034, bw/Math.max(text.length*0.45,3)));
-  ctx.font    = `bold ${fs}px Tajawal, Arial`;
+// ── Write Arabic text centered in area ──
+function drawArabicText(ctx, text, cx, cy, maxW, maxH, type){
+  // Determine text color based on type
+  let textColor;
+  if(type==='narration') textColor='#1a0e00';
+  else textColor='#111111';
 
-  const lines = wrapTextAr(ctx, text, bw - pad*2);
-  const lineH = fs*1.38;
-  const boxH  = Math.max(bh, lines.length*lineH + pad*2.5);
+  // Calculate font size to fit
+  let fs=Math.max(11, Math.min(maxH*0.42, maxW*0.11));
+  ctx.font=`bold ${fs}px Tajawal,Arial`;
+
+  // Shrink font until text fits width
+  let lines=wrapAr(ctx,text,maxW*0.9);
+  while(lines.length*fs*1.3>maxH*0.9 && fs>9){
+    fs-=1;
+    ctx.font=`bold ${fs}px Tajawal,Arial`;
+    lines=wrapAr(ctx,text,maxW*0.9);
+  }
+
+  const lineH=fs*1.32;
+  const totalH=lines.length*lineH;
+  const startY=cy-totalH/2+lineH*0.5;
 
   ctx.save();
-  roundRect(ctx, x, y, bw, boxH, NW*0.012);
-  // Parchment/gold fill — matches the target image caption boxes
-  ctx.fillStyle = 'rgba(210,185,120,0.93)';
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(140,100,30,0.7)';
-  ctx.lineWidth = NW*0.003;
-  ctx.stroke();
-  ctx.restore();
-
-  ctx.save();
-  ctx.fillStyle = '#1a1000';
-  ctx.font      = `bold ${fs}px Tajawal, Arial`;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  const cx = x + bw/2;
-  const cy_start = y + boxH/2 - ((lines.length-1)*lineH)/2;
-  lines.forEach((line,i)=> ctx.fillText(line, cx, cy_start + i*lineH));
+  ctx.fillStyle=textColor;
+  ctx.font=`bold ${fs}px Tajawal,Arial`;
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  lines.forEach((line,i)=>ctx.fillText(line,cx,startY+i*lineH));
   ctx.restore();
 }
 
-// ── SFX (stylized, semi-transparent) ──
-function drawSFX(ctx, text, cx, cy, bw, NW){
-  const fs = Math.max(NW*0.03, Math.min(NW*0.065, bw*0.8));
+function drawSFXText(ctx,text,x1,y1,bw,bh){
+  const cx=x1+bw/2, cy=y1+bh/2;
+  const fs=Math.max(14,Math.min(bh*0.6,bw*0.25));
   ctx.save();
-  ctx.font      = `900 ${fs}px Tajawal, Arial`;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  // Outline
-  ctx.strokeStyle = 'rgba(0,0,0,0.7)';
-  ctx.lineWidth   = fs*0.12;
-  ctx.lineJoin    = 'round';
-  ctx.strokeText(text, cx, cy);
-  // Fill
-  ctx.fillStyle = '#ffd60a';
-  ctx.fillText(text, cx, cy);
+  ctx.font=`900 ${fs}px Tajawal,Arial`;
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.strokeStyle='rgba(0,0,0,0.6)';ctx.lineWidth=fs*0.1;ctx.lineJoin='round';
+  ctx.strokeText(text,cx,cy);
+  ctx.fillStyle='#ffd60a';ctx.fillText(text,cx,cy);
   ctx.restore();
 }
 
-// ── Title (large centered text) ──
-function drawTitle(ctx, text, cx, cy, bw, NW, NH){
-  const fs = Math.max(NW*0.045, Math.min(NW*0.09, bw*0.6));
-  ctx.save();
-  ctx.font      = `900 ${fs}px Tajawal, Arial`;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  // Background bar
-  const tw = ctx.measureText(text).width;
-  const pad = NW*0.02;
-  roundRect(ctx, cx - tw/2 - pad, cy - fs*0.7, tw + pad*2, fs*1.4, NW*0.01);
-  ctx.fillStyle = 'rgba(10,10,20,0.75)';
-  ctx.fill();
-  // Text
-  ctx.strokeStyle = '#000'; ctx.lineWidth = fs*0.08; ctx.lineJoin='round'; ctx.strokeText(text,cx,cy);
-  ctx.fillStyle = '#f0ebe0'; ctx.fillText(text,cx,cy);
-  ctx.restore();
+// ── Rounded rect clip path ──
+function roundRectClip(ctx,x,y,w,h,r){
+  r=Math.min(r,w/2,h/2);
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();
 }
 
-// ── Arabic text wrap (right-to-left) ──
-function wrapTextAr(ctx, text, maxW){
-  // Split by spaces, build lines
-  const words = text.split(' ');
-  const lines = [];
-  let cur = '';
+// ── Arabic text wrap ──
+function wrapAr(ctx,text,maxW){
+  if(!text) return [''];
+  const words=text.split(' ');
+  const lines=[];let cur='';
   for(const w of words){
-    const test = cur ? cur+' '+w : w;
-    if(ctx.measureText(test).width > maxW && cur){
-      lines.push(cur); cur = w;
-    } else { cur = test; }
+    const test=cur?cur+' '+w:w;
+    if(ctx.measureText(test).width>maxW&&cur){lines.push(cur);cur=w;}
+    else cur=test;
   }
   if(cur) lines.push(cur);
-  return lines.length ? lines : [text];
-}
-
-// ── Rounded rect helper ──
-function roundRect(ctx, x, y, w, h, r){
-  r = Math.min(r, w/2, h/2);
-  ctx.beginPath();
-  ctx.moveTo(x+r, y);
-  ctx.lineTo(x+w-r, y);
-  ctx.quadraticCurveTo(x+w, y, x+w, y+r);
-  ctx.lineTo(x+w, y+h-r);
-  ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
-  ctx.lineTo(x+r, y+h);
-  ctx.quadraticCurveTo(x, y+h, x, y+h-r);
-  ctx.lineTo(x, y+r);
-  ctx.quadraticCurveTo(x, y, x+r, y);
-  ctx.closePath();
+  return lines.length?lines:[text];
 }
 
 // ── Cards ──
 function renderCards(){
-  const c = document.getElementById('cards');
-  c.innerHTML = '';
-  const tlbl = {dialogue:'حوار 💬',narration:'سرد 📖',sfx:'مؤثر 💥',title:'عنوان'};
+  const c=document.getElementById('cards');c.innerHTML='';
+  const tl={dialogue:'حوار 💬',narration:'سرد 📖',sfx:'مؤثر 💥',title:'عنوان'};
   bubbles.forEach((b,i)=>{
-    const d = document.createElement('div');
-    d.className = 'card'+(b.type==='narration'?' nar':b.type==='sfx'?' sfx':'');
-    d.style.animationDelay = (i*.055)+'s';
-    d.innerHTML = `<div class="cnum">${tlbl[b.type]||'نص'} — ${i+1}</div>
+    const d=document.createElement('div');
+    d.className='card'+(b.type==='narration'?' nar':'');
+    d.style.animationDelay=(i*.05)+'s';
+    d.innerHTML=`<div class="cnum">${tl[b.type]||'نص'} — ${i+1}</div>
       <div class="corig">${esc(b.original)}</div>
       <div class="car">${esc(b.arabic)}</div>`;
     c.appendChild(d);
@@ -547,25 +467,24 @@ function renderCards(){
 }
 
 function copyAll(){
-  const txt = bubbles.map((b,i)=>`[${i+1}] ${b.arabic}`).join('\n');
+  const txt=bubbles.map((b,i)=>`[${i+1}] ${b.arabic}`).join('\n');
   navigator.clipboard.writeText(txt).catch(()=>{
-    const ta=document.createElement('textarea'); ta.value=txt;
-    document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+    const ta=document.createElement('textarea');ta.value=txt;
+    document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
   });
   const btn=document.querySelector('.copyall');
-  btn.textContent='✅ تم النسخ!';
-  setTimeout(()=>btn.textContent='📋 نسخ كل الترجمات',2000);
+  btn.textContent='✅ تم النسخ!';setTimeout(()=>btn.textContent='📋 نسخ كل الترجمات',2000);
 }
 
 function prog(show,txt='',pct=0){
-  document.getElementById('pw').style.display = show?'block':'none';
-  document.getElementById('pt').style.display = show?'block':'none';
-  document.getElementById('pt').textContent   = txt;
-  document.getElementById('pf').style.width   = pct+'%';
+  document.getElementById('pw').style.display=show?'block':'none';
+  document.getElementById('pt').style.display=show?'block':'none';
+  document.getElementById('pt').textContent=txt;
+  document.getElementById('pf').style.width=pct+'%';
 }
-function showErr(m){ const e=document.getElementById('err'); e.textContent=m; e.style.display='block'; }
-function clearErr(){ document.getElementById('err').style.display='none'; }
-function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function showErr(m){const e=document.getElementById('err');e.textContent=m;e.style.display='block';}
+function clearErr(){document.getElementById('err').style.display='none';}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 </script>
 
 </body>
