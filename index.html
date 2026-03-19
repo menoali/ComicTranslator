@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>مترجم المانغا v4</title>
+<title>مترجم المانغا v5</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{--ink:#0d0d12;--paper:#f0ebe0;--red:#e63946;--gold:#c8a84b;--dim:#666;--panel:#181825}
@@ -14,103 +14,90 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),
   linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:42px 42px}
 .wrap{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:0 13px 50px}
-
 header{padding:22px 0 14px;text-align:center}
-.badge{display:inline-block;background:var(–red);color:#fff;font-family:‘Space Mono’,monospace;
-font-size:9px;font-weight:700;letter-spacing:3px;padding:3px 13px;text-transform:uppercase;
-clip-path:polygon(0 0,calc(100% - 7px) 0,100% 50%,calc(100% - 7px) 100%,0 100%,7px 50%);margin-bottom:8px}
+.badge{display:inline-block;background:var(--red);color:#fff;font-family:'Space Mono',monospace;
+  font-size:9px;font-weight:700;letter-spacing:3px;padding:3px 13px;text-transform:uppercase;
+  clip-path:polygon(0 0,calc(100% - 7px) 0,100% 50%,calc(100% - 7px) 100%,0 100%,7px 50%);margin-bottom:8px}
 h1{font-size:24px;font-weight:900;letter-spacing:-1px}
-h1 small{display:block;font-size:11px;font-weight:300;letter-spacing:2px;color:var(–dim);margin-top:3px}
-
-.api-box{background:var(–panel);border-radius:13px;padding:13px;margin-bottom:12px;border:1px solid rgba(255,255,255,.07)}
-.lbl{font-size:11px;font-weight:700;letter-spacing:2px;color:var(–dim);margin-bottom:7px}
+h1 small{display:block;font-size:11px;font-weight:300;letter-spacing:2px;color:var(--dim);margin-top:3px}
+.api-box{background:var(--panel);border-radius:13px;padding:13px;margin-bottom:12px;border:1px solid rgba(255,255,255,.07)}
+.lbl{font-size:11px;font-weight:700;letter-spacing:2px;color:var(--dim);margin-bottom:7px}
 .row{display:flex;gap:7px;align-items:center}
 input[type=password],input[type=text]{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
-color:#fff;border-radius:9px;padding:9px 11px;font-size:13px;font-family:‘Space Mono’,monospace;
-outline:none;direction:ltr;transition:border-color .2s}
-input:focus{border-color:var(–gold)}
-.eye{background:rgba(255,255,255,.07);border:none;color:var(–dim);border-radius:8px;padding:9px 11px;cursor:pointer;font-size:14px}
-.hint{font-size:11px;color:var(–dim);margin-top:6px}
-.hint a{color:var(–gold);text-decoration:none}
-
+  color:#fff;border-radius:9px;padding:9px 11px;font-size:13px;font-family:'Space Mono',monospace;
+  outline:none;direction:ltr;transition:border-color .2s}
+input:focus{border-color:var(--gold)}
+.eye{background:rgba(255,255,255,.07);border:none;color:var(--dim);border-radius:8px;padding:9px 11px;cursor:pointer;font-size:14px}
+.hint{font-size:11px;color:var(--dim);margin-top:6px}
+.hint a{color:var(--gold);text-decoration:none}
 .dz{border:2px dashed rgba(255,255,255,.15);border-radius:14px;padding:34px 14px;text-align:center;
-cursor:pointer;background:rgba(255,255,255,.02);margin-bottom:12px;transition:all .2s;
-position:relative;overflow:hidden}
-.dz.over{border-color:var(–gold);background:rgba(200,168,75,.04)}
-.dz.filled{padding:0;border-color:var(–red)}
-.dz img.prev{width:100%;display:block;border-radius:12px;max-height:58dvh;object-fit:contain;background:#000}
+  cursor:pointer;background:rgba(255,255,255,.02);margin-bottom:12px;transition:all .2s;
+  position:relative;overflow:hidden}
+.dz.over{border-color:var(--gold)}
+.dz.filled{padding:0;border-color:var(--red)}
+.dz img.prev{width:100%;display:block;border-radius:12px;max-height:60dvh;object-fit:contain;background:#000}
 .di{font-size:40px;margin-bottom:8px;display:block}
 .dm{font-size:14px;font-weight:700;margin-bottom:4px}
-.ds{font-size:12px;color:var(–dim)}
+.ds{font-size:12px;color:var(--dim)}
 #fi{display:none}
 .chg{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.18);
-color:#fff;border-radius:7px;padding:5px 10px;font-size:12px;font-family:‘Tajawal’,sans-serif;cursor:pointer;backdrop-filter:blur(8px)}
-
-.go{width:100%;background:var(–red);border:none;color:#fff;font-family:‘Tajawal’,sans-serif;
-font-size:17px;font-weight:900;padding:15px;border-radius:12px;cursor:pointer;
-transition:all .2s;margin-bottom:12px;
-clip-path:polygon(0 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,0 100%,10px 50%)}
+  color:#fff;border-radius:7px;padding:5px 10px;font-size:12px;font-family:'Tajawal',sans-serif;cursor:pointer;backdrop-filter:blur(8px)}
+.go{width:100%;background:var(--red);border:none;color:#fff;font-family:'Tajawal',sans-serif;
+  font-size:17px;font-weight:900;padding:15px;border-radius:12px;cursor:pointer;
+  transition:all .2s;margin-bottom:12px;
+  clip-path:polygon(0 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,0 100%,10px 50%)}
 .go:disabled{background:#252525;cursor:not-allowed;color:#555}
 .go:not(:disabled):active{transform:scale(.98)}
-
 .pw{display:none;background:rgba(255,255,255,.06);border-radius:99px;height:4px;overflow:hidden;margin-bottom:6px}
-.pf{height:100%;background:linear-gradient(90deg,var(–red),var(–gold));border-radius:99px;transition:width .4s ease;width:0}
-.pt{display:none;font-size:11px;color:var(–dim);text-align:center;margin-bottom:12px;font-family:‘Space Mono’,monospace}
+.pf{height:100%;background:linear-gradient(90deg,var(--red),var(--gold));border-radius:99px;transition:width .5s ease;width:0}
+.pt{display:none;font-size:12px;color:var(--dim);text-align:center;margin-bottom:12px;font-family:'Tajawal',monospace;line-height:1.5}
 .err{display:none;background:rgba(230,57,70,.1);border:1px solid rgba(230,57,70,.3);
-border-radius:11px;padding:12px;color:#ff7070;font-size:13px;line-height:1.6;margin-bottom:12px}
-
+  border-radius:11px;padding:12px;color:#ff7070;font-size:13px;line-height:1.6;margin-bottom:12px}
 .res{display:none}
 .tabs{display:flex;gap:5px;background:rgba(255,255,255,.05);border-radius:10px;padding:3px;margin-bottom:12px}
-.tab{flex:1;background:transparent;border:none;color:var(–dim);font-family:‘Tajawal’,sans-serif;
-font-size:14px;font-weight:700;padding:8px;border-radius:8px;cursor:pointer;transition:all .2s}
-.tab.on{background:var(–red);color:#fff}
+.tab{flex:1;background:transparent;border:none;color:var(--dim);font-family:'Tajawal',sans-serif;
+  font-size:14px;font-weight:700;padding:8px;border-radius:8px;cursor:pointer;transition:all .2s}
+.tab.on{background:var(--red);color:#fff}
 .pane{display:none}.pane.on{display:block}
-
 .cvs-wrap{border-radius:13px;overflow:hidden;border:1px solid rgba(255,255,255,.08);background:#000;margin-bottom:6px}
 #cvs{display:block;width:100%;height:auto}
-.save-hint{font-size:11px;color:var(–dim);text-align:center;margin-bottom:12px}
-
+.save-hint{font-size:11px;color:var(--dim);text-align:center;margin-bottom:10px}
 .dl-btn{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);
-color:var(–paper);font-family:‘Tajawal’,sans-serif;font-size:14px;font-weight:700;
-padding:12px;border-radius:11px;cursor:pointer;margin-bottom:6px;transition:background .2s;display:block;text-align:center;text-decoration:none}
+  color:var(--paper);font-family:'Tajawal',sans-serif;font-size:14px;font-weight:700;
+  padding:12px;border-radius:11px;cursor:pointer;margin-bottom:6px;transition:background .2s;
+  display:block;text-align:center;text-decoration:none}
 .dl-btn:active{background:rgba(255,255,255,.12)}
-
-/* cards */
-.stitle{font-size:10px;font-weight:700;letter-spacing:3px;color:var(–dim);
-margin-bottom:10px;display:flex;align-items:center;gap:7px;text-transform:uppercase}
-.stitle::after{content:’’;flex:1;height:1px;background:rgba(255,255,255,.07)}
-.card{background:var(–panel);border-radius:11px;padding:11px 12px;margin-bottom:8px;
-border:1px solid rgba(255,255,255,.05);position:relative;overflow:hidden;animation:slin .3s ease backwards}
-.card::before{content:’’;position:absolute;top:0;right:0;width:3px;height:100%;background:var(–red)}
-.card.nar::before{background:var(–gold)}
+.stitle{font-size:10px;font-weight:700;letter-spacing:3px;color:var(--dim);
+  margin-bottom:10px;display:flex;align-items:center;gap:7px;text-transform:uppercase}
+.stitle::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.07)}
+.card{background:var(--panel);border-radius:11px;padding:11px 12px;margin-bottom:8px;
+  border:1px solid rgba(255,255,255,.05);position:relative;overflow:hidden;animation:slin .3s ease backwards}
+.card::before{content:'';position:absolute;top:0;right:0;width:3px;height:100%;background:var(--red)}
+.card.nar::before{background:var(--gold)}
 @keyframes slin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-.cnum{font-family:‘Space Mono’,monospace;font-size:10px;color:var(–red);font-weight:700;margin-bottom:4px;letter-spacing:2px}
-.card.nar .cnum{color:var(–gold)}
-.corig{font-family:‘Space Mono’,monospace;font-size:10px;color:var(–dim);direction:ltr;text-align:left;
-background:rgba(0,0,0,.28);padding:6px 8px;border-radius:6px;margin-bottom:7px;word-break:break-word}
-.car{font-size:16px;font-weight:700;line-height:1.6;color:var(–paper)}
-.copyall{width:100%;background:transparent;border:1px solid rgba(255,255,255,.11);color:var(–paper);
-font-family:‘Tajawal’,sans-serif;font-size:14px;font-weight:700;padding:11px;border-radius:11px;
-cursor:pointer;margin-top:6px;transition:background .2s}
-.copyall:active{background:rgba(255,255,255,.07)}
-
-.how{margin-top:22px;padding:16px;background:var(–panel);border-radius:12px;border:1px solid rgba(255,255,255,.05)}
+.cnum{font-family:'Space Mono',monospace;font-size:10px;color:var(--red);font-weight:700;margin-bottom:4px;letter-spacing:2px}
+.card.nar .cnum{color:var(--gold)}
+.corig{font-family:'Space Mono',monospace;font-size:10px;color:var(--dim);direction:ltr;text-align:left;
+  background:rgba(0,0,0,.28);padding:6px 8px;border-radius:6px;margin-bottom:7px;word-break:break-word}
+.car{font-size:16px;font-weight:700;line-height:1.6;color:var(--paper)}
+.copyall{width:100%;background:transparent;border:1px solid rgba(255,255,255,.11);color:var(--paper);
+  font-family:'Tajawal',sans-serif;font-size:14px;font-weight:700;padding:11px;border-radius:11px;
+  cursor:pointer;margin-top:6px;transition:background .2s}
+.how{margin-top:22px;padding:16px;background:var(--panel);border-radius:12px;border:1px solid rgba(255,255,255,.05)}
 .step{display:flex;align-items:flex-start;gap:10px;margin-bottom:11px}
 .step:last-child{margin-bottom:0}
-.sn{background:var(–red);color:#fff;font-family:‘Space Mono’,monospace;font-size:10px;font-weight:700;
-width:24px;height:24px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sn{background:var(--red);color:#fff;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;
+  width:24px;height:24px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .st{font-size:13px;line-height:1.5;padding-top:2px}
-.st strong{color:var(–gold)}
-footer{text-align:center;padding-top:24px;font-size:10px;color:rgba(255,255,255,.15);font-family:‘Space Mono’,monospace}
+.st strong{color:var(--gold)}
+footer{text-align:center;padding-top:24px;font-size:10px;color:rgba(255,255,255,.15);font-family:'Space Mono',monospace}
 </style>
-
 </head>
 <body>
 <div class="wrap">
-
 <header>
-  <div class="badge">AutoScanlate AR · v4</div>
-  <h1>مترجم المانغا <small>يمسح الإنجليزي ويكتب العربي مكانه</small></h1>
+  <div class="badge">AutoScanlate AR · v5 Final</div>
+  <h1>مترجم المانغا <small>يمسح الإنجليزي · يكتب العربي مكانه</small></h1>
 </header>
 
 <div class="api-box">
@@ -119,13 +106,13 @@ footer{text-align:center;padding-top:24px;font-size:10px;color:rgba(255,255,255,
     <input type="password" id="ak" placeholder="sk-ant-..." autocomplete="off" spellcheck="false">
     <button class="eye" onclick="toggleVis()">👁</button>
   </div>
-  <div class="hint">من <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> — يُحفظ محلياً فقط</div>
+  <div class="hint">من <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> — يُحفظ محلياً</div>
 </div>
 
 <div class="dz" id="dz" onclick="document.getElementById('fi').click()">
   <span class="di">🖼️</span>
-  <div class="dm">ارفع صفحة الكوميك / المانغا</div>
-  <div class="ds">PNG · JPG · WEBP</div>
+  <div class="dm">ارفع الصفحة الأصلية (إنجليزية)</div>
+  <div class="ds">PNG · JPG · WEBP — الصورة الأصلية بدون screenshots</div>
 </div>
 <input type="file" id="fi" accept="image/*" onchange="loadFile(event)">
 
@@ -142,7 +129,7 @@ footer{text-align:center;padding-top:24px;font-size:10px;color:rgba(255,255,255,
   <div class="pane on" id="imgPane">
     <div class="cvs-wrap"><canvas id="cvs"></canvas></div>
     <div class="save-hint">اضغط مطولاً لحفظ الصورة · أو</div>
-    <a class="dl-btn" id="dlBtn" download="manga_translated.png">⬇️ تحميل الصورة</a>
+    <a class="dl-btn" id="dlBtn" download="manga_ar.png">⬇️ تحميل الصورة</a>
   </div>
   <div class="pane" id="crdPane">
     <div class="stitle">النصوص المترجمة</div>
@@ -152,26 +139,30 @@ footer{text-align:center;padding-top:24px;font-size:10px;color:rgba(255,255,255,
 </div>
 
 <div class="how">
-  <div class="stitle">كيف يعمل</div>
-  <div class="step"><div class="sn">١</div><div class="st">Claude يقرأ الصورة ويحدد <strong>إحداثيات النص الإنجليزي</strong> بالضبط</div></div>
-  <div class="step"><div class="sn">٢</div><div class="st">يسحب <strong>لون خلفية</strong> كل فقاعة من الصورة نفسها ويمسح النص الإنجليزي</div></div>
-  <div class="step"><div class="sn">٣</div><div class="st">يكتب الترجمة العربية <strong>بنفس المكان والحجم</strong> — بدون فقاعات جديدة</div></div>
+  <div class="stitle">الطريقة الصحيحة للاستخدام</div>
+  <div class="step"><div class="sn">١</div><div class="st">ارفع <strong>الصفحة الأصلية الإنجليزية</strong> (ليس screenshot — الصورة نفسها)</div></div>
+  <div class="step"><div class="sn">٢</div><div class="st">Claude يحدد <strong>مواقع الفقاعات بالبكسل</strong> ويترجم النصوص</div></div>
+  <div class="step"><div class="sn">٣</div><div class="st">يسحب <strong>لون خلفية كل فقاعة</strong> ويمسح النص الإنجليزي بدقة</div></div>
+  <div class="step"><div class="sn">٤</div><div class="st">يكتب العربي <strong>بنفس الفقاعة</strong> — بدون مربعات، بدون خلفيات جديدة</div></div>
 </div>
-
-<footer>AutoScanlate AR v4 — Claude Vision + Canvas Inpainting</footer>
+<footer>AutoScanlate AR v5 — Claude Vision + Canvas Inpainting</footer>
 </div>
 
 <script>
-let imgEl   = null;
-let imgDURL = null;
-let bubbles = [];
+let imgEl=null, imgDURL=null, bubbles=[];
+const FONT_URL = 'https://fonts.gstatic.com/s/tajawal/v9/Iura6YBj_oCad4k1rzaLCr5IlLA.woff2';
+let arFont = null;
 
-// persist key
-window.addEventListener('load',()=>{ const s=localStorage.getItem('ak'); if(s) document.getElementById('ak').value=s; });
-document.getElementById('ak').addEventListener('input',()=>{ const v=document.getElementById('ak').value.trim(); if(v.startsWith('sk-')) localStorage.setItem('ak',v); });
-function toggleVis(){ const i=document.getElementById('ak'); i.type=i.type==='password'?'text':'password'; }
+window.addEventListener('load',()=>{
+  const s=localStorage.getItem('ak');
+  if(s) document.getElementById('ak').value=s;
+});
+document.getElementById('ak').addEventListener('input',()=>{
+  const v=document.getElementById('ak').value.trim();
+  if(v.startsWith('sk-')) localStorage.setItem('ak',v);
+});
+function toggleVis(){const i=document.getElementById('ak');i.type=i.type==='password'?'text':'password';}
 
-// upload
 const dz=document.getElementById('dz');
 dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('over');});
 dz.addEventListener('dragleave',()=>dz.classList.remove('over'));
@@ -181,27 +172,25 @@ function readFile(f){
   const r=new FileReader();
   r.onload=e=>{
     imgDURL=e.target.result;
-    dz.innerHTML=`<img class="prev" src="${imgDURL}" alt=""><button class="chg" onclick="resetImg(event)">تغيير</button>`;
+    dz.innerHTML=`<img class="prev" src="${imgDURL}"><button class="chg" onclick="resetImg(event)">تغيير</button>`;
     dz.classList.add('filled');
     document.getElementById('goBtn').disabled=false;
     document.getElementById('res').style.display='none';
-    document.getElementById('cards').innerHTML='';
     bubbles=[];clearErr();
   };
   r.readAsDataURL(f);
 }
 function resetImg(e){
   e.stopPropagation();imgDURL=null;imgEl=null;
-  dz.innerHTML=`<span class="di">🖼️</span><div class="dm">ارفع صفحة الكوميك / المانغا</div><div class="ds">PNG · JPG · WEBP</div>`;
+  dz.innerHTML=`<span class="di">🖼️</span><div class="dm">ارفع الصفحة الأصلية (إنجليزية)</div><div class="ds">PNG · JPG · WEBP — الصورة الأصلية بدون screenshots</div>`;
   dz.classList.remove('filled');document.getElementById('goBtn').disabled=true;document.getElementById('fi').value='';
 }
-
 function swTab(n){
   ['img','crd'].forEach((t,i)=>{
     document.querySelectorAll('.tab')[i].classList.toggle('on',t===n);
     document.getElementById(t==='img'?'imgPane':'crdPane').classList.toggle('on',t===n);
   });
-  if(n==='img'&&bubbles.length) drawCanvas();
+  if(n==='img'&&bubbles.length)drawCanvas();
 }
 
 async function run(){
@@ -209,14 +198,15 @@ async function run(){
   if(!key){showErr('أدخل مفتاح API أولاً');return;}
   if(!imgDURL){showErr('ارفع صورة أولاً');return;}
   clearErr();
-  prog(true,'Claude يحلل الصورة...',10);
+  prog(true,'جاري تحميل الصورة...',5);
   document.getElementById('goBtn').disabled=true;
   document.getElementById('res').style.display='none';
   try{
     imgEl=await loadImg(imgDURL);
-    prog(true,'جاري الترجمة...',35);
+    prog(true,'Claude يقرأ الصورة ويحدد الفقاعات...',15);
     bubbles=await callClaude(imgDURL,key);
-    prog(true,'يرسم النتيجة...',80);
+    if(!bubbles.length){showErr('لم يُعثر على نصوص إنجليزية في الصورة');prog(false);return;}
+    prog(true,`تم كشف ${bubbles.length} فقاعة — جاري الرسم...`,85);
     renderCards();
     drawCanvas();
     prog(false);
@@ -227,48 +217,37 @@ async function run(){
 }
 
 function loadImg(src){
-  return new Promise((res,rej)=>{
-    const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(new Error('فشل تحميل الصورة'));i.src=src;
-  });
+  return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(new Error('فشل تحميل الصورة'));i.src=src;});
 }
 
-// ── Claude call ──
 async function callClaude(dataURL,key){
   const b64=dataURL.split(',')[1];
   const mime=dataURL.split(';')[0].split(':')[1];
+  const W=imgEl.naturalWidth, H=imgEl.naturalHeight;
 
-  const sys=`أنت نظام استخراج نصوص من صفحات الكوميكس والمانغا.
+  const sys=`أنت نظام تحليل كوميكس دقيق.
 
-مهمتك: حدد كل فقاعة/صندوق نص إنجليزي في الصورة بإحداثيات دقيقة، وترجمه للعربية.
+الصورة أبعادها: ${W}×${H} بكسل.
 
-أجب بـ JSON خالص فقط، بدون أي نص قبله أو بعده:
-{
-  "bubbles": [
-    {
-      "id": 1,
-      "type": "dialogue",
-      "original": "النص الإنجليزي كاملاً",
-      "arabic": "الترجمة العربية",
-      "x1": 12.5,
-      "y1": 8.3,
-      "x2": 35.0,
-      "y2": 22.1
-    }
-  ]
-}
+مهمتك: حدد كل فقاعة/صندوق نص إنجليزي بإحداثيات بكسل دقيقة (ليس نسب مئوية)، واستخرج النص، وترجمه للعربية.
+
+أجب بـ JSON خالص فقط — لا أي نص قبله أو بعده:
+{"bubbles":[{"id":1,"type":"dialogue","original":"النص كاملاً","arabic":"الترجمة","x1":120,"y1":45,"x2":380,"y2":190}]}
 
 الحقول:
-- type: "dialogue" = فقاعة حوار بيضاء | "narration" = صندوق سرد بيج/ذهبي | "sfx" = مؤثر صوتي | "title" = عنوان
-- x1,y1: الزاوية العلوية اليسرى للفقاعة (نسبة مئوية من أبعاد الصورة 0-100)
-- x2,y2: الزاوية السفلية اليمنى للفقاعة (نسبة مئوية من أبعاد الصورة 0-100)
-- كن دقيقاً: الإحداثيات يجب أن تغطي منطقة النص بالضبط وليس أكثر
+- type: "dialogue"=فقاعة حوار بيضاء | "narration"=صندوق سرد بيج/ذهبي | "sfx"=مؤثر صوتي | "title"=عنوان
+- x1,y1: الزاوية العلوية اليسرى بالبكسل
+- x2,y2: الزاوية السفلية اليمنى بالبكسل
+- كن دقيقاً جداً: الإحداثيات يجب أن تحيط بمنطقة النص تحديداً، لا أكثر ولا أقل
 
 قواعد الترجمة:
-- الحوار: طبيعي بلهجة الشخصية
+- الحوار: طبيعي بأسلوب الشخصية، قصير ومباشر
 - السرد: أدبي وواضح
-- المؤثرات: عرّبها (BANG=دوي، CLANG=قرقعة)
-- العناوين: ترجمها (PROLOGUE=المقدمة)
-- الأسماء: بالعربية كما تنطق`;
+- المؤثرات: عرّبها
+- العناوين: ترجمها (PROLOGUE=المقدمة، CHAPTER=الفصل...)
+- الأسماء: بالعربية كما تُنطق`;
+
+  prog(true,'Claude يحلل الصورة... (قد يأخذ 15-30 ثانية)',30);
 
   const resp=await fetch('https://api.anthropic.com/v1/messages',{
     method:'POST',
@@ -284,7 +263,7 @@ async function callClaude(dataURL,key){
       system:sys,
       messages:[{role:'user',content:[
         {type:'image',source:{type:'base64',media_type:mime,data:b64}},
-        {type:'text',text:'استخرج كل الفقاعات والنصوص مع إحداثياتها الدقيقة. JSON فقط.'}
+        {type:'text',text:`الصورة أبعادها ${W}×${H} بكسل. استخرج كل فقاعات النص بإحداثيات بكسل دقيقة وترجم للعربية. JSON فقط.`}
       ]}]
     })
   });
@@ -292,166 +271,178 @@ async function callClaude(dataURL,key){
   const data=await resp.json();
   let raw=data.content[0].text.trim();
   raw=raw.replace(/^```json\s*/,'').replace(/^```\s*/,'').replace(/\s*```$/,'').trim();
-  const parsed=JSON.parse(raw);
+  // Extract JSON even if there's surrounding text
+  const m=raw.match(/\{[\s\S]*\}/);
+  if(!m) throw new Error('Claude لم يُرجع JSON صحيح');
+  const parsed=JSON.parse(m[0]);
   return parsed.bubbles||[];
 }
 
-// ══════════════════════════════════════════
-//  CANVAS RENDERER v4
-//  Strategy:
-//  1. Draw original image
-//  2. For each bubble:
-//     a. Sample bg color from border of bubble area
-//     b. Fill the text area with that color (erase English)
-//     c. Write Arabic text in same area
-// ══════════════════════════════════════════
+// ══════════════════════════════════════════════════════
+//  CANVAS ENGINE v5
+//  Core improvement: proper inpainting using pixel sampling
+//  + correct Arabic font rendering
+// ══════════════════════════════════════════════════════
 function drawCanvas(){
   const cvs=document.getElementById('cvs');
   const ctx=cvs.getContext('2d');
   const W=imgEl.naturalWidth, H=imgEl.naturalHeight;
   cvs.width=W; cvs.height=H;
-
-  // Draw original
   ctx.drawImage(imgEl,0,0,W,H);
 
   bubbles.forEach(b=>{
-    // Convert % to px
-    const x1=Math.round((b.x1/100)*W);
-    const y1=Math.round((b.y1/100)*H);
-    const x2=Math.round((b.x2/100)*W);
-    const y2=Math.round((b.y2/100)*H);
+    const x1=Math.max(0,Math.round(b.x1));
+    const y1=Math.max(0,Math.round(b.y1));
+    const x2=Math.min(W,Math.round(b.x2));
+    const y2=Math.min(H,Math.round(b.y2));
     const bw=x2-x1, bh=y2-y1;
-    if(bw<4||bh<4) return;
+    if(bw<6||bh<6||!b.arabic) return;
 
     if(b.type==='sfx'){
-      // SFX: don't fill, just write over
-      drawSFXText(ctx,b.arabic,x1,y1,bw,bh);
-      return;
+      drawSFX(ctx,b.arabic,x1,y1,bw,bh); return;
     }
 
-    // 1. Sample background color from the bubble itself
-    //    Take a small patch from near the center, avoiding text pixels
-    const bgColor=sampleBgColor(ctx,x1,y1,bw,bh);
+    // 1. Sample background color
+    const bg=sampleBg(ctx,x1,y1,x2,y2);
 
-    // 2. Fill region with sampled bg color to erase English text
-    //    Use a slightly inset area to preserve bubble borders
-    const inset=Math.max(2, Math.min(6, bw*0.04));
-    ctx.save();
-    roundRectClip(ctx, x1+inset, y1+inset, bw-inset*2, bh-inset*2, Math.max(4,bw*0.06));
-    ctx.fillStyle=bgColor;
-    ctx.fill();
-    ctx.restore();
+    // 2. Inpaint: erase English text
+    inpaintRegion(ctx,x1,y1,x2,y2,bg);
 
-    // 3. Write Arabic text inside
-    const cx=x1+bw/2, cy=y1+bh/2;
-    drawArabicText(ctx, b.arabic, cx, cy, bw-inset*4, bh-inset*2, b.type);
+    // 3. Draw Arabic text
+    drawAr(ctx,b.arabic,x1,y1,bw,bh,bg,b.type);
   });
 
-  // Update download link
-  const dl=document.getElementById('dlBtn');
-  dl.href=cvs.toDataURL('image/png');
+  document.getElementById('dlBtn').href=cvs.toDataURL('image/png');
 }
 
-// ── Sample dominant background color from bubble ──
-function sampleBgColor(ctx, x1, y1, bw, bh){
-  // Sample multiple points from corners and center of bubble, pick most common light color
-  const samples=[];
+function sampleBg(ctx,x1,y1,x2,y2){
+  const bw=x2-x1, bh=y2-y1;
+  // Sample from inner perimeter — avoids text in center
   const pts=[
-    {x:x1+bw*0.1, y:y1+bh*0.1},
-    {x:x1+bw*0.9, y:y1+bh*0.1},
-    {x:x1+bw*0.1, y:y1+bh*0.9},
-    {x:x1+bw*0.9, y:y1+bh*0.9},
-    {x:x1+bw*0.5, y:y1+bh*0.15},
-    {x:x1+bw*0.5, y:y1+bh*0.85},
-    {x:x1+bw*0.15, y:y1+bh*0.5},
-    {x:x1+bw*0.85, y:y1+bh*0.5},
+    [x1+bw*.06, y1+bh*.06],[x1+bw*.94, y1+bh*.06],
+    [x1+bw*.06, y1+bh*.94],[x1+bw*.94, y1+bh*.94],
+    [x1+bw*.5,  y1+bh*.05],[x1+bw*.5,  y1+bh*.95],
+    [x1+bw*.05, y1+bh*.5], [x1+bw*.95, y1+bh*.5],
+    [x1+bw*.25, y1+bh*.08],[x1+bw*.75, y1+bh*.08],
+    [x1+bw*.25, y1+bh*.92],[x1+bw*.75, y1+bh*.92],
   ];
-  for(const p of pts){
-    const px=Math.round(Math.max(0,Math.min(ctx.canvas.width-1,p.x)));
-    const py=Math.round(Math.max(0,Math.min(ctx.canvas.height-1,p.y)));
-    const d=ctx.getImageData(px,py,1,1).data;
-    samples.push({r:d[0],g:d[1],b:d[2],bright:d[0]+d[1]+d[2]});
+  const W=ctx.canvas.width, H=ctx.canvas.height;
+  const colors=[];
+  for(const [px,py] of pts){
+    const x=Math.round(Math.max(0,Math.min(W-1,px)));
+    const y=Math.round(Math.max(0,Math.min(H-1,py)));
+    const d=ctx.getImageData(x,y,1,1).data;
+    colors.push({r:d[0],g:d[1],b:d[2],br:d[0]+d[1]+d[2]});
   }
-  // Pick the brightest sample (most likely the bubble background, not text)
-  samples.sort((a,b2)=>b2.bright-a.bright);
-  // Use average of top 4 brightest
-  const top=samples.slice(0,4);
-  const r=Math.round(top.reduce((s,c)=>s+c.r,0)/top.length);
-  const g=Math.round(top.reduce((s,c)=>s+c.g,0)/top.length);
-  const bv=Math.round(top.reduce((s,c)=>s+c.b,0)/top.length);
-  return `rgb(${r},${g},${bv})`;
+  // Sort by brightness, take top half (brightest = background, not text)
+  colors.sort((a,b)=>b.br-a.br);
+  const top=colors.slice(0,6);
+  return {
+    r:Math.round(top.reduce((s,c)=>s+c.r,0)/top.length),
+    g:Math.round(top.reduce((s,c)=>s+c.g,0)/top.length),
+    b:Math.round(top.reduce((s,c)=>s+c.b,0)/top.length),
+  };
 }
 
-// ── Write Arabic text centered in area ──
-function drawArabicText(ctx, text, cx, cy, maxW, maxH, type){
-  // Determine text color based on type
-  let textColor;
-  if(type==='narration') textColor='#1a0e00';
-  else textColor='#111111';
+function inpaintRegion(ctx,x1,y1,x2,y2,bg){
+  const bw=x2-x1, bh=y2-y1;
+  // Inset to preserve bubble border
+  const inset=Math.max(2,Math.round(Math.min(bw,bh)*0.03));
+  const ix1=x1+inset, iy1=y1+inset, ix2=x2-inset, iy2=y2-inset;
 
-  // Calculate font size to fit
-  let fs=Math.max(11, Math.min(maxH*0.42, maxW*0.11));
-  ctx.font=`bold ${fs}px Tajawal,Arial`;
+  // Fill with bg color
+  ctx.save();
+  ctx.fillStyle=`rgb(${bg.r},${bg.g},${bg.b})`;
+  // Slightly rounded fill
+  const r=Math.max(3,Math.min(bw,bh)*0.08);
+  ctx.beginPath();
+  ctx.moveTo(ix1+r,iy1);ctx.lineTo(ix2-r,iy1);ctx.quadraticCurveTo(ix2,iy1,ix2,iy1+r);
+  ctx.lineTo(ix2,iy2-r);ctx.quadraticCurveTo(ix2,iy2,ix2-r,iy2);
+  ctx.lineTo(ix1+r,iy2);ctx.quadraticCurveTo(ix1,iy2,ix1,iy2-r);
+  ctx.lineTo(ix1,iy1+r);ctx.quadraticCurveTo(ix1,iy1,ix1+r,iy1);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
 
-  // Shrink font until text fits width
-  let lines=wrapAr(ctx,text,maxW*0.9);
-  while(lines.length*fs*1.3>maxH*0.9 && fs>9){
-    fs-=1;
-    ctx.font=`bold ${fs}px Tajawal,Arial`;
-    lines=wrapAr(ctx,text,maxW*0.9);
+  // Smooth edges with a subtle blur effect by re-blending border pixels
+  // Sample border row/col and blend inward
+  blendEdges(ctx,ix1,iy1,ix2-ix1,iy2-iy1,bg);
+}
+
+function blendEdges(ctx,x,y,w,h,bg){
+  // Read a thin strip around the edge and blend toward bg
+  // This softens the hard cut between inpainted area and original
+  const blendW=Math.max(2,Math.round(Math.min(w,h)*0.04));
+  for(let d=0;d<blendW;d++){
+    const alpha=(d+1)/blendW;
+    ctx.save();
+    ctx.globalAlpha=1-alpha*0.7;
+    ctx.fillStyle=`rgb(${bg.r},${bg.g},${bg.b})`;
+    // top
+    ctx.fillRect(x,y+d,w,1);
+    // bottom
+    ctx.fillRect(x,y+h-1-d,w,1);
+    // left
+    ctx.fillRect(x+d,y,1,h);
+    // right
+    ctx.fillRect(x+w-1-d,y,1,h);
+    ctx.restore();
+  }
+}
+
+function drawAr(ctx,text,x1,y1,bw,bh,bg,type){
+  const cx=x1+bw/2, cy=y1+bh/2;
+  const brightness=bg.r*0.299+bg.g*0.587+bg.b*0.114;
+  const textColor=brightness>100?'rgba(15,10,5,0.95)':'rgba(240,235,220,0.95)';
+
+  // Find fitting font size
+  let fs=Math.max(9,Math.min(bh*0.42,bw*0.14));
+  ctx.font=`bold ${fs}px Tajawal, Arial`;
+  let lines=wrapAr(ctx,text,bw*0.86);
+  while(lines.length*fs*1.3>bh*0.87&&fs>8){
+    fs-=0.5;
+    ctx.font=`bold ${fs}px Tajawal, Arial`;
+    lines=wrapAr(ctx,text,bw*0.86);
   }
 
-  const lineH=fs*1.32;
-  const totalH=lines.length*lineH;
-  const startY=cy-totalH/2+lineH*0.5;
+  const lh=fs*1.32;
+  const totalH=lines.length*lh;
+  const startY=cy-totalH/2+lh*0.4;
 
   ctx.save();
   ctx.fillStyle=textColor;
-  ctx.font=`bold ${fs}px Tajawal,Arial`;
+  ctx.font=`bold ${fs}px Tajawal, Arial`;
   ctx.textAlign='center';
-  ctx.textBaseline='middle';
-  lines.forEach((line,i)=>ctx.fillText(line,cx,startY+i*lineH));
+  ctx.textBaseline='alphabetic';
+  lines.forEach((line,i)=>ctx.fillText(line,cx,startY+i*lh));
   ctx.restore();
 }
 
-function drawSFXText(ctx,text,x1,y1,bw,bh){
+function drawSFX(ctx,text,x1,y1,bw,bh){
   const cx=x1+bw/2, cy=y1+bh/2;
-  const fs=Math.max(14,Math.min(bh*0.6,bw*0.25));
+  const fs=Math.max(12,Math.min(bh*0.55,bw*0.22));
   ctx.save();
-  ctx.font=`900 ${fs}px Tajawal,Arial`;
+  ctx.font=`900 ${fs}px Tajawal, Arial`;
   ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.strokeStyle='rgba(0,0,0,0.6)';ctx.lineWidth=fs*0.1;ctx.lineJoin='round';
+  ctx.strokeStyle='rgba(0,0,0,0.65)';ctx.lineWidth=fs*0.09;ctx.lineJoin='round';
   ctx.strokeText(text,cx,cy);
   ctx.fillStyle='#ffd60a';ctx.fillText(text,cx,cy);
   ctx.restore();
 }
 
-// ── Rounded rect clip path ──
-function roundRectClip(ctx,x,y,w,h,r){
-  r=Math.min(r,w/2,h/2);
-  ctx.beginPath();
-  ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
-  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
-  ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);
-  ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);
-  ctx.closePath();
-}
-
-// ── Arabic text wrap ──
 function wrapAr(ctx,text,maxW){
-  if(!text) return [''];
+  if(!text)return[''];
   const words=text.split(' ');
   const lines=[];let cur='';
   for(const w of words){
-    const test=cur?cur+' '+w:w;
-    if(ctx.measureText(test).width>maxW&&cur){lines.push(cur);cur=w;}
-    else cur=test;
+    const t=(cur+' '+w).trim();
+    if(ctx.measureText(t).width>maxW&&cur){lines.push(cur);cur=w;}
+    else cur=t;
   }
-  if(cur) lines.push(cur);
+  if(cur)lines.push(cur);
   return lines.length?lines:[text];
 }
 
-// ── Cards ──
 function renderCards(){
   const c=document.getElementById('cards');c.innerHTML='';
   const tl={dialogue:'حوار 💬',narration:'سرد 📖',sfx:'مؤثر 💥',title:'عنوان'};
