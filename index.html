@@ -4,219 +4,137 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>مترجم المانغا v2</title>
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<title>مترجم المانغا v3</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --ink: #0d0d12;
-  --paper: #f0ebe0;
-  --red: #e63946;
-  --accent: #ffd60a;
-  --panel: #1a1a2e;
-  --dim: #777;
+  --ink:#0d0d12; --paper:#f0ebe0; --red:#e63946;
+  --gold:#c8a84b; --gold-bg:rgba(200,168,75,0.92);
+  --bubble-bg:rgba(255,255,255,0.93);
+  --bubble-dark:rgba(20,20,30,0.88);
+  --dim:#666; --panel:#181825;
 }
-* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 
-body {
-background: var(–ink);
-color: var(–paper);
-font-family: ‘Tajawal’, sans-serif;
-min-height: 100dvh;
-}
-body::before {
-content:’’; position:fixed; inset:0; z-index:0; pointer-events:none;
-background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);
-background-size:44px 44px;
-}
+body{background:var(–ink);color:var(–paper);font-family:‘Tajawal’,sans-serif;min-height:100dvh}
+body::before{content:’’;position:fixed;inset:0;z-index:0;pointer-events:none;
+background-image:linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),
+linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px);
+background-size:42px 42px}
 
-.wrap { position:relative; z-index:1; max-width:480px; margin:0 auto; padding:0 14px 50px; }
+.wrap{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:0 13px 50px}
 
-/* HEADER */
-header { padding:26px 0 18px; text-align:center; }
-.badge {
-display:inline-block; background:var(–red); color:#fff;
-font-family:‘Space Mono’,monospace; font-size:9px; font-weight:700;
-letter-spacing:3px; padding:3px 14px; text-transform:uppercase;
+/* ── HEADER ── */
+header{padding:24px 0 16px;text-align:center}
+.badge{display:inline-block;background:var(–red);color:#fff;
+font-family:‘Space Mono’,monospace;font-size:9px;font-weight:700;
+letter-spacing:3px;padding:3px 13px;text-transform:uppercase;
 clip-path:polygon(0 0,calc(100% - 7px) 0,100% 50%,calc(100% - 7px) 100%,0 100%,7px 50%);
-margin-bottom:10px;
-}
-h1 { font-size:26px; font-weight:900; letter-spacing:-1px; }
-h1 small { display:block; font-size:12px; font-weight:300; letter-spacing:2px; color:var(–dim); margin-top:4px; }
+margin-bottom:9px}
+h1{font-size:25px;font-weight:900;letter-spacing:-1px}
+h1 small{display:block;font-size:11px;font-weight:300;letter-spacing:2px;color:var(–dim);margin-top:3px}
 
-/* API KEY */
-.api-box {
-background:var(–panel); border-radius:14px; padding:14px;
-margin-bottom:14px; border:1px solid rgba(255,255,255,0.07);
-}
-.lbl { font-size:11px; font-weight:700; letter-spacing:2px; color:var(–dim); margin-bottom:8px; }
-.row { display:flex; gap:8px; align-items:center; }
-input {
-flex:1; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1);
-color:#fff; border-radius:10px; padding:10px 13px; font-size:14px;
-font-family:‘Space Mono’,monospace; outline:none; direction:ltr;
-transition:border-color .2s;
-}
-input:focus { border-color:var(–accent); }
-.eye {
-background:rgba(255,255,255,0.07); border:none; color:var(–dim);
-border-radius:8px; padding:10px 12px; cursor:pointer; font-size:15px;
-}
-.hint { font-size:11px; color:var(–dim); margin-top:7px; }
-.hint a { color:var(–accent); text-decoration:none; }
+/* ── API BOX ── */
+.api-box{background:var(–panel);border-radius:14px;padding:13px;
+margin-bottom:13px;border:1px solid rgba(255,255,255,.07)}
+.lbl{font-size:11px;font-weight:700;letter-spacing:2px;color:var(–dim);margin-bottom:8px}
+.row{display:flex;gap:7px;align-items:center}
+input{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+color:#fff;border-radius:10px;padding:10px 12px;font-size:13px;
+font-family:‘Space Mono’,monospace;outline:none;direction:ltr;transition:border-color .2s}
+input:focus{border-color:var(–gold)}
+.eye{background:rgba(255,255,255,.07);border:none;color:var(–dim);
+border-radius:8px;padding:10px 11px;cursor:pointer;font-size:14px}
+.hint{font-size:11px;color:var(–dim);margin-top:6px}
+.hint a{color:var(–gold);text-decoration:none}
 
-/* UPLOAD */
-.drop-zone {
-border:2px dashed rgba(255,255,255,0.18); border-radius:16px;
-padding:38px 18px; text-align:center; cursor:pointer;
-background:rgba(255,255,255,0.025); margin-bottom:14px;
-transition:all .25s; position:relative; overflow:hidden;
-}
-.drop-zone.over { border-color:var(–accent); background:rgba(255,214,10,.05); }
-.drop-zone.filled { padding:0; border-color:var(–red); }
-.drop-zone img.preview { width:100%; display:block; border-radius:14px; max-height:62dvh; object-fit:contain; background:#000; }
-.drop-icon { font-size:44px; margin-bottom:10px; display:block; }
-.drop-main { font-size:15px; font-weight:700; margin-bottom:5px; }
-.drop-sub { font-size:12px; color:var(–dim); }
-#fi { display:none; }
-.chg-btn {
-position:absolute; top:10px; left:10px;
-background:rgba(0,0,0,0.72); border:1px solid rgba(255,255,255,0.18);
-color:#fff; border-radius:8px; padding:5px 11px; font-size:12px;
-font-family:‘Tajawal’,sans-serif; cursor:pointer; backdrop-filter:blur(8px);
-}
+/* ── UPLOAD ── */
+.dz{border:2px dashed rgba(255,255,255,.16);border-radius:15px;
+padding:36px 16px;text-align:center;cursor:pointer;
+background:rgba(255,255,255,.023);margin-bottom:13px;transition:all .22s;
+position:relative;overflow:hidden}
+.dz.over{border-color:var(–gold);background:rgba(200,168,75,.05)}
+.dz.filled{padding:0;border-color:var(–red)}
+.dz img.prev{width:100%;display:block;border-radius:13px;
+max-height:60dvh;object-fit:contain;background:#000}
+.di{font-size:42px;margin-bottom:9px;display:block}
+.dm{font-size:15px;font-weight:700;margin-bottom:4px}
+.ds{font-size:12px;color:var(–dim)}
+#fi{display:none}
+.chg{position:absolute;top:9px;left:9px;background:rgba(0,0,0,.72);
+border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:7px;
+padding:5px 10px;font-size:12px;font-family:‘Tajawal’,sans-serif;cursor:pointer;
+backdrop-filter:blur(8px)}
 
-/* TRANSLATE BTN */
-.go-btn {
-width:100%; background:var(–red); border:none; color:#fff;
-font-family:‘Tajawal’,sans-serif; font-size:18px; font-weight:900;
-padding:17px; border-radius:14px; cursor:pointer; letter-spacing:.5px;
-transition:all .2s; margin-bottom:14px;
-clip-path:polygon(0 0,calc(100% - 11px) 0,100% 50%,calc(100% - 11px) 100%,0 100%,11px 50%);
-}
-.go-btn:disabled { background:#2d2d2d; cursor:not-allowed; }
-.go-btn:not(:disabled):active { transform:scale(.98); }
+/* ── BUTTON ── */
+.go{width:100%;background:var(–red);border:none;color:#fff;
+font-family:‘Tajawal’,sans-serif;font-size:17px;font-weight:900;
+padding:16px;border-radius:13px;cursor:pointer;letter-spacing:.5px;
+transition:all .2s;margin-bottom:13px;
+clip-path:polygon(0 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,0 100%,10px 50%)}
+.go:disabled{background:#2a2a2a;cursor:not-allowed}
+.go:not(:disabled):active{transform:scale(.98)}
 
-/* PROGRESS */
-.prog-wrap { display:none; background:rgba(255,255,255,0.06); border-radius:99px; height:5px; overflow:hidden; margin-bottom:7px; }
-.prog-fill { height:100%; background:linear-gradient(90deg,var(–red),var(–accent)); border-radius:99px; transition:width .4s ease; width:0; }
-.prog-txt { display:none; font-size:12px; color:var(–dim); text-align:center; margin-bottom:14px; font-family:‘Space Mono’,monospace; }
+/* ── PROGRESS ── */
+.pw{display:none;background:rgba(255,255,255,.06);border-radius:99px;height:5px;overflow:hidden;margin-bottom:6px}
+.pf{height:100%;background:linear-gradient(90deg,var(–red),var(–gold));border-radius:99px;transition:width .4s ease;width:0}
+.pt{display:none;font-size:11px;color:var(–dim);text-align:center;margin-bottom:13px;font-family:‘Space Mono’,monospace}
+.err{display:none;background:rgba(230,57,70,.1);border:1px solid rgba(230,57,70,.3);
+border-radius:12px;padding:12px;color:#ff7070;font-size:13px;line-height:1.6;margin-bottom:13px}
 
-/* ERROR */
-.err {
-display:none; background:rgba(230,57,70,.1); border:1px solid rgba(230,57,70,.3);
-border-radius:12px; padding:13px; color:#ff6b6b; font-size:13px; line-height:1.6;
-margin-bottom:14px;
-}
+/* ── RESULTS ── */
+.res{display:none}
+.tabs{display:flex;gap:5px;background:rgba(255,255,255,.05);border-radius:11px;padding:4px;margin-bottom:13px}
+.tab{flex:1;background:transparent;border:none;color:var(–dim);
+font-family:‘Tajawal’,sans-serif;font-size:14px;font-weight:700;
+padding:9px;border-radius:9px;cursor:pointer;transition:all .2s}
+.tab.on{background:var(–red);color:#fff}
+.pane{display:none}.pane.on{display:block}
 
-/* RESULT */
-.result-area { display:none; }
+/* ══════════════════════════════
+IMAGE OVERLAY PANE
+The core: canvas-based rendering
+══════════════════════════════ */
+.canvas-wrap{position:relative;border-radius:14px;overflow:hidden;
+border:1px solid rgba(255,255,255,.08);margin-bottom:7px;background:#000}
+#cvs{display:block;width:100%;height:auto}
+.save-hint{font-size:11px;color:var(–dim);text-align:center;margin-top:5px}
 
-/* Tabs */
-.tabs { display:flex; gap:5px; background:rgba(255,255,255,0.05); border-radius:12px; padding:4px; margin-bottom:14px; }
-.tab {
-flex:1; background:transparent; border:none; color:var(–dim);
-font-family:‘Tajawal’,sans-serif; font-size:14px; font-weight:700;
-padding:9px; border-radius:9px; cursor:pointer; transition:all .2s;
-}
-.tab.on { background:var(–red); color:#fff; }
+/* ── CARDS PANE ── */
+.stitle{font-size:11px;font-weight:700;letter-spacing:3px;color:var(–dim);
+margin-bottom:11px;display:flex;align-items:center;gap:7px;text-transform:uppercase}
+.stitle::after{content:’’;flex:1;height:1px;background:rgba(255,255,255,.08)}
 
-.pane { display:none; }
-.pane.on { display:block; }
+.card{background:var(–panel);border-radius:12px;padding:12px 13px;
+margin-bottom:8px;border:1px solid rgba(255,255,255,.06);
+position:relative;overflow:hidden;animation:slin .32s ease backwards}
+.card::before{content:’’;position:absolute;top:0;right:0;width:3px;height:100%;background:var(–red)}
+.card.nar::before{background:var(–gold)}
+.card.sfx::before{background:var(–gold);opacity:.6}
+@keyframes slin{from{opacity:0;transform:translateY(13px)}to{opacity:1;transform:translateY(0)}}
+.cnum{font-family:‘Space Mono’,monospace;font-size:10px;color:var(–red);font-weight:700;margin-bottom:5px;letter-spacing:2px}
+.card.nar .cnum{color:var(–gold)}.card.sfx .cnum{color:var(–gold);opacity:.8}
+.corig{font-family:‘Space Mono’,monospace;font-size:11px;color:var(–dim);
+direction:ltr;text-align:left;background:rgba(0,0,0,.3);
+padding:6px 8px;border-radius:7px;margin-bottom:8px;word-break:break-word}
+.car{font-size:16px;font-weight:700;line-height:1.6;color:var(–paper)}
 
-/* ===== IMAGE PANE ===== */
-.img-stage {
-position:relative; border-radius:14px; overflow:hidden;
-border:1px solid rgba(255,255,255,0.09); margin-bottom:8px;
-background:#000;
-}
-.img-stage img { width:100%; display:block; }
+.copyall{width:100%;background:transparent;border:1px solid rgba(255,255,255,.12);
+color:var(–paper);font-family:‘Tajawal’,sans-serif;font-size:14px;font-weight:700;
+padding:12px;border-radius:12px;cursor:pointer;margin-top:7px;transition:background .2s}
+.copyall:active{background:rgba(255,255,255,.07)}
 
-/* Bubble overlay */
-.bbl {
-position:absolute;
-transform:translate(-50%,-50%);
-background:rgba(8,8,14,0.93);
-color:var(–paper);
-font-family:‘Tajawal’,sans-serif;
-font-weight:700;
-text-align:center;
-direction:rtl;
-border-radius:10px;
-border:1.5px solid rgba(230,57,70,0.55);
-padding:3px 7px;
-line-height:1.45;
-pointer-events:none;
-word-break:break-word;
-backdrop-filter:blur(2px);
-box-shadow:0 2px 12px rgba(0,0,0,0.6);
-}
-/* Narration box style */
-.bbl.narration {
-background:rgba(180,150,80,0.92);
-color:#0a0a0f;
-border-color:rgba(180,150,80,0.8);
-font-weight:500;
-}
-/* Sound effect */
-.bbl.sfx {
-background:transparent;
-color:var(–accent);
-border:none;
-font-size:1.1em !important;
-font-weight:900;
-text-shadow:0 0 8px rgba(255,214,10,.5);
-}
+/* ── HOW ── */
+.how{margin-top:24px;padding:17px;background:var(–panel);border-radius:13px;border:1px solid rgba(255,255,255,.06)}
+.step{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
+.step:last-child{margin-bottom:0}
+.sn{background:var(–red);color:#fff;font-family:‘Space Mono’,monospace;font-size:10px;
+font-weight:700;width:25px;height:25px;border-radius:7px;display:flex;
+align-items:center;justify-content:center;flex-shrink:0}
+.st{font-size:13px;line-height:1.5;padding-top:2px}
+.st strong{color:var(–gold)}
 
-.save-hint { font-size:11px; color:var(–dim); text-align:center; margin-top:6px; }
-
-/* ===== CARDS PANE ===== */
-.sec-title {
-font-size:11px; font-weight:700; letter-spacing:3px; color:var(–dim);
-margin-bottom:12px; display:flex; align-items:center; gap:8px;
-text-transform:uppercase;
-}
-.sec-title::after { content:’’; flex:1; height:1px; background:rgba(255,255,255,0.09); }
-
-.card {
-background:var(–panel); border-radius:13px; padding:13px 14px;
-margin-bottom:9px; border:1px solid rgba(255,255,255,0.06);
-position:relative; overflow:hidden;
-animation:slin .35s ease backwards;
-}
-.card::before { content:’’; position:absolute; top:0; right:0; width:3px; height:100%; background:var(–red); }
-.card.narration::before { background:#b49650; }
-.card.sfx::before { background:var(–accent); }
-
-@keyframes slin { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
-
-.card-num { font-family:‘Space Mono’,monospace; font-size:10px; color:var(–red); font-weight:700; margin-bottom:5px; letter-spacing:2px; }
-.card.narration .card-num { color:#b49650; }
-.card.sfx .card-num { color:var(–accent); }
-.card-orig {
-font-family:‘Space Mono’,monospace; font-size:11px; color:var(–dim);
-direction:ltr; text-align:left; background:rgba(0,0,0,.3);
-padding:7px 9px; border-radius:7px; margin-bottom:9px; word-break:break-word;
-}
-.card-ar { font-size:17px; font-weight:700; line-height:1.6; color:var(–paper); direction:rtl; }
-
-.copy-all {
-width:100%; background:transparent; border:1px solid rgba(255,255,255,0.13);
-color:var(–paper); font-family:‘Tajawal’,sans-serif; font-size:15px;
-font-weight:700; padding:13px; border-radius:13px; cursor:pointer;
-margin-top:8px; transition:background .2s;
-}
-.copy-all:active { background:rgba(255,255,255,.07); }
-
-/* HOW */
-.how { margin-top:26px; padding:18px; background:var(–panel); border-radius:14px; border:1px solid rgba(255,255,255,.06); }
-.step { display:flex; align-items:flex-start; gap:11px; margin-bottom:13px; }
-.step:last-child { margin-bottom:0; }
-.snum { background:var(–red); color:#fff; font-family:‘Space Mono’,monospace; font-size:11px; font-weight:700; width:26px; height:26px; border-radius:7px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-.stxt { font-size:13px; line-height:1.5; padding-top:3px; }
-.stxt strong { color:var(–accent); }
-
-footer { text-align:center; padding-top:28px; font-size:11px; color:rgba(255,255,255,.18); font-family:‘Space Mono’,monospace; }
+footer{text-align:center;padding-top:26px;font-size:10px;color:rgba(255,255,255,.17);font-family:‘Space Mono’,monospace}
 </style>
 
 </head>
@@ -224,13 +142,9 @@ footer { text-align:center; padding-top:28px; font-size:11px; color:rgba(255,255
 <div class="wrap">
 
 <header>
-  <div class="badge">AutoScanlate AR v2</div>
-  <h1>مترجم المانغا
-    <small>إنجليزي → عربي · Claude Vision</small>
-  </h1>
+  <div class="badge">AutoScanlate AR · v3</div>
+  <h1>مترجم المانغا <small>إنجليزي → عربي · Claude Vision</small></h1>
 </header>
-
-<!-- API KEY -->
 
 <div class="api-box">
   <div class="lbl">🔑 مفتاح Anthropic API</div>
@@ -241,101 +155,80 @@ footer { text-align:center; padding-top:28px; font-size:11px; color:rgba(255,255
   <div class="hint">من <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> — يُحفظ على جهازك فقط</div>
 </div>
 
-<!-- UPLOAD -->
-
-<div class="drop-zone" id="dz" onclick="document.getElementById('fi').click()">
-  <span class="drop-icon">🖼️</span>
-  <div class="drop-main">ارفع صفحة الكوميك / المانغا</div>
-  <div class="drop-sub">PNG · JPG · WEBP — اضغط أو اسحب</div>
+<div class="dz" id="dz" onclick="document.getElementById('fi').click()">
+  <span class="di">🖼️</span>
+  <div class="dm">ارفع صفحة الكوميك أو المانغا</div>
+  <div class="ds">PNG · JPG · WEBP — اضغط أو اسحب</div>
 </div>
 <input type="file" id="fi" accept="image/*" onchange="loadFile(event)">
 
-<!-- ERROR -->
-
 <div class="err" id="err"></div>
+<div class="pw" id="pw"><div class="pf" id="pf"></div></div>
+<div class="pt" id="pt"></div>
 
-<!-- PROGRESS -->
+<button class="go" id="goBtn" onclick="run()" disabled>← ترجم الآن</button>
 
-<div class="prog-wrap" id="pw"><div class="prog-fill" id="pf"></div></div>
-<div class="prog-txt" id="pt"></div>
-
-<!-- BUTTON -->
-
-<button class="go-btn" id="goBtn" onclick="run()" disabled>← ترجم الآن</button>
-
-<!-- RESULTS -->
-
-<div class="result-area" id="res">
+<div class="res" id="res">
   <div class="tabs">
     <button class="tab on" onclick="swTab('img')">🖼️ على الصورة</button>
-    <button class="tab" onclick="swTab('crd')">📋 البطاقات</button>
+    <button class="tab"    onclick="swTab('crd')">📋 البطاقات</button>
   </div>
 
   <div class="pane on" id="imgPane">
-    <div class="img-stage" id="stage">
-      <img id="rimg" src="" alt="">
+    <div class="canvas-wrap">
+      <canvas id="cvs"></canvas>
     </div>
     <div class="save-hint">اضغط مطولاً على الصورة لحفظها</div>
+    <!-- Hidden download link for share -->
+    <a id="dlLink" style="display:none"></a>
   </div>
 
   <div class="pane" id="crdPane">
-    <div class="sec-title">النصوص المترجمة</div>
+    <div class="stitle">النصوص المترجمة</div>
     <div id="cards"></div>
-    <button class="copy-all" onclick="copyAll()">📋 نسخ كل الترجمات</button>
+    <button class="copyall" onclick="copyAll()">📋 نسخ كل الترجمات</button>
   </div>
 </div>
 
-<!-- HOW IT WORKS -->
-
 <div class="how">
-  <div class="sec-title">كيف يعمل</div>
-  <div class="step"><div class="snum">١</div><div class="stxt">ترفع صورة المانغا أو الكوميك بأي جودة</div></div>
-  <div class="step"><div class="snum">٢</div><div class="stxt"><strong>Claude Vision</strong> يقرأ الصورة مباشرة ويعرف مواقع الفقاعات والإحداثيات بدقة</div></div>
-  <div class="step"><div class="snum">٣</div><div class="stxt">يترجم كل فقاعة للعربية مع التفريق بين <strong>حوار / سرد / مؤثرات صوتية</strong></div></div>
-  <div class="step"><div class="snum">٤</div><div class="stxt">الترجمة تظهر مباشرة داخل الفقاعات بالمكان الصحيح</div></div>
+  <div class="stitle">كيف يعمل</div>
+  <div class="step"><div class="sn">١</div><div class="st">ارفع صورة الصفحة بأي جودة</div></div>
+  <div class="step"><div class="sn">٢</div><div class="st"><strong>Claude Vision</strong> يحلل الصورة ويحدد مواقع الفقاعات بدقة</div></div>
+  <div class="step"><div class="sn">٣</div><div class="st">يُميّز بين <strong>حوار / سرد / مؤثرات صوتية</strong> ويترجم كلاً بأسلوبه</div></div>
+  <div class="step"><div class="sn">٤</div><div class="st">الترجمة تُرسم مباشرة على الصورة بـ <strong>Canvas</strong> بشكل نظيف</div></div>
 </div>
 
-<footer>AutoScanlate AR v2 — Claude Vision · يعمل في المتصفح بالكامل</footer>
+<footer>AutoScanlate AR v3 — Claude Vision + Canvas · يعمل في المتصفح بالكامل</footer>
 </div>
 
 <script>
-// ─── state ───
-let imgDataURL = null;
-let bubbles    = [];
+// ── state ──
+let imgEl     = null;   // HTMLImageElement of original
+let imgDURL   = null;
+let bubbles   = [];
 
-// ─── api key persist ───
+// ── api key ──
 window.addEventListener('load', () => {
-  const s = localStorage.getItem('ak');
-  if (s) document.getElementById('ak').value = s;
+  const s = localStorage.getItem('ak'); if (s) document.getElementById('ak').value = s;
 });
 document.getElementById('ak').addEventListener('input', () => {
   const v = document.getElementById('ak').value.trim();
   if (v.startsWith('sk-')) localStorage.setItem('ak', v);
 });
-function toggleVis() {
-  const i = document.getElementById('ak');
-  i.type = i.type === 'password' ? 'text' : 'password';
-}
+function toggleVis(){ const i=document.getElementById('ak'); i.type = i.type==='password'?'text':'password'; }
 
-// ─── upload / drag ───
+// ── upload ──
 const dz = document.getElementById('dz');
-dz.addEventListener('dragover',  e => { e.preventDefault(); dz.classList.add('over'); });
-dz.addEventListener('dragleave', () => dz.classList.remove('over'));
-dz.addEventListener('drop', e => {
-  e.preventDefault(); dz.classList.remove('over');
-  const f = e.dataTransfer.files[0];
-  if (f && f.type.startsWith('image/')) readFile(f);
-});
-function loadFile(ev) { const f = ev.target.files[0]; if (f) readFile(f); }
+dz.addEventListener('dragover',  e=>{ e.preventDefault(); dz.classList.add('over'); });
+dz.addEventListener('dragleave', ()=> dz.classList.remove('over'));
+dz.addEventListener('drop', e=>{ e.preventDefault(); dz.classList.remove('over'); const f=e.dataTransfer.files[0]; if(f&&f.type.startsWith('image/')) readFile(f); });
+function loadFile(ev){ const f=ev.target.files[0]; if(f) readFile(f); }
 
-function readFile(f) {
+function readFile(f){
   const r = new FileReader();
   r.onload = e => {
-    imgDataURL = e.target.result;
-    dz.innerHTML = `
-      <img class="preview" src="${imgDataURL}" alt="صورة">
-      <button class="chg-btn" onclick="resetImg(event)">تغيير</button>
-    `;
+    imgDURL = e.target.result;
+    dz.innerHTML = `<img class="prev" src="${imgDURL}" alt="صورة"><button class="chg" onclick="resetImg(event)">تغيير</button>`;
     dz.classList.add('filled');
     document.getElementById('goBtn').disabled = false;
     document.getElementById('res').style.display = 'none';
@@ -345,223 +238,334 @@ function readFile(f) {
   };
   r.readAsDataURL(f);
 }
-function resetImg(e) {
+function resetImg(e){
   e.stopPropagation();
-  imgDataURL = null;
-  dz.innerHTML = `
-    <span class="drop-icon">🖼️</span>
-    <div class="drop-main">ارفع صفحة الكوميك / المانغا</div>
-    <div class="drop-sub">PNG · JPG · WEBP — اضغط أو اسحب</div>
-  `;
+  imgDURL = null; imgEl = null;
+  dz.innerHTML = `<span class="di">🖼️</span><div class="dm">ارفع صفحة الكوميك أو المانغا</div><div class="ds">PNG · JPG · WEBP — اضغط أو اسحب</div>`;
   dz.classList.remove('filled');
   document.getElementById('goBtn').disabled = true;
   document.getElementById('fi').value = '';
 }
 
-// ─── tabs ───
-function swTab(name) {
-  ['img','crd'].forEach((t,i) => {
+// ── tabs ──
+function swTab(name){
+  ['img','crd'].forEach((t,i)=>{
     document.querySelectorAll('.tab')[i].classList.toggle('on', t===name);
     document.getElementById(t==='img'?'imgPane':'crdPane').classList.toggle('on', t===name);
   });
+  if(name==='img' && bubbles.length) drawCanvas();
 }
 
-// ─── main ───
-async function run() {
-  const apiKey = document.getElementById('ak').value.trim();
-  if (!apiKey) { showErr('أدخل مفتاح API أولاً'); return; }
-  if (!imgDataURL) { showErr('ارفع صورة أولاً'); return; }
+// ── main ──
+async function run(){
+  const key = document.getElementById('ak').value.trim();
+  if(!key)    { showErr('أدخل مفتاح API أولاً'); return; }
+  if(!imgDURL){ showErr('ارفع صورة أولاً'); return; }
 
   clearErr();
-  prog(true, 'Claude يحلل الصورة ويترجم...', 15);
+  prog(true,'Claude يحلل الصورة ويترجم...',15);
   document.getElementById('goBtn').disabled = true;
   document.getElementById('res').style.display = 'none';
 
   try {
-    const result = await callClaude(imgDataURL, apiKey);
-    prog(true, 'جاري عرض النتائج...', 90);
-    bubbles = result;
+    // load image element first (need natural dimensions)
+    imgEl = await loadImage(imgDURL);
+
+    prog(true,'جاري الترجمة...',40);
+    bubbles = await callClaude(imgDURL, key);
+
+    prog(true,'يرسم النتيجة...',85);
     renderCards();
-    renderOverlay();
+    drawCanvas();
+
     prog(false);
     document.getElementById('res').style.display = 'block';
-    document.getElementById('res').scrollIntoView({ behavior:'smooth' });
-  } catch(err) {
-    showErr('خطأ: ' + err.message);
+    document.getElementById('res').scrollIntoView({behavior:'smooth'});
+  } catch(err){
+    showErr('خطأ: '+err.message);
     prog(false);
   } finally {
     document.getElementById('goBtn').disabled = false;
   }
 }
 
-// ─── Claude Vision call ───
-async function callClaude(dataURL, key) {
-  // strip data:image/xxx;base64,
-  const b64 = dataURL.split(',')[1];
-  const mime = dataURL.split(';')[0].split(':')[1];
-
-  const systemPrompt = `أنت محلل ومترجم متخصص في كوميكس المانغا.
-مهمتك: قراءة الصورة المرفقة واستخراج كل النصوص الإنجليزية مع إحداثياتها بالنسبة المئوية من حجم الصورة الكلي، ثم ترجمتها للعربية.
-
-أجب بـ JSON فقط بهذا الشكل (بدون أي نص إضافي):
-{
-  "bubbles": [
-    {
-      "id": 1,
-      "type": "dialogue",
-      "original": "النص الأصلي بالإنجليزية",
-      "arabic": "الترجمة العربية",
-      "cx": 45.2,
-      "cy": 23.7,
-      "w": 18.0,
-      "h": 8.0
-    }
-  ]
+function loadImage(src){
+  return new Promise((res,rej)=>{
+    const img = new Image();
+    img.onload = ()=>res(img);
+    img.onerror = ()=>rej(new Error('فشل تحميل الصورة'));
+    img.src = src;
+  });
 }
 
-حيث:
-- type: "dialogue" للحوار داخل فقاعة / "narration" للسرد في صندوق / "sfx" للمؤثرات الصوتية
-- cx, cy: مركز الفقاعة بالنسبة المئوية (0-100) من عرض وارتفاع الصورة
-- w, h: عرض وارتفاع الفقاعة تقريباً بالنسبة المئوية
+// ── Claude Vision ──
+async function callClaude(dataURL, key){
+  const b64  = dataURL.split(',')[1];
+  const mime = dataURL.split(';')[0].split(':')[1];
+
+  const sys = `أنت محلل ومترجم متخصص في كوميكس المانغا وكتب الرسوم المصورة.
+
+مهمتك: قراءة الصورة واستخراج كل النصوص الإنجليزية مع إحداثيات مراكزها بالنسبة المئوية، ثم ترجمتها للعربية الفصحى المبسطة.
+
+أجب بـ JSON خالص فقط، بدون أي نص قبله أو بعده، بهذا الشكل:
+{"bubbles":[{"id":1,"type":"dialogue","original":"...","arabic":"...","cx":45.2,"cy":23.7,"w":18,"h":8}]}
+
+تعريفات الحقول:
+- type: "dialogue" = فقاعة حوار بيضاء بيضوية | "narration" = صندوق سرد ذهبي/بيج | "sfx" = مؤثر صوتي | "title" = عنوان كبير
+- cx,cy: مركز النص بالنسبة المئوية من أبعاد الصورة (0-100)
+- w,h: العرض والارتفاع التقريبيين بالنسبة المئوية
 
 قواعد الترجمة:
-- حافظ على لهجة الشخصيات وأسلوبهم
-- أسماء الشخصيات تُكتب بالحروف العربية كما تنطق
-- المؤثرات الصوتية تُترجم أو تُعرّب (مثل BANG = دوي)
-- اجعل الترجمة طبيعية وسلسة للقارئ العربي`;
+- الحوار: طبيعي وأسلوب شخصية محددة، قصير ومباشر
+- السرد: أدبي وواضح
+- المؤثرات: عرّب الصوت (BANG=دوي، CLANG=قرقعة، إلخ)
+- العناوين: ترجمها (PROLOGUE=المقدمة)
+- الأسماء: اكتبها كما تنطق بالعربية (Cressen=كريسن)
+- إذا كان النص قصيراً جداً (حرف أو رقم) فلا تدرجه`;
 
-  const resp = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': key,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true'
+  const resp = await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key':key,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true'
     },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 4000,
-      system: systemPrompt,
-      messages: [{
-        role: 'user',
-        content: [
-          {
-            type: 'image',
-            source: { type: 'base64', media_type: mime, data: b64 }
-          },
-          {
-            type: 'text',
-            text: 'استخرج كل النصوص الإنجليزية من هذه الصفحة مع إحداثياتها وترجمتها للعربية. أجب بـ JSON فقط.'
-          }
-        ]
-      }]
+    body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',
+      max_tokens:4096,
+      system:sys,
+      messages:[{role:'user',content:[
+        {type:'image',source:{type:'base64',media_type:mime,data:b64}},
+        {type:'text',text:'استخرج كل النصوص مع إحداثياتها وترجمتها. JSON فقط.'}
+      ]}]
     })
   });
 
-  if (!resp.ok) {
-    const e = await resp.json().catch(() => ({}));
-    throw new Error(e.error?.message || `API Error ${resp.status}`);
-  }
+  if(!resp.ok){ const e=await resp.json().catch(()=>({})); throw new Error(e.error?.message||`API Error ${resp.status}`); }
 
   const data = await resp.json();
   let raw = data.content[0].text.trim();
-  // strip possible markdown fences
-  raw = raw.replace(/^```json\s*/,'').replace(/^```\s*/,'').replace(/\s*```$/,'');
-
+  raw = raw.replace(/^```json\s*/,'').replace(/^```\s*/,'').replace(/\s*```$/,'').trim();
   const parsed = JSON.parse(raw);
-  return parsed.bubbles || [];
+  return parsed.bubbles||[];
 }
 
-// ─── render overlay on image ───
-function renderOverlay() {
-  const stage = document.getElementById('stage');
-  stage.querySelectorAll('.bbl').forEach(el => el.remove());
+// ══════════════════════════════════════
+//  CANVAS RENDERER — the heart of v3
+// ══════════════════════════════════════
+function drawCanvas(){
+  const cvs = document.getElementById('cvs');
+  const ctx = cvs.getContext('2d');
 
-  const rimg = document.getElementById('rimg');
-  rimg.src = imgDataURL;
-  rimg.onload = () => placeOverlays();
-  if (rimg.complete && rimg.naturalWidth) placeOverlays();
-}
+  const NW = imgEl.naturalWidth;
+  const NH = imgEl.naturalHeight;
 
-function placeOverlays() {
-  const stage   = document.getElementById('stage');
-  const rimg    = document.getElementById('rimg');
-  const dispW   = rimg.offsetWidth;
-  const dispH   = rimg.offsetHeight;
+  // Set canvas to natural image size for crisp output
+  cvs.width  = NW;
+  cvs.height = NH;
 
-  stage.querySelectorAll('.bbl').forEach(el => el.remove());
+  // 1. Draw original image
+  ctx.drawImage(imgEl, 0, 0, NW, NH);
 
+  // 2. Draw each bubble overlay
   bubbles.forEach(b => {
-    const el = document.createElement('div');
-    el.className = 'bbl' + (b.type === 'narration' ? ' narration' : b.type === 'sfx' ? ' sfx' : '');
+    const cx = (b.cx/100)*NW;
+    const cy = (b.cy/100)*NH;
+    const bw = (b.w /100)*NW;
+    const bh = (b.h /100)*NH;
 
-    // position
-    const leftPx = (b.cx / 100) * dispW;
-    const topPx  = (b.cy / 100) * dispH;
-    const wPx    = Math.max((b.w / 100) * dispW, 60);
+    const half_w = bw/2;
+    const half_h = bh/2;
+    const x = cx - half_w;
+    const y = cy - half_h;
 
-    el.style.left      = leftPx + 'px';
-    el.style.top       = topPx  + 'px';
-    el.style.maxWidth  = wPx + 'px';
-    el.style.width     = wPx + 'px';
-
-    // font size scaled to bubble width
-    const fs = Math.max(9, Math.min(15, wPx / 7));
-    el.style.fontSize = fs + 'px';
-
-    el.textContent = b.arabic;
-    stage.appendChild(el);
+    switch(b.type){
+      case 'title':     drawTitle(ctx, b.arabic, cx, cy, bw, NW, NH); break;
+      case 'narration': drawNarration(ctx, b.arabic, x, y, bw, bh, NW); break;
+      case 'sfx':       drawSFX(ctx, b.arabic, cx, cy, bw, NW); break;
+      default:          drawDialogue(ctx, b.arabic, cx, cy, bw, bh, NW); break;
+    }
   });
+
+  // Make canvas downloadable via long-press on iOS
+  // (Safari allows long-press save on canvas)
 }
 
-// re-render when image size changes (e.g. tab switch)
-window.addEventListener('resize', () => {
-  if (bubbles.length) placeOverlays();
-});
+// ── Dialogue bubble (white background, rounded rect) ──
+function drawDialogue(ctx, text, cx, cy, bw, bh, NW){
+  const pad   = NW*0.012;
+  const fs    = Math.max(NW*0.022, Math.min(NW*0.038, bw/Math.max(text.length*0.5,3)));
+  ctx.font    = `bold ${fs}px Tajawal, Arial`;
 
-// ─── render cards ───
-function renderCards() {
+  const lines = wrapTextAr(ctx, text, bw - pad*2);
+  const lineH = fs*1.35;
+  const boxW  = bw;
+  const boxH  = Math.max(bh, lines.length*lineH + pad*2);
+
+  const x = cx - boxW/2;
+  const y = cy - boxH/2;
+
+  // White fill
+  ctx.save();
+  roundRect(ctx, x, y, boxW, boxH, NW*0.015);
+  ctx.fillStyle = 'rgba(255,255,255,0.93)';
+  ctx.fill();
+  // Border
+  ctx.strokeStyle = 'rgba(30,30,40,0.4)';
+  ctx.lineWidth   = NW*0.003;
+  ctx.stroke();
+  ctx.restore();
+
+  // Arabic text (right-to-left, dark)
+  ctx.save();
+  ctx.fillStyle = '#111';
+  ctx.font      = `bold ${fs}px Tajawal, Arial`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  const totalH = lines.length*lineH;
+  const startY = cy - totalH/2 + lineH/2;
+  lines.forEach((line,i)=> ctx.fillText(line, cx, startY + i*lineH));
+  ctx.restore();
+}
+
+// ── Narration box (gold/beige background like caption boxes) ──
+function drawNarration(ctx, text, x, y, bw, bh, NW){
+  const pad   = NW*0.012;
+  const fs    = Math.max(NW*0.020, Math.min(NW*0.034, bw/Math.max(text.length*0.45,3)));
+  ctx.font    = `bold ${fs}px Tajawal, Arial`;
+
+  const lines = wrapTextAr(ctx, text, bw - pad*2);
+  const lineH = fs*1.38;
+  const boxH  = Math.max(bh, lines.length*lineH + pad*2.5);
+
+  ctx.save();
+  roundRect(ctx, x, y, bw, boxH, NW*0.012);
+  // Parchment/gold fill — matches the target image caption boxes
+  ctx.fillStyle = 'rgba(210,185,120,0.93)';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(140,100,30,0.7)';
+  ctx.lineWidth = NW*0.003;
+  ctx.stroke();
+  ctx.restore();
+
+  ctx.save();
+  ctx.fillStyle = '#1a1000';
+  ctx.font      = `bold ${fs}px Tajawal, Arial`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  const cx = x + bw/2;
+  const cy_start = y + boxH/2 - ((lines.length-1)*lineH)/2;
+  lines.forEach((line,i)=> ctx.fillText(line, cx, cy_start + i*lineH));
+  ctx.restore();
+}
+
+// ── SFX (stylized, semi-transparent) ──
+function drawSFX(ctx, text, cx, cy, bw, NW){
+  const fs = Math.max(NW*0.03, Math.min(NW*0.065, bw*0.8));
+  ctx.save();
+  ctx.font      = `900 ${fs}px Tajawal, Arial`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  // Outline
+  ctx.strokeStyle = 'rgba(0,0,0,0.7)';
+  ctx.lineWidth   = fs*0.12;
+  ctx.lineJoin    = 'round';
+  ctx.strokeText(text, cx, cy);
+  // Fill
+  ctx.fillStyle = '#ffd60a';
+  ctx.fillText(text, cx, cy);
+  ctx.restore();
+}
+
+// ── Title (large centered text) ──
+function drawTitle(ctx, text, cx, cy, bw, NW, NH){
+  const fs = Math.max(NW*0.045, Math.min(NW*0.09, bw*0.6));
+  ctx.save();
+  ctx.font      = `900 ${fs}px Tajawal, Arial`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  // Background bar
+  const tw = ctx.measureText(text).width;
+  const pad = NW*0.02;
+  roundRect(ctx, cx - tw/2 - pad, cy - fs*0.7, tw + pad*2, fs*1.4, NW*0.01);
+  ctx.fillStyle = 'rgba(10,10,20,0.75)';
+  ctx.fill();
+  // Text
+  ctx.strokeStyle = '#000'; ctx.lineWidth = fs*0.08; ctx.lineJoin='round'; ctx.strokeText(text,cx,cy);
+  ctx.fillStyle = '#f0ebe0'; ctx.fillText(text,cx,cy);
+  ctx.restore();
+}
+
+// ── Arabic text wrap (right-to-left) ──
+function wrapTextAr(ctx, text, maxW){
+  // Split by spaces, build lines
+  const words = text.split(' ');
+  const lines = [];
+  let cur = '';
+  for(const w of words){
+    const test = cur ? cur+' '+w : w;
+    if(ctx.measureText(test).width > maxW && cur){
+      lines.push(cur); cur = w;
+    } else { cur = test; }
+  }
+  if(cur) lines.push(cur);
+  return lines.length ? lines : [text];
+}
+
+// ── Rounded rect helper ──
+function roundRect(ctx, x, y, w, h, r){
+  r = Math.min(r, w/2, h/2);
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.lineTo(x+w-r, y);
+  ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+  ctx.lineTo(x+w, y+h-r);
+  ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+  ctx.lineTo(x+r, y+h);
+  ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+  ctx.lineTo(x, y+r);
+  ctx.quadraticCurveTo(x, y, x+r, y);
+  ctx.closePath();
+}
+
+// ── Cards ──
+function renderCards(){
   const c = document.getElementById('cards');
   c.innerHTML = '';
-  const typeLabel = { dialogue:'حوار 💬', narration:'سرد 📖', sfx:'مؤثر صوتي 💥' };
-
-  bubbles.forEach((b, i) => {
+  const tlbl = {dialogue:'حوار 💬',narration:'سرد 📖',sfx:'مؤثر 💥',title:'عنوان'};
+  bubbles.forEach((b,i)=>{
     const d = document.createElement('div');
-    d.className = 'card' + (b.type === 'narration' ? ' narration' : b.type === 'sfx' ? ' sfx' : '');
-    d.style.animationDelay = (i * 0.06) + 's';
-    d.innerHTML = `
-      <div class="card-num">${typeLabel[b.type] || 'نص'} — ${i+1}</div>
-      <div class="card-orig">${esc(b.original)}</div>
-      <div class="card-ar">${esc(b.arabic)}</div>
-    `;
+    d.className = 'card'+(b.type==='narration'?' nar':b.type==='sfx'?' sfx':'');
+    d.style.animationDelay = (i*.055)+'s';
+    d.innerHTML = `<div class="cnum">${tlbl[b.type]||'نص'} — ${i+1}</div>
+      <div class="corig">${esc(b.original)}</div>
+      <div class="car">${esc(b.arabic)}</div>`;
     c.appendChild(d);
   });
 }
 
-// ─── copy ───
-function copyAll() {
-  const txt = bubbles.map((b,i) => `[${i+1}] ${b.arabic}`).join('\n');
-  navigator.clipboard.writeText(txt).catch(() => {
-    const ta = document.createElement('textarea');
-    ta.value = txt;
-    document.body.appendChild(ta); ta.select();
-    document.execCommand('copy'); document.body.removeChild(ta);
-  }).then && undefined;
-  const btn = document.querySelector('.copy-all');
-  btn.textContent = '✅ تم النسخ!';
-  setTimeout(() => btn.textContent = '📋 نسخ كل الترجمات', 2000);
+function copyAll(){
+  const txt = bubbles.map((b,i)=>`[${i+1}] ${b.arabic}`).join('\n');
+  navigator.clipboard.writeText(txt).catch(()=>{
+    const ta=document.createElement('textarea'); ta.value=txt;
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+  });
+  const btn=document.querySelector('.copyall');
+  btn.textContent='✅ تم النسخ!';
+  setTimeout(()=>btn.textContent='📋 نسخ كل الترجمات',2000);
 }
 
-// ─── helpers ───
-function prog(show, txt='', pct=0) {
-  document.getElementById('pw').style.display  = show ? 'block' : 'none';
-  document.getElementById('pt').style.display  = show ? 'block' : 'none';
-  document.getElementById('pt').textContent    = txt;
-  document.getElementById('pf').style.width    = pct + '%';
+function prog(show,txt='',pct=0){
+  document.getElementById('pw').style.display = show?'block':'none';
+  document.getElementById('pt').style.display = show?'block':'none';
+  document.getElementById('pt').textContent   = txt;
+  document.getElementById('pf').style.width   = pct+'%';
 }
-function showErr(m) { const e=document.getElementById('err'); e.textContent=m; e.style.display='block'; }
-function clearErr()  { document.getElementById('err').style.display='none'; }
-function esc(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function showErr(m){ const e=document.getElementById('err'); e.textContent=m; e.style.display='block'; }
+function clearErr(){ document.getElementById('err').style.display='none'; }
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 </script>
 
 </body>
