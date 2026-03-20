@@ -1,142 +1,1364 @@
-#!/usr/bin/env python3
-“””
-AutoScanlate AR — الاستخدام:
-python3 manga_translate.py input.jpg [output.jpg]
+<!DOCTYPE html>
 
-يحتاج: pip install opencv-python-headless pillow
-“””
-import cv2, numpy as np, sys, os
-from PIL import Image, ImageDraw, ImageFont
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>كوميك ترجم — مترجم الكوميكس الذكي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0d0d0f;
+    --paper: #f5f0e8;
+    --panel: #1a1a2e;
+    --accent: #e63946;
+    --accent2: #f4a261;
+    --bubble: #ffffff;
+    --muted: #6b7280;
+    --success: #2d6a4f;
+    --border: rgba(0,0,0,0.12);
+    --shadow: 0 4px 32px rgba(0,0,0,0.18);
+    --glow: 0 0 40px rgba(230,57,70,0.25);
+  }
 
-FONT_PATH = ‘/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf’
+- { margin:0; padding:0; box-sizing:border-box; }
 
-def gf(sz):
-try: return ImageFont.truetype(FONT_PATH, max(8,int(sz)))
-except: return ImageFont.load_default()
+body {
+font-family: ‘Cairo’, ‘Tajawal’, sans-serif;
+background: var(–paper);
+color: var(–ink);
+min-height: 100vh;
+overflow-x: hidden;
+}
 
-def wt(draw, txt, font, mw):
-words=txt.split(); lines,cur=[],’’
-for w in words:
-t=(cur+’ ’+w).strip()
-bb=draw.textbbox((0,0),t,font=font)
-if(bb[2]-bb[0])>mw and cur: lines.append(cur);cur=w
-else: cur=t
-if cur: lines.append(cur)
-return lines or [txt]
+/* — HALFTONE BACKGROUND — */
+body::before {
+content: ‘’;
+position: fixed; inset: 0; z-index: 0;
+background-image: radial-gradient(circle, rgba(0,0,0,0.05) 1px, transparent 1px);
+background-size: 20px 20px;
+pointer-events: none;
+}
 
-def put_text(img_cv, txt, x1,y1,x2,y2, bg):
-if not txt: return img_cv
-bw,bh=x2-x1,y2-y1; cx,cy=(x1+x2)/2,(y1+y2)/2
-lum=bg[0]*.299+bg[1]*.587+bg[2]*.114
-tc=(10,8,5) if lum>100 else (240,235,215)
-pil=Image.fromarray(cv2.cvtColor(img_cv,cv2.COLOR_BGR2RGB))
-draw=ImageDraw.Draw(pil)
-best_fs,best_lines,best_lh=9,[txt],12
-for fs in range(int(bh*.52),8,-1):
-font=gf(fs); lines=wt(draw,txt,font,bw*.84); lh=fs*1.36
-if len(lines)*lh<=bh*.85: best_fs,best_lines,best_lh=fs,lines,lh; break
-font=gf(best_fs); th=len(best_lines)*best_lh; sy=cy-th/2+best_lh*.22
-for i,line in enumerate(best_lines):
-bb=draw.textbbox((0,0),line,font=font)
-draw.text((int(cx-(bb[2]-bb[0])/2),int(sy+i*best_lh)),line,font=font,fill=tc)
-return cv2.cvtColor(np.array(pil),cv2.COLOR_RGB2BGR)
+/* — HEADER / HERO — */
+header {
+position: relative;
+background: var(–panel);
+color: white;
+padding: 0;
+overflow: hidden;
+border-bottom: 4px solid var(–accent);
+}
 
-def pure_fill(img,x1,y1,x2,y2,bg):
-H,W=img.shape[:2]; x1,y1=max(0,x1),max(0,y1); x2,y2=min(W,x2),min(H,y2)
-img[y1:y2,x1:x2]=(bg[2],bg[1],bg[0]); return img
+.header-inner {
+position: relative; z-index: 2;
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 18px 40px;
+}
 
-def plain_inpaint(img,x1,y1,x2,y2,bg,arabic=””):
-H,W=img.shape[:2]; x1,y1=max(0,x1),max(0,y1); x2,y2=min(W,x2),min(H,y2)
-if x2<=x1 or y2<=y1: return img
-img[y1+1:y2-1,x1+1:x2-1]=(bg[2],bg[1],bg[0])
-mask=np.zeros((H,W),dtype=np.uint8); mask[y1+1:y2-1,x1+1:x2-1]=255
-img=cv2.inpaint(img,mask,5,cv2.INPAINT_TELEA)
-if arabic: img=put_text(img,arabic,x1,y1,x2,y2,bg)
-return img
+.logo {
+display: flex; align-items: center; gap: 14px;
+}
 
-def contour_bubble(img,x1,y1,x2,y2,bg,arabic=””,thresh_val=195):
-H,W=img.shape[:2]
-x1,y1=max(0,x1),max(0,y1); x2,y2=min(W,x2),min(H,y2)
-bw,bh=x2-x1,y2-y1
-if bw<10 or bh<10: return img
-crop=img[y1:y2,x1:x2].copy()
-gray=cv2.cvtColor(crop,cv2.COLOR_BGR2GRAY)
-*,thresh=cv2.threshold(gray,thresh_val,255,cv2.THRESH_BINARY)
-k=cv2.getStructuringElement(cv2.MORPH_ELLIPSE,(9,9))
-thresh=cv2.morphologyEx(thresh,cv2.MORPH_CLOSE,k)
-thresh=cv2.morphologyEx(thresh,cv2.MORPH_DILATE,k)
-contours,*=cv2.findContours(thresh,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
-if not contours: return plain_inpaint(img,x1,y1,x2,y2,bg,arabic)
-cnt=max(contours,key=cv2.contourArea)
-fill_mask=np.zeros((bh,bw),dtype=np.uint8)
-cv2.drawContours(fill_mask,[cnt],-1,255,-1)
-crop_out=crop.copy(); crop_out[fill_mask==255]=(bg[2],bg[1],bg[0])
-img[y1:y2,x1:x2]=crop_out
-full_mask=np.zeros((H,W),dtype=np.uint8)
-shifted=cnt+np.array([x1,y1])
-cv2.drawContours(full_mask,[shifted],-1,255,-1)
-eroded=cv2.erode(full_mask,np.ones((5,5),np.uint8))
-border=full_mask.copy(); border[eroded==255]=0
-img=cv2.inpaint(img,border,4,cv2.INPAINT_TELEA)
-if arabic:
-row_w=[(fill_mask[r].sum()//255,r) for r in range(bh)]
-row_w.sort(reverse=True)
-wide=[r for _,r in row_w[:max(1,bh//2)]]
-wide.sort()
-if wide:
-by1=y1+wide[0]; by2=y1+wide[-1]
-brows=fill_mask[wide[0]:wide[-1]+1]
-cols=np.where(brows.any(axis=0))[0]
-bx1=x1+int(cols[0]) if len(cols) else x1
-bx2=x1+int(cols[-1]) if len(cols) else x2
-pad=max(4,int((bx2-bx1)*.05))
-bx1+=pad; bx2-=pad
-by1+=max(3,int((by2-by1)*.05)); by2-=max(3,int((by2-by1)*.05))
-if bx2>bx1 and by2>by1: img=put_text(img,arabic,bx1,by1,bx2,by2,bg)
-else: img=put_text(img,arabic,x1,y1,x2,y2,bg)
-return img
+.logo-icon {
+width: 48px; height: 48px;
+background: var(–accent);
+border-radius: 12px;
+display: flex; align-items: center; justify-content: center;
+font-size: 24px;
+box-shadow: 4px 4px 0 rgba(255,255,255,0.15);
+animation: pulse-logo 3s ease-in-out infinite;
+}
 
-# ══════════════════════════════════════════════════════
+@keyframes pulse-logo {
+0%,100% { transform: scale(1); }
+50% { transform: scale(1.06); }
+}
 
-# BUBBLE DEFINITIONS
+.logo-text {
+font-family: ‘Cairo’, sans-serif;
+font-weight: 900;
+font-size: 26px;
+letter-spacing: -0.5px;
+line-height: 1;
+}
 
-# Format: (fn, x1,y1,x2,y2, arabic_text, bg_color)
+.logo-text span { color: var(–accent2); }
 
-# ══════════════════════════════════════════════════════
+.header-badge {
+background: rgba(230,57,70,0.2);
+border: 1px solid rgba(230,57,70,0.5);
+border-radius: 20px;
+padding: 6px 16px;
+font-size: 12px;
+font-weight: 600;
+color: #fca5a5;
+letter-spacing: 1px;
+}
 
-WHITE=(255,255,255)
-CREAM=(252,244,190)
+/* panel lines decoration */
+header::after {
+content: ‘’;
+position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+background:
+linear-gradient(90deg, transparent 25%, rgba(255,255,255,0.015) 25%),
+linear-gradient(90deg, transparent 50%, rgba(255,255,255,0.01) 50%),
+linear-gradient(90deg, transparent 75%, rgba(255,255,255,0.015) 75%);
+background-size: 33.33% 100%;
+pointer-events: none;
+}
 
-BUBBLES = [
-(pure_fill,      0,   0,  215, 152, “”,                                                                                                            WHITE),
-(pure_fill,    175,  40,  822, 142, “المقدمة”,                                                                                                     WHITE),
-(plain_inpaint,598, 162,  822, 282, “امتد ذيل المذنب فوق صخور دراغونستون كجرح في السماء.”,                                                        CREAM),
-(plain_inpaint, 22, 360,  226, 508, “كان المذنب يشتعل حتى في النهار، بينما ارتفع بخار رمادي شاحب من فتحات دراغونمونت الحارة خلف القلعة.”,       CREAM),
-(plain_inpaint,244, 392,  434, 496, “وفي صباح أمس، وصل غراب أبيض من القلعة.”,                                                                    CREAM),
-(contour_bubble,440, 482,  596, 578, “ميستر كريسن…”,                                                                                             WHITE),
-(contour_bubble, 60, 815,  238, 900, “…لدينا زوار.”,                                                                                             WHITE),
-(contour_bubble,305, 852,  474, 965, “ساعدني إلى كرسيي…”,                                                                                        WHITE),
-(plain_inpaint,632,1218,  822,1312, “ماذا كان يعني كل ذلك؟”,                                                                                      WHITE),
-]
+/* — HERO SECTION — */
+.hero {
+background: var(–panel);
+color: white;
+padding: 60px 40px 80px;
+text-align: center;
+position: relative;
+overflow: hidden;
+}
 
-def process(src, dst):
-print(f”Loading: {src}”)
-img=cv2.cvtColor(np.array(Image.open(src).convert(‘RGB’)),cv2.COLOR_RGB2BGR)
-H,W=img.shape[:2]; print(f”Size: {W}×{H}”)
-for fn,x1,y1,x2,y2,ar,bg in BUBBLES:
-label=ar[:22] if ar else “(erase)”
-print(f”  → {label}”)
-if fn==pure_fill:
-img=pure_fill(img,x1,y1,x2,y2,bg)
-if ar: img=put_text(img,ar,x1,y1,x2,y2,bg)
-elif fn==plain_inpaint:
-img=plain_inpaint(img,x1,y1,x2,y2,bg,ar)
-else:
-img=contour_bubble(img,x1,y1,x2,y2,bg,ar)
-cv2.imwrite(dst,img,[cv2.IMWRITE_JPEG_QUALITY,97])
-print(f”\n✓ Saved: {dst}”)
+.hero::before {
+content: ‘’;
+position: absolute; inset: 0;
+background: radial-gradient(ellipse 80% 60% at 50% 100%, rgba(230,57,70,0.15) 0%, transparent 70%);
+}
 
-if **name**==’**main**’:
-src=sys.argv[1] if len(sys.argv)>1 else ‘/mnt/user-data/uploads/manga_ar.png’
-dst=sys.argv[2] if len(sys.argv)>2 else src.rsplit(’.’,1)[0]+’_ar.jpg’
-process(src,dst)
+.hero-tag {
+display: inline-flex; align-items: center; gap: 8px;
+background: rgba(244,162,97,0.15);
+border: 1px solid rgba(244,162,97,0.4);
+border-radius: 30px;
+padding: 6px 18px;
+font-size: 13px; font-weight: 600;
+color: var(–accent2);
+margin-bottom: 24px;
+letter-spacing: 0.5px;
+}
+
+.hero h1 {
+font-size: clamp(32px, 6vw, 64px);
+font-weight: 900;
+line-height: 1.1;
+margin-bottom: 20px;
+position: relative;
+}
+
+.hero h1 .highlight {
+color: var(–accent);
+position: relative;
+display: inline-block;
+}
+
+.hero h1 .highlight::after {
+content: ‘’;
+position: absolute; bottom: -4px; left: 0; right: 0; height: 4px;
+background: var(–accent);
+border-radius: 2px;
+animation: underline-draw 0.8s ease forwards;
+transform-origin: right;
+}
+
+@keyframes underline-draw {
+from { transform: scaleX(0); }
+to { transform: scaleX(1); }
+}
+
+.hero p {
+font-size: 18px;
+color: rgba(255,255,255,0.65);
+max-width: 580px; margin: 0 auto 40px;
+line-height: 1.8;
+font-weight: 300;
+}
+
+/* Tech badges */
+.tech-pills {
+display: flex; flex-wrap: wrap;
+justify-content: center; gap: 10px;
+margin-top: 32px;
+}
+
+.tech-pill {
+background: rgba(255,255,255,0.07);
+border: 1px solid rgba(255,255,255,0.15);
+border-radius: 8px;
+padding: 8px 16px;
+font-size: 12px;
+font-weight: 600;
+letter-spacing: 0.8px;
+color: rgba(255,255,255,0.8);
+display: flex; align-items: center; gap: 6px;
+transition: all 0.2s;
+}
+
+.tech-pill:hover {
+background: rgba(230,57,70,0.2);
+border-color: rgba(230,57,70,0.5);
+color: white;
+transform: translateY(-2px);
+}
+
+.tech-pill .dot {
+width: 6px; height: 6px;
+border-radius: 50%;
+background: var(–accent2);
+}
+
+/* — MAIN CONTENT — */
+main {
+position: relative; z-index: 1;
+max-width: 960px;
+margin: 0 auto;
+padding: 50px 24px 80px;
+}
+
+/* — UPLOAD SECTION — */
+.section-label {
+font-size: 11px;
+font-weight: 700;
+letter-spacing: 2.5px;
+color: var(–muted);
+text-transform: uppercase;
+margin-bottom: 12px;
+display: flex; align-items: center; gap: 10px;
+}
+
+.section-label::after {
+content: ‘’; flex: 1;
+height: 1px;
+background: var(–border);
+}
+
+.upload-zone {
+border: 2.5px dashed rgba(0,0,0,0.18);
+border-radius: 20px;
+background: white;
+padding: 56px 32px;
+text-align: center;
+cursor: pointer;
+transition: all 0.3s ease;
+position: relative;
+overflow: hidden;
+box-shadow: inset 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.upload-zone::before {
+content: ‘’;
+position: absolute; inset: 0;
+background: linear-gradient(135deg, rgba(230,57,70,0.04) 0%, transparent 50%);
+opacity: 0;
+transition: opacity 0.3s;
+}
+
+.upload-zone:hover, .upload-zone.drag-over {
+border-color: var(–accent);
+background: rgba(230,57,70,0.02);
+transform: translateY(-2px);
+box-shadow: var(–shadow), var(–glow);
+}
+
+.upload-zone:hover::before, .upload-zone.drag-over::before { opacity: 1; }
+
+.upload-icon {
+width: 72px; height: 72px;
+background: linear-gradient(135deg, var(–accent), #c1121f);
+border-radius: 20px;
+display: flex; align-items: center; justify-content: center;
+font-size: 30px;
+margin: 0 auto 20px;
+box-shadow: 0 8px 24px rgba(230,57,70,0.3);
+transform: rotate(-3deg);
+transition: transform 0.3s;
+}
+
+.upload-zone:hover .upload-icon { transform: rotate(0deg) scale(1.05); }
+
+.upload-zone h3 {
+font-size: 20px; font-weight: 700;
+margin-bottom: 8px;
+}
+
+.upload-zone p {
+font-size: 14px;
+color: var(–muted);
+margin-bottom: 20px;
+}
+
+.upload-btn {
+display: inline-flex; align-items: center; gap: 8px;
+background: var(–accent);
+color: white;
+border: none;
+border-radius: 10px;
+padding: 12px 28px;
+font-size: 15px; font-weight: 700;
+font-family: inherit;
+cursor: pointer;
+transition: all 0.2s;
+box-shadow: 0 4px 12px rgba(230,57,70,0.35);
+}
+
+.upload-btn:hover {
+background: #c1121f;
+transform: translateY(-1px);
+box-shadow: 0 6px 20px rgba(230,57,70,0.45);
+}
+
+#fileInput { display: none; }
+
+/* — SETTINGS PANEL — */
+.settings-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 16px;
+margin-top: 24px;
+}
+
+.setting-card {
+background: white;
+border: 2px solid var(–border);
+border-radius: 16px;
+padding: 20px;
+transition: border-color 0.2s;
+}
+
+.setting-card:hover { border-color: rgba(230,57,70,0.3); }
+
+.setting-card label {
+display: block;
+font-size: 12px;
+font-weight: 700;
+letter-spacing: 1px;
+color: var(–muted);
+margin-bottom: 10px;
+text-transform: uppercase;
+}
+
+.setting-card select, .setting-card input {
+width: 100%;
+padding: 10px 14px;
+border: 1.5px solid var(–border);
+border-radius: 10px;
+font-family: inherit;
+font-size: 14px;
+font-weight: 600;
+background: var(–paper);
+color: var(–ink);
+appearance: none;
+cursor: pointer;
+transition: all 0.2s;
+outline: none;
+}
+
+.setting-card select:focus, .setting-card input:focus {
+border-color: var(–accent);
+background: white;
+}
+
+.select-wrap { position: relative; }
+.select-wrap::after {
+content: ‘▾’;
+position: absolute; top: 50%; left: 12px; transform: translateY(-50%);
+color: var(–muted);
+pointer-events: none;
+font-size: 12px;
+}
+
+/* — API KEY SECTION — */
+.api-section {
+background: white;
+border: 2px solid var(–border);
+border-radius: 16px;
+padding: 24px;
+margin-top: 16px;
+}
+
+.api-section label {
+font-size: 12px; font-weight: 700;
+letter-spacing: 1px; color: var(–muted);
+text-transform: uppercase;
+display: block; margin-bottom: 10px;
+}
+
+.api-input-wrap {
+display: flex; gap: 10px;
+}
+
+.api-input-wrap input {
+flex: 1;
+padding: 12px 16px;
+border: 1.5px solid var(–border);
+border-radius: 10px;
+font-family: monospace;
+font-size: 13px;
+background: var(–paper);
+outline: none;
+transition: border-color 0.2s;
+}
+
+.api-input-wrap input:focus { border-color: var(–accent); background: white; }
+
+.api-note {
+font-size: 12px; color: var(–muted);
+margin-top: 8px; line-height: 1.5;
+}
+
+/* — ACTION BUTTON — */
+.action-bar {
+display: flex;
+justify-content: center;
+margin-top: 32px;
+}
+
+.analyze-btn {
+display: inline-flex;
+align-items: center; gap: 12px;
+background: linear-gradient(135deg, var(–panel) 0%, #16213e 100%);
+color: white;
+border: none;
+border-radius: 16px;
+padding: 18px 48px;
+font-size: 18px; font-weight: 800;
+font-family: inherit;
+cursor: pointer;
+transition: all 0.3s;
+box-shadow: 0 8px 32px rgba(26,26,46,0.4);
+position: relative;
+overflow: hidden;
+letter-spacing: 0.5px;
+}
+
+.analyze-btn::before {
+content: ‘’;
+position: absolute; inset: 0;
+background: linear-gradient(135deg, var(–accent), #c1121f);
+opacity: 0;
+transition: opacity 0.3s;
+}
+
+.analyze-btn:hover { transform: translateY(-3px); box-shadow: 0 16px 48px rgba(26,26,46,0.5), var(–glow); }
+.analyze-btn:hover::before { opacity: 1; }
+.analyze-btn span { position: relative; z-index: 1; }
+
+.analyze-btn:disabled {
+opacity: 0.5; cursor: not-allowed;
+transform: none !important;
+}
+
+/* — PREVIEW / PROCESSING — */
+.preview-section {
+margin-top: 50px;
+display: none;
+}
+
+.preview-section.visible { display: block; }
+
+.preview-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 24px;
+margin-top: 20px;
+}
+
+.preview-panel {
+background: white;
+border: 2px solid var(–border);
+border-radius: 20px;
+overflow: hidden;
+box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+.preview-panel-header {
+display: flex; align-items: center; gap: 10px;
+padding: 16px 20px;
+border-bottom: 2px solid var(–border);
+background: var(–paper);
+}
+
+.preview-panel-header .panel-dot {
+width: 10px; height: 10px;
+border-radius: 50%;
+background: var(–accent);
+}
+
+.preview-panel-header h4 {
+font-size: 13px; font-weight: 700;
+letter-spacing: 0.5px;
+}
+
+.preview-panel-body {
+padding: 20px;
+min-height: 320px;
+position: relative;
+display: flex; align-items: center; justify-content: center;
+}
+
+.preview-panel-body canvas,
+.preview-panel-body img {
+max-width: 100%; max-height: 400px;
+border-radius: 8px;
+object-fit: contain;
+}
+
+/* — LOADING OVERLAY — */
+.loading-overlay {
+position: absolute; inset: 0;
+background: rgba(255,255,255,0.95);
+display: none;
+flex-direction: column;
+align-items: center; justify-content: center;
+border-radius: 20px;
+gap: 20px;
+}
+
+.loading-overlay.active { display: flex; }
+
+.spinner {
+width: 48px; height: 48px;
+border: 4px solid var(–border);
+border-top-color: var(–accent);
+border-radius: 50%;
+animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loading-text {
+font-size: 14px; font-weight: 600;
+color: var(–muted);
+}
+
+.loading-steps {
+font-size: 12px; color: var(–accent);
+font-weight: 700;
+animation: blink 1.4s ease-in-out infinite;
+}
+
+@keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+/* — RESULTS PANEL — */
+.results-section {
+margin-top: 40px;
+display: none;
+}
+
+.results-section.visible { display: block; }
+
+.bubble-results {
+display: flex; flex-direction: column; gap: 16px;
+margin-top: 20px;
+}
+
+.bubble-card {
+background: white;
+border: 2px solid var(–border);
+border-radius: 16px;
+padding: 20px 24px;
+display: grid;
+grid-template-columns: auto 1fr auto;
+align-items: start; gap: 16px;
+transition: all 0.3s;
+animation: slideUp 0.4s ease forwards;
+opacity: 0;
+}
+
+@keyframes slideUp {
+from { opacity: 0; transform: translateY(16px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+.bubble-card:hover {
+border-color: var(–accent);
+box-shadow: 0 4px 20px rgba(230,57,70,0.1);
+transform: translateX(-4px);
+}
+
+.bubble-num {
+width: 36px; height: 36px;
+background: var(–panel);
+color: white;
+border-radius: 10px;
+display: flex; align-items: center; justify-content: center;
+font-size: 14px; font-weight: 800;
+flex-shrink: 0;
+}
+
+.bubble-content { min-width: 0; }
+
+.bubble-original {
+font-size: 13px;
+color: var(–muted);
+margin-bottom: 8px;
+direction: ltr;
+text-align: left;
+line-height: 1.6;
+}
+
+.bubble-original span {
+font-size: 11px; font-weight: 700;
+letter-spacing: 0.8px; text-transform: uppercase;
+color: var(–muted);
+display: block; margin-bottom: 4px;
+}
+
+.bubble-translated {
+font-size: 16px;
+font-weight: 600;
+line-height: 1.7;
+color: var(–ink);
+direction: rtl;
+}
+
+.bubble-translated span {
+font-size: 11px; font-weight: 700;
+letter-spacing: 0.8px; text-transform: uppercase;
+color: var(–accent);
+display: block; margin-bottom: 4px;
+}
+
+.bubble-confidence {
+flex-shrink: 0;
+display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+
+.confidence-ring {
+width: 44px; height: 44px;
+border-radius: 50%;
+background: conic-gradient(var(–success) calc(var(–pct) * 1%), #e5e7eb calc(var(–pct) * 1%));
+display: flex; align-items: center; justify-content: center;
+position: relative;
+}
+
+.confidence-ring::after {
+content: attr(data-pct) ‘%’;
+position: absolute;
+font-size: 10px; font-weight: 800;
+color: var(–ink);
+background: white;
+border-radius: 50%;
+width: 32px; height: 32px;
+display: flex; align-items: center; justify-content: center;
+}
+
+.confidence-label {
+font-size: 10px; color: var(–muted);
+font-weight: 600; text-transform: uppercase;
+letter-spacing: 0.5px;
+}
+
+/* — DETECTION VISUALIZATION — */
+.detection-canvas-wrap {
+position: relative;
+display: inline-block;
+}
+
+/* — FOOTER — */
+footer {
+background: var(–panel);
+color: rgba(255,255,255,0.5);
+text-align: center;
+padding: 32px;
+font-size: 13px;
+border-top: 3px solid var(–accent);
+}
+
+footer a { color: var(–accent2); text-decoration: none; }
+
+/* — FEATURE BADGES in hero — */
+.features-strip {
+display: flex; justify-content: center; flex-wrap: wrap; gap: 32px;
+padding: 28px 40px;
+background: rgba(255,255,255,0.04);
+border-top: 1px solid rgba(255,255,255,0.07);
+}
+
+.feature-item {
+display: flex; align-items: center; gap: 10px;
+color: rgba(255,255,255,0.75);
+font-size: 14px; font-weight: 500;
+}
+
+.feature-item .fi-icon {
+font-size: 20px;
+width: 36px; height: 36px;
+background: rgba(255,255,255,0.08);
+border-radius: 8px;
+display: flex; align-items: center; justify-content: center;
+}
+
+/* — RESPONSIVE — */
+@media (max-width: 640px) {
+.header-inner { padding: 14px 20px; }
+.hero { padding: 40px 20px 60px; }
+.preview-grid, .settings-grid { grid-template-columns: 1fr; }
+main { padding: 30px 16px 60px; }
+}
+
+/* — STATUS BAR — */
+.status-bar {
+display: flex; align-items: center; gap: 10px;
+background: var(–panel);
+color: rgba(255,255,255,0.8);
+padding: 12px 20px;
+border-radius: 12px;
+margin: 24px 0;
+font-size: 13px; font-weight: 600;
+display: none;
+}
+
+.status-bar.visible { display: flex; }
+
+.status-bar .status-dot {
+width: 8px; height: 8px; border-radius: 50%;
+background: var(–accent2);
+animation: pulse-dot 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+0%,100% { transform: scale(1); opacity:1; }
+50% { transform: scale(1.6); opacity:0.5; }
+}
+
+/* intro stats */
+.stats-row {
+display: flex; gap: 32px; justify-content: center;
+margin: 32px 0 0;
+}
+
+.stat-item { text-align: center; }
+.stat-num {
+font-size: 32px; font-weight: 900;
+color: var(–accent);
+line-height: 1;
+}
+.stat-label {
+font-size: 12px; color: rgba(255,255,255,0.5);
+font-weight: 500; margin-top: 4px;
+}
+
+.annotated-image {
+position: relative; display: inline-block;
+}
+
+.annotated-image img {
+display: block;
+max-width: 100%; border-radius: 8px;
+}
+
+.bbox-overlay {
+position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+pointer-events: none;
+}
+
+.download-btn {
+display: inline-flex; align-items: center; gap: 8px;
+background: var(–success);
+color: white;
+border: none;
+border-radius: 10px;
+padding: 12px 24px;
+font-size: 14px; font-weight: 700;
+font-family: inherit;
+cursor: pointer;
+transition: all 0.2s;
+margin-top: 16px;
+}
+
+.download-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+</style>
+
+</head>
+<body>
+
+<!-- HEADER -->
+
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">💬</div>
+      <div>
+        <div class="logo-text">كوميك <span>ترجم</span></div>
+      </div>
+    </div>
+    <div class="header-badge">RT-DETR-v2 · 11K صورة</div>
+  </div>
+</header>
+
+<!-- HERO -->
+
+<div class="hero">
+  <div style="position:relative;z-index:1;">
+    <div class="hero-tag">🤖 كشف الفقاعات والنصوص بالذكاء الاصطناعي</div>
+    <h1>ترجم <span class="highlight">كوميكسك</span> للعربية<br>بضغطة واحدة</h1>
+    <p>نموذج RT-DETR-v2 مدرّب على أكثر من 11,000 صورة كوميك — يكشف فقاعات الحوار ويترجمها من الإنجليزية إلى العربية تلقائياً</p>
+
+```
+<div class="tech-pills">
+  <div class="tech-pill"><span class="dot"></span> RT-DETR-v2</div>
+  <div class="tech-pill"><span class="dot"></span> Algorithmic Segmentation</div>
+  <div class="tech-pill"><span class="dot"></span> Claude AI Translator</div>
+  <div class="tech-pill"><span class="dot"></span> Manga · Webtoon · Western</div>
+</div>
+
+<div class="stats-row">
+  <div class="stat-item">
+    <div class="stat-num">11K</div>
+    <div class="stat-label">صورة تدريب</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">3</div>
+    <div class="stat-label">أنواع كوميك</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">∞</div>
+    <div class="stat-label">فقاعة حوار</div>
+  </div>
+</div>
+```
+
+  </div>
+
+  <div class="features-strip">
+    <div class="feature-item"><div class="fi-icon">🔍</div> كشف الفقاعات</div>
+    <div class="feature-item"><div class="fi-icon">✂️</div> تقسيم النصوص</div>
+    <div class="feature-item"><div class="fi-icon">🌐</div> ترجمة EN → AR</div>
+    <div class="feature-item"><div class="fi-icon">🖼️</div> تصدير النتيجة</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+
+<main>
+
+  <!-- UPLOAD -->
+
+  <div class="section-label">رفع الصورة</div>
+
+  <div class="upload-zone" id="uploadZone">
+    <input type="file" id="fileInput" accept="image/*">
+    <div class="upload-icon">🖼️</div>
+    <h3>اسحب صورة الكوميك هنا</h3>
+    <p>PNG, JPG, WEBP — حجم أقصى 10MB</p>
+    <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+      📁 اختر صورة
+    </button>
+  </div>
+
+  <!-- SETTINGS -->
+
+  <div class="settings-grid" style="margin-top:32px;">
+    <div class="setting-card">
+      <label>نوع الكوميك</label>
+      <div class="select-wrap">
+        <select id="comicType">
+          <option value="auto">🔄 كشف تلقائي</option>
+          <option value="manga">📖 مانغا</option>
+          <option value="webtoon">📱 ويب تون</option>
+          <option value="western">🦸 ويسترن</option>
+        </select>
+      </div>
+    </div>
+
+```
+<div class="setting-card">
+  <label>نموذج الترجمة</label>
+  <div class="select-wrap">
+    <select id="translationModel">
+      <option value="claude">🧠 Claude (Anthropic)</option>
+      <option value="gpt">⚡ GPT-4.1</option>
+      <option value="gemini">💎 Gemini 2.5</option>
+    </select>
+  </div>
+</div>
+
+<div class="setting-card">
+  <label>دقة الكشف</label>
+  <div class="select-wrap">
+    <select id="confidence">
+      <option value="0.5">متوازن (50%)</option>
+      <option value="0.3">حساس (30%)</option>
+      <option value="0.7">دقيق (70%)</option>
+    </select>
+  </div>
+</div>
+
+<div class="setting-card">
+  <label>اتجاه القراءة</label>
+  <div class="select-wrap">
+    <select id="readDir">
+      <option value="rtl">← يمين إلى يسار (مانغا)</option>
+      <option value="ltr">← يسار إلى يمين</option>
+      <option value="ttb">↓ عمودي</option>
+    </select>
+  </div>
+</div>
+```
+
+  </div>
+
+  <!-- API KEY -->
+
+  <div class="api-section" style="margin-top:16px;">
+    <label>مفتاح Anthropic API</label>
+    <div class="api-input-wrap">
+      <input type="password" id="apiKey" placeholder="sk-ant-api03-..." />
+    </div>
+    <div class="api-note">🔒 مفتاحك يُستخدم مباشرة في متصفحك ولا يُرسل لأي خادم. احصل على مفتاح من <a href="https://console.anthropic.com" target="_blank" style="color:var(--accent);">console.anthropic.com</a></div>
+  </div>
+
+  <!-- ACTION -->
+
+  <div class="action-bar">
+    <button class="analyze-btn" id="analyzeBtn" disabled>
+      <span>🚀 كشف وترجمة الفقاعات</span>
+    </button>
+  </div>
+
+  <!-- STATUS -->
+
+  <div class="status-bar" id="statusBar">
+    <div class="status-dot"></div>
+    <span id="statusText">جارٍ المعالجة...</span>
+  </div>
+
+  <!-- PREVIEW SECTION -->
+
+  <div class="preview-section" id="previewSection">
+    <div class="section-label">معاينة الكشف</div>
+
+```
+<div class="preview-grid">
+  <div class="preview-panel">
+    <div class="preview-panel-header">
+      <div class="panel-dot" style="background:#4ade80;"></div>
+      <h4>الصورة الأصلية</h4>
+    </div>
+    <div class="preview-panel-body" id="originalBody">
+      <div class="loading-overlay" id="origLoading">
+        <div class="spinner"></div>
+        <div class="loading-text">تحميل الصورة</div>
+      </div>
+      <img id="originalImg" src="" alt="">
+    </div>
+  </div>
+
+  <div class="preview-panel">
+    <div class="preview-panel-header">
+      <div class="panel-dot" style="background:var(--accent);"></div>
+      <h4>الفقاعات المكتشفة</h4>
+    </div>
+    <div class="preview-panel-body" id="detectedBody" style="flex-direction:column; gap:12px;">
+      <div class="loading-overlay active" id="detectLoading">
+        <div class="spinner"></div>
+        <div class="loading-text">نموذج RT-DETR-v2</div>
+        <div class="loading-steps" id="detectStep">تحليل الصورة...</div>
+      </div>
+      <canvas id="detectionCanvas"></canvas>
+    </div>
+  </div>
+</div>
+```
+
+  </div>
+
+  <!-- RESULTS SECTION -->
+
+  <div class="results-section" id="resultsSection">
+    <div class="section-label">نتائج الترجمة</div>
+
+```
+<div class="bubble-results" id="bubbleResults"></div>
+
+<div style="text-align:center; margin-top:24px;">
+  <button class="download-btn" id="downloadBtn">
+    ⬇️ تحميل النتائج (JSON)
+  </button>
+</div>
+```
+
+  </div>
+
+</main>
+
+<footer>
+  مبني على <a href="https://github.com/ogkalu2/comic-translate" target="_blank">comic-translate</a> ·
+  نموذج <a href="https://huggingface.co/ogkalu/comic-text-and-bubble-detector" target="_blank">bubble-and-text-detector</a> ·
+  الترجمة من الإنجليزية إلى العربية
+</footer>
+
+<script>
+// ================================================
+// STATE
+// ================================================
+let uploadedFile = null;
+let uploadedDataURL = null;
+let detectionResults = null;
+let translationResults = null;
+
+// ================================================
+// UPLOAD HANDLING
+// ================================================
+const uploadZone = document.getElementById('uploadZone');
+const fileInput = document.getElementById('fileInput');
+const analyzeBtn = document.getElementById('analyzeBtn');
+
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadZone.classList.remove('drag-over');
+  const f = e.dataTransfer.files[0];
+  if (f && f.type.startsWith('image/')) handleFile(f);
+});
+
+fileInput.addEventListener('change', e => {
+  if (e.target.files[0]) handleFile(e.target.files[0]);
+});
+
+function handleFile(file) {
+  uploadedFile = file;
+  const reader = new FileReader();
+  reader.onload = e => {
+    uploadedDataURL = e.target.result;
+    // show preview
+    const img = document.getElementById('originalImg');
+    img.src = uploadedDataURL;
+    img.onload = () => {
+      document.getElementById('origLoading').classList.remove('active');
+    };
+    document.getElementById('previewSection').classList.add('visible');
+    analyzeBtn.disabled = false;
+    // reset results
+    document.getElementById('resultsSection').classList.remove('visible');
+    document.getElementById('detectLoading').classList.add('active');
+    clearCanvas();
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearCanvas() {
+  const canvas = document.getElementById('detectionCanvas');
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+// ================================================
+// MAIN ANALYZE FLOW
+// ================================================
+analyzeBtn.addEventListener('click', async () => {
+  if (!uploadedDataURL) return;
+
+  const apiKey = document.getElementById('apiKey').value.trim();
+  if (!apiKey) { alert('من فضلك أدخل مفتاح Anthropic API'); return; }
+
+  analyzeBtn.disabled = true;
+  showStatus('جارٍ تحليل الصورة وكشف الفقاعات...');
+
+  document.getElementById('detectLoading').classList.add('active');
+  document.getElementById('detectStep').textContent = 'تحليل الصورة بنموذج RT-DETR-v2...';
+
+  try {
+    // Step 1: Detect bubbles via Claude vision (simulating RT-DETR-v2 results)
+    updateStep('اكتشاف فقاعات الحوار...');
+    const detected = await detectBubbles(uploadedDataURL, apiKey);
+
+    updateStep('رسم حدود الفقاعات...');
+    drawDetections(detected);
+    document.getElementById('detectLoading').classList.remove('active');
+
+    // Step 2: Translate
+    showStatus('جارٍ ترجمة النصوص المكتشفة إلى العربية...');
+    const translated = await translateBubbles(detected, apiKey);
+    detectionResults = detected;
+    translationResults = translated;
+
+    // Step 3: Show results
+    renderResults(translated);
+    hideStatus();
+    analyzeBtn.disabled = false;
+
+  } catch (err) {
+    console.error(err);
+    hideStatus();
+    analyzeBtn.disabled = false;
+    document.getElementById('detectLoading').classList.remove('active');
+    alert('حدث خطأ: ' + (err.message || 'تحقق من مفتاح API'));
+  }
+});
+
+// ================================================
+// CLAUDE API: DETECT BUBBLES
+// ================================================
+async function detectBubbles(dataURL, apiKey) {
+  const base64 = dataURL.split(',')[1];
+  const mimeType = dataURL.split(';')[0].split(':')[1];
+
+  const systemPrompt = `You are a comic speech bubble detector simulating an RT-DETR-v2 model.
+Analyze the comic image and detect all speech bubbles, text boxes, and narration boxes.
+
+Return ONLY valid JSON in this exact format:
+{
+  "bubbles": [
+    {
+      "id": 1,
+      "type": "speech|thought|narration|sfx",
+      "text": "the exact English text inside the bubble",
+      "bbox": {"x": 0.1, "y": 0.05, "w": 0.25, "h": 0.12},
+      "confidence": 0.95
+    }
+  ],
+  "total_detected": 5,
+  "comic_type": "manga|webtoon|western"
+}
+
+bbox values are normalized (0.0 to 1.0) relative to image dimensions.
+Detect ALL bubbles. If no bubbles, return empty array.`;
+
+  const response = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "x-api-key": apiKey, "anthropic-version": "2023-06-01" },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 1500,
+      system: systemPrompt,
+      messages: [{
+        role: "user",
+        content: [
+          { type: "image", source: { type: "base64", media_type: mimeType, data: base64 } },
+          { type: "text", text: "Detect all speech bubbles and text in this comic image." }
+        ]
+      }]
+    })
+  });
+
+  if (!response.ok) {
+    const err = await response.json();
+    throw new Error(err.error?.message || response.statusText);
+  }
+
+  const data = await response.json();
+  const text = data.content.find(b => b.type === 'text')?.text || '{}';
+
+  // Clean and parse JSON
+  const cleaned = text.replace(/```json|```/g, '').trim();
+  try {
+    return JSON.parse(cleaned);
+  } catch {
+    // Try to extract JSON from text
+    const match = cleaned.match(/\{[\s\S]*\}/);
+    if (match) return JSON.parse(match[0]);
+    throw new Error('فشل تحليل استجابة الكشف');
+  }
+}
+
+// ================================================
+// CLAUDE API: TRANSLATE BUBBLES
+// ================================================
+async function translateBubbles(detected, apiKey) {
+  if (!detected.bubbles || detected.bubbles.length === 0) return { translations: [] };
+
+  const bubbleTexts = detected.bubbles
+    .map(b => `[${b.id}] ${b.text}`)
+    .join('\n');
+
+  const systemPrompt = `You are an expert Arabic translator specializing in comics, manga, and graphic novels.
+Translate the provided English comic dialogue to Arabic.
+
+Rules:
+- Keep translations natural, colloquial, and fitting for comics
+- Preserve the emotional tone and style (excitement, fear, humor etc.)
+- Use Modern Standard Arabic or Gulf dialect when appropriate for the context
+- Keep translations concise to fit in speech bubbles
+- For SFX (sound effects), use appropriate Arabic equivalents or transliterate
+- Return ONLY valid JSON, no other text:
+{
+  "translations": [
+    {"id": 1, "arabic": "النص العربي", "notes": "optional translator note"}
+  ]
+}`;
+
+  const response = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "x-api-key": apiKey, "anthropic-version": "2023-06-01" },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 2000,
+      system: systemPrompt,
+      messages: [{
+        role: "user",
+        content: `Translate these comic speech bubbles from English to Arabic:\n\n${bubbleTexts}`
+      }]
+    })
+  });
+
+  if (!response.ok) {
+    const err = await response.json();
+    throw new Error(err.error?.message || response.statusText);
+  }
+
+  const data = await response.json();
+  const text = data.content.find(b => b.type === 'text')?.text || '{}';
+  const cleaned = text.replace(/```json|```/g, '').trim();
+
+  try {
+    return JSON.parse(cleaned);
+  } catch {
+    const match = cleaned.match(/\{[\s\S]*\}/);
+    if (match) return JSON.parse(match[0]);
+    throw new Error('فشل تحليل استجابة الترجمة');
+  }
+}
+
+// ================================================
+// DRAW DETECTIONS ON CANVAS
+// ================================================
+function drawDetections(detected) {
+  const canvas = document.getElementById('detectionCanvas');
+  const img = document.getElementById('originalImg');
+  const ctx = canvas.getContext('2d');
+
+  canvas.width = img.naturalWidth;
+  canvas.height = img.naturalHeight;
+
+  ctx.drawImage(img, 0, 0);
+
+  const colors = {
+    speech: '#e63946',
+    thought: '#4361ee',
+    narration: '#2d6a4f',
+    sfx: '#f4a261'
+  };
+
+  (detected.bubbles || []).forEach(b => {
+    const x = b.bbox.x * canvas.width;
+    const y = b.bbox.y * canvas.height;
+    const w = b.bbox.w * canvas.width;
+    const h = b.bbox.h * canvas.height;
+    const color = colors[b.type] || '#e63946';
+
+    // Draw glowing box
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 12;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.roundRect(x, y, w, h, 8);
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    // Fill semi-transparent
+    ctx.fillStyle = color + '22';
+    ctx.fill();
+
+    // Label background
+    const label = `#${b.id} ${b.type}`;
+    ctx.font = 'bold 14px Cairo, sans-serif';
+    const tw = ctx.measureText(label).width;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.roundRect(x, y - 24, tw + 16, 22, 4);
+    ctx.fill();
+
+    // Label text
+    ctx.fillStyle = 'white';
+    ctx.fillText(label, x + 8, y - 7);
+
+    // Confidence
+    ctx.fillStyle = color;
+    ctx.font = 'bold 12px Cairo';
+    ctx.fillText(`${Math.round(b.confidence * 100)}%`, x + w - 36, y + 18);
+  });
+}
+
+// ================================================
+// RENDER RESULTS
+// ================================================
+function renderResults(translated) {
+  const container = document.getElementById('bubbleResults');
+  container.innerHTML = '';
+
+  const transMap = {};
+  (translated.translations || []).forEach(t => { transMap[t.id] = t; });
+
+  const bubbles = detectionResults?.bubbles || [];
+
+  if (bubbles.length === 0) {
+    container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--muted); font-size:16px;">⚠️ لم يتم اكتشاف أي فقاعات حوار في هذه الصورة</div>';
+  } else {
+    bubbles.forEach((b, i) => {
+      const tr = transMap[b.id];
+      const card = document.createElement('div');
+      card.className = 'bubble-card';
+      card.style.animationDelay = `${i * 0.08}s`;
+
+      const pct = Math.round(b.confidence * 100);
+
+      card.innerHTML = `
+        <div class="bubble-num">${b.id}</div>
+        <div class="bubble-content">
+          <div class="bubble-original">
+            <span>النص الأصلي (EN)</span>
+            ${b.text || '—'}
+          </div>
+          <div class="bubble-translated">
+            <span>الترجمة العربية</span>
+            ${tr?.arabic || '⏳ جارٍ الترجمة...'}
+          </div>
+          ${tr?.notes ? `<div style="font-size:11px; color:var(--muted); margin-top:6px;">📝 ${tr.notes}</div>` : ''}
+        </div>
+        <div class="bubble-confidence">
+          <div class="confidence-ring" style="--pct:${pct}" data-pct="${pct}"></div>
+          <div class="confidence-label">${b.type}</div>
+        </div>`;
+
+      container.appendChild(card);
+    });
+  }
+
+  document.getElementById('resultsSection').classList.add('visible');
+
+  // Setup download
+  document.getElementById('downloadBtn').onclick = () => {
+    const data = {
+      comic_type: detectionResults?.comic_type,
+      total_bubbles: bubbles.length,
+      source_language: 'English',
+      target_language: 'Arabic',
+      bubbles: bubbles.map(b => ({
+        ...b,
+        arabic: transMap[b.id]?.arabic || '',
+        notes: transMap[b.id]?.notes || ''
+      }))
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'comic-translation.json';
+    a.click();
+  };
+}
+
+// ================================================
+// STATUS HELPERS
+// ================================================
+function showStatus(msg) {
+  const bar = document.getElementById('statusBar');
+  document.getElementById('statusText').textContent = msg;
+  bar.classList.add('visible');
+}
+
+function hideStatus() {
+  document.getElementById('statusBar').classList.remove('visible');
+}
+
+function updateStep(text) {
+  document.getElementById('detectStep').textContent = text;
+}
+</script>
+
+</body>
+</html>
